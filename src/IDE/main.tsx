@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {createBrowserRouter, RouterProvider,} from "react-router-dom";
-import App from './App.tsx';
+import Home from './pages/Home.tsx';
 import './style.scss';
-import {DisplayGraph} from "./routes/DisplayGraph.tsx";
-import {ErrorPage} from "./routes/ErrorPage.tsx";
-import {Root} from "./routes/Root.tsx";
+import {DisplayGraph} from "./pages/DisplayGraph.tsx";
+import {ErrorPage} from "./pages/ErrorPage.tsx";
+import {Root} from "./pages/Root.tsx";
 
 const router = createBrowserRouter([
     {
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '',
-                element: <App/>
+                element: <Home/>
             },
             {
                 path: 'graph',
