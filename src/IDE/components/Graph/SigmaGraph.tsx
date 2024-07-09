@@ -1,7 +1,7 @@
 import {SigmaContainer, useLoadGraph} from "@react-sigma/core";
-import Graph from "graphology";
 import {CSSProperties, ReactElement, useEffect, useMemo} from "react";
 import {Settings} from "sigma/settings";
+import {GraphGridBuilder} from "../../../Graph/Graphology/Builder/GraphGridBuilder.ts";
 import {drawHover, drawLabel} from "./drawUtils.ts";
 import "@react-sigma/core/lib/react-sigma.min.css";
 
@@ -22,9 +22,15 @@ const LoadGraph = (): null => {
     const loadGraph = useLoadGraph();
 
     useEffect(() => {
-        const graph = new Graph();
-        graph.addNode("first", {x: 0, y: 0, size: 15, label: "My first node", color: "#FA4F40"});
-        loadGraph(graph);
+        // const graph = new Graph();
+        // graph.addNode("first", {x: 0, y: 0, size: 15, label: "My first node", color: "#FA4F40"});
+        // loadGraph(graph);
+        loadGraph(GraphGridBuilder.generateGrid(
+            5,
+            5,
+            {color: "#FA4F40",size: 15},
+            {},
+        ));
     }, [loadGraph]);
 
     return null;

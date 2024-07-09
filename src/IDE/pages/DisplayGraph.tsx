@@ -5,7 +5,7 @@ export const DisplayGraph = (): ReactElement => {
     return <>
         <SigmaGraph>
             <div className="panels">
-                <StatsPanel/>
+                <StatsPanel initializeExpanded/>
             </div>
         </SigmaGraph>
     </>;

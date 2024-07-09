@@ -8,11 +8,11 @@ type CollapsibleCardProps = {
     duration?: number,
     title: ReactNode,
     children: ReactNode,
-    expanded?: boolean,
+    initializeExpanded?: boolean,
 }
 
 export const CollapsibleCard = (props: CollapsibleCardProps): ReactElement => {
-    const [expanded, setExpanded] = useState<boolean>(props.expanded ?? false);
+    const [expanded, setExpanded] = useState<boolean>(props.initializeExpanded ?? false);
     const dom = useRef<HTMLDivElement>(null);
 
     useEffect(() => {

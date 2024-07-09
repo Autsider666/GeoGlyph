@@ -9,7 +9,11 @@ type Stats = {
     edges: number,
 }
 
-export const StatsPanel = (): ReactElement => {
+type StatsPanelProps = {
+    initializeExpanded?: boolean,
+}
+
+export const StatsPanel = (props:StatsPanelProps): ReactElement => {
     const [stats, setStats] = useState<Stats>({nodes: 0, edges: 0});
     const sigma = useSigma();
     const graph = sigma.getGraph();
@@ -25,7 +29,7 @@ export const StatsPanel = (): ReactElement => {
         });
     }, [graph]);
 
-    return <Panel title="Stats">
+    return <Panel title="Stats" initializeExpanded={props.initializeExpanded}>
         <Grid width={1}>
             {Object.keys(stats).map((stat) =>
                 <GridCell key={stat} classNames={{'has-text-centered': true}}>
