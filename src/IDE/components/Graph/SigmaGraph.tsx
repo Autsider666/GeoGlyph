@@ -14,6 +14,10 @@ const sigmaStyle: CSSProperties = {
     backgroundColor: 'transparent',
 };
 
+type SigmaGraphProps = {
+    children:ReactElement,
+}
+
 const LoadGraph = (): null => {
     const loadGraph = useLoadGraph();
 
@@ -26,7 +30,7 @@ const LoadGraph = (): null => {
     return null;
 };
 
-export const SigmaGraph = ():ReactElement => {
+export const SigmaGraph = (props:SigmaGraphProps):ReactElement => {
     const sigmaSettings: Partial<Settings> = useMemo(
         () => ({
             defaultDrawNodeHover: drawHover,
@@ -50,5 +54,6 @@ export const SigmaGraph = ():ReactElement => {
 
     return <SigmaContainer style={sigmaStyle} settings={sigmaSettings}>
         <LoadGraph/>
+        {props.children}
     </SigmaContainer>;
 };

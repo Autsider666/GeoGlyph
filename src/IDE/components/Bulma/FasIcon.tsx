@@ -9,12 +9,14 @@ type FasIconProps = {
     icon: FasIconType,
     size?: Size,
     children?: ReactNode,
+    align?: 'left' | 'right',
 }
 export const FasIcon = (props: FasIconProps): ReactElement => {
     const icon = <span
         className={classNames({
             icon: true,
             [`is-${props.size ?? 'normal'}`]: true,
+            'is-right': props.align === 'right',
         })}
     >
       <i className={classNames({
@@ -28,7 +30,8 @@ export const FasIcon = (props: FasIconProps): ReactElement => {
     }
 
     return <span className="icon-text">
-        {icon}
+        {props.align !== "right" ? icon : undefined}
         <span>{props.children}</span>
+        {props.align === "right" ? icon : undefined}
     </span>;
 };
