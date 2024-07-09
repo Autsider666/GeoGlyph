@@ -1,0 +1,34 @@
+import classNames from "classnames";
+import {ReactElement, ReactNode} from "react";
+import {Size} from "./types.ts";
+
+// https://fontawesome.com/search?o=r&m=free
+export type FasIconType = `fa-${string}`;
+
+type FasIconProps = {
+    icon: FasIconType,
+    size?: Size,
+    children?: ReactNode,
+}
+export const FasIcon = (props: FasIconProps): ReactElement => {
+    const icon = <span
+        className={classNames({
+            icon: true,
+            [`is-${props.size ?? 'normal'}`]: true,
+        })}
+    >
+      <i className={classNames({
+          fas: true,
+          [props.icon]: true,
+      })}></i>
+    </span>;
+
+    if (!props.children) {
+        return icon;
+    }
+
+    return <span className="icon-text">
+        {icon}
+        <span>{props.children}</span>
+    </span>;
+};
