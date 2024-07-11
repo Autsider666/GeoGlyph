@@ -1,0 +1,108 @@
+@use '../../../node_modules/bulma/bulma';
+
+$stagePadding: 8px;
+
+.navbar {
+  background-color: transparent;
+}
+
+.react-sigma, .diagram {
+  user-select: none;
+}
+
+$panelWidth: 350px;
+
+.panels {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: $panelWidth;
+  max-height: calc(100vh - 2 * $stagePadding);
+  overflow-y: auto;
+  padding: $stagePadding;
+  scrollbar-width: thin;
+
+  > :not(:last-child) {
+    margin-bottom: $stagePadding;
+  }
+}
+
+.fullScreen {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+
+  //height: 100vh;
+  //background-color: rgb(60, 60, 60);
+  //background-size: 50px 50px;
+  //display: flex;
+
+  > * {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+  }
+}
+
+$patternColor: #a9a9a9;
+$patternSize: 30px;
+$backgroundColor: rgba(255, 255, 255, 0.05);
+
+.pattern {
+  &.grid {
+    //background-color: rgb(60, 60, 60);
+    background-size: $patternSize $patternSize;
+    display: flex;
+
+    background-image: linear-gradient(
+                    0deg,
+                    transparent 24%,
+                    $backgroundColor 25%,
+                    $backgroundColor 26%,
+                    transparent 27%,
+                    transparent 74%,
+                    $backgroundColor 75%,
+                    $backgroundColor 76%,
+                    transparent 77%,
+                    transparent
+    ),
+    linear-gradient(
+                    90deg,
+                    transparent 24%,
+                    $backgroundColor 25%,
+                    $backgroundColor 26%,
+                    transparent 27%,
+                    transparent 74%,
+                    $backgroundColor 75%,
+                    $backgroundColor 76%,
+                    transparent 77%,
+                    transparent
+    );
+  }
+
+  &.dotted {
+    background-image: radial-gradient(circle at 1px 1px, $patternColor 1px, transparent 0);
+    background-size: $patternSize $patternSize;
+  }
+
+  &.paper {
+    background-color: #e5e5f7;
+    opacity: 0.8;
+    background-image:  linear-gradient(#444cf7 2px, transparent 2px), linear-gradient(90deg, #444cf7 2px, transparent 2px), linear-gradient(#444cf7 1px, transparent 1px), linear-gradient(90deg, #444cf7 1px, #e5e5f7 1px);
+    background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+  }
+
+  &.test {
+    --s: 50px; /* control the size*/
+    --c1: #774f38;
+    --c2: #f1d4af;
+
+    --g:conic-gradient(at 90% 40%,#0000 75%,var(--c1) 0);
+    background: var(--g),var(--g) var(--s) var(--s) var(--c2);
+    background-size: calc(2*var(--s)) calc(2*var(--s));
+  }
+}

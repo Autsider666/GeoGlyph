@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@projectstorm/react-diagrams": "^7.0.4",
     "@react-sigma/core": "^4.0.2",
     "bulma": "^1.0.1",
     "classnames": "^2.5.1",

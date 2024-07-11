@@ -9,7 +9,7 @@ type NavBarItem = {
 }
 
 type NavBarProps = {
-    brand?: ReactElement,
+    brand?: ReactElement[],
     start?: NavBarItem[],
     end?: NavBarItem[],
 };
