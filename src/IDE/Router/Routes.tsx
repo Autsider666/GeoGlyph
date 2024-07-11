@@ -2,6 +2,7 @@ import {RouteObject} from "react-router-dom";
 import {FasIconType} from "../components/Bulma/FasIcon.tsx";
 import {DisplayReactDiagram} from "../pages/DisplayReactDiagram.tsx";
 import {DisplayGraph} from "../pages/DisplayGraph.tsx";
+import {DisplayReactFlow} from "../pages/DisplayReactFlow.tsx";
 import Home from "../pages/Home.tsx";
 import {TestSandbox} from "../pages/TestSandbox.tsx";
 
@@ -33,11 +34,19 @@ export const Routes: Route[] = [
     },
     {
         menu: {
-            name: 'Display',
+            name: 'React Diagrams',
             type: 'start',
         },
-        path: 'diagram',
+        path: 'react-diagram',
         element: <DisplayReactDiagram/>
+    },
+    {
+        menu: {
+            name: 'React Flow',
+            type: 'start',
+        },
+        path: 'react-flow',
+        element: <DisplayReactFlow/>
     },
     {
         menu: {

@@ -13,9 +13,23 @@ export const MenuNavBar = (): ReactElement => {
 
     return <NavBar
         brand={generateElementsFor('brand')}
-        start={[
-            {key: 'graph', item: 'Graph', link: '/graph'},
-            {key: 'diagram', item: 'Diagram', link: '/diagram'},
-        ]}
+        start={Routes.filter(route => route.menu?.type === 'start')
+            .map(({
+                      menu,
+                      path
+                  }) => menu && path !== undefined ? ({
+                key: path,
+                item: menu.name,
+                link: path
+            }) : undefined).filter(element => element !== undefined)}
+        end={Routes.filter(route => route.menu?.type === 'end')
+            .map(({
+                      menu,
+                      path
+                  }) => menu && path !== undefined ? ({
+                key: path,
+                item: menu.name,
+                link: path
+            }) : undefined).filter(element => element !== undefined)}
     />;
 };
