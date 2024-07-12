@@ -17,7 +17,7 @@ type NavBarProps = {
 export const NavBar = (props: NavBarProps): ReactElement => {
     const [expanded, setExpanded] = useState(false);
 
-    return <div className="navbar" style={{right: 0}}>
+    return <header className="navbar" style={{right: 0}}>
         {props.brand ? (
             <div className="navbar-brand">
                 {props.brand}
@@ -58,5 +58,5 @@ export const NavBar = (props: NavBarProps): ReactElement => {
                 ) : undefined}
             </div>
         ) : undefined}
-    </div>;
+    </header>;
 };

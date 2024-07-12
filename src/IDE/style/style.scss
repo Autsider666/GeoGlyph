@@ -1,13 +1,30 @@
 @use '../../../node_modules/bulma/bulma';
 
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
 $stagePadding: 8px;
 
 .navbar {
   background-color: transparent;
+  flex: 0 1 auto;
 }
 
 .react-sigma, .diagram {
   user-select: none;
+}
+
+.is-transparent {
+  background-color: transparent;
 }
 
 $panelWidth: 350px;
@@ -25,6 +42,13 @@ $panelWidth: 350px;
   > :not(:last-child) {
     margin-bottom: $stagePadding;
   }
+}
+
+.fillScreen {
+  display: flex;
+  //height: 100%;
+  //flex-grow:1;
+  flex: 1 1 auto;
 }
 
 .fullScreen {
