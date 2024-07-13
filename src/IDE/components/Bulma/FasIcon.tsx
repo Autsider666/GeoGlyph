@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import {ReactElement, ReactNode} from "react";
+import {CSSProperties, ReactElement, ReactNode} from "react";
 import {Size} from "./types.ts";
 
 // https://fontawesome.com/search?o=r&m=free
@@ -10,6 +10,10 @@ type FasIconProps = {
     size?: Size,
     children?: ReactNode,
     align?: 'left' | 'right',
+    containerClasses?: Record<string, boolean>,
+    containerStyle?: CSSProperties,
+    iconClasses?: Record<string, boolean>,
+    iconStyle?: CSSProperties,
 }
 export const FasIcon = (props: FasIconProps): ReactElement => {
     const icon = <span
@@ -17,12 +21,17 @@ export const FasIcon = (props: FasIconProps): ReactElement => {
             icon: true,
             [`is-${props.size ?? 'normal'}`]: true,
             'is-right': props.align === 'right',
+            ...props.containerClasses
         })}
+        style={props.containerStyle}
     >
       <i className={classNames({
           fas: true,
           [props.icon]: true,
-      })}></i>
+          'fa-lg': props.size === 'medium',
+          'fa-2x': props.size === 'large',
+          ...props.iconClasses,
+      })} style={props.iconStyle}></i>
     </span>;
 
     if (!props.children) {

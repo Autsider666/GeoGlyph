@@ -71,62 +71,70 @@ $panelWidth: 350px;
   }
 }
 
-$patternColor: #a9a9a9;
-$patternSize: 30px;
-$backgroundColor: rgba(255, 255, 255, 0.05);
-
-.pattern {
-  &.grid {
-    //background-color: rgb(60, 60, 60);
-    background-size: $patternSize $patternSize;
-    display: flex;
-
-    background-image: linear-gradient(
-                    0deg,
-                    transparent 24%,
-                    $backgroundColor 25%,
-                    $backgroundColor 26%,
-                    transparent 27%,
-                    transparent 74%,
-                    $backgroundColor 75%,
-                    $backgroundColor 76%,
-                    transparent 77%,
-                    transparent
-    ),
-    linear-gradient(
-                    90deg,
-                    transparent 24%,
-                    $backgroundColor 25%,
-                    $backgroundColor 26%,
-                    transparent 27%,
-                    transparent 74%,
-                    $backgroundColor 75%,
-                    $backgroundColor 76%,
-                    transparent 77%,
-                    transparent
-    );
-  }
-
-  &.dotted {
-    background-image: radial-gradient(circle at 1px 1px, $patternColor 1px, transparent 0);
-    background-size: $patternSize $patternSize;
-  }
-
-  &.paper {
-    background-color: #e5e5f7;
-    opacity: 0.8;
-    background-image:  linear-gradient(#444cf7 2px, transparent 2px), linear-gradient(90deg, #444cf7 2px, transparent 2px), linear-gradient(#444cf7 1px, transparent 1px), linear-gradient(90deg, #444cf7 1px, #e5e5f7 1px);
-    background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
-    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
-  }
-
-  &.test {
-    --s: 50px; /* control the size*/
-    --c1: #774f38;
-    --c2: #f1d4af;
-
-    --g:conic-gradient(at 90% 40%,#0000 75%,var(--c1) 0);
-    background: var(--g),var(--g) var(--s) var(--s) var(--c2);
-    background-size: calc(2*var(--s)) calc(2*var(--s));
+.react-flow {
+  .node {
+    border-radius: 100px;
+    border: 1px solid black;
+    background-color: gray
   }
 }
+
+//$patternColor: #a9a9a9;
+//$patternSize: 30px;
+//$backgroundColor: rgba(255, 255, 255, 0.05);
+
+//.pattern {
+//  &.grid {
+//    //background-color: rgb(60, 60, 60);
+//    background-size: $patternSize $patternSize;
+//    display: flex;
+//
+//    background-image: linear-gradient(
+//                    0deg,
+//                    transparent 24%,
+//                    $backgroundColor 25%,
+//                    $backgroundColor 26%,
+//                    transparent 27%,
+//                    transparent 74%,
+//                    $backgroundColor 75%,
+//                    $backgroundColor 76%,
+//                    transparent 77%,
+//                    transparent
+//    ),
+//    linear-gradient(
+//                    90deg,
+//                    transparent 24%,
+//                    $backgroundColor 25%,
+//                    $backgroundColor 26%,
+//                    transparent 27%,
+//                    transparent 74%,
+//                    $backgroundColor 75%,
+//                    $backgroundColor 76%,
+//                    transparent 77%,
+//                    transparent
+//    );
+//  }
+//
+//  &.dotted {
+//    background-image: radial-gradient(circle at 1px 1px, $patternColor 1px, transparent 0);
+//    background-size: $patternSize $patternSize;
+//  }
+//
+//  &.paper {
+//    background-color: #e5e5f7;
+//    opacity: 0.8;
+//    background-image:  linear-gradient(#444cf7 2px, transparent 2px), linear-gradient(90deg, #444cf7 2px, transparent 2px), linear-gradient(#444cf7 1px, transparent 1px), linear-gradient(90deg, #444cf7 1px, #e5e5f7 1px);
+//    background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+//    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+//  }
+//
+//  &.test {
+//    --s: 50px; /* control the size*/
+//    --c1: #774f38;
+//    --c2: #f1d4af;
+//
+//    --g:conic-gradient(at 90% 40%,#0000 75%,var(--c1) 0);
+//    background: var(--g),var(--g) var(--s) var(--s) var(--c2);
+//    background-size: calc(2*var(--s)) calc(2*var(--s));
+//  }
+//}
