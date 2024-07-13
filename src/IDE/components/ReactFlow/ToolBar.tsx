@@ -12,7 +12,8 @@ export type Tool = {
 }
 
 type ToolBarProps = {
-    tools: Tool[]
+    createNode: (type: string) => void,
+    tools: Tool[],
 }
 
 export const ToolBar = (props: ToolBarProps): ReactElement => {
@@ -32,6 +33,7 @@ export const ToolBar = (props: ToolBarProps): ReactElement => {
                 })}
                 onDragStart={(event) => onDragStart(event, type)}
                 draggable
+                onClick={() => props.createNode(type)}
             >{name}</button>)}
     </div>;
 };

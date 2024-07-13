@@ -2,14 +2,15 @@ import {
     addEdge,
     Background,
     Connection,
-    Controls, Edge,
+    Controls,
+    Edge,
     MiniMap,
     Node,
+    NodeProps,
     ReactFlow,
     useEdgesState,
     useNodesState,
-    useReactFlow,
-    NodeProps
+    useReactFlow
 } from "@xyflow/react";
 import {ComponentType, CSSProperties, DragEvent, ReactElement, useCallback, useMemo} from "react";
 import {Tool, ToolBar} from "./ToolBar.tsx";
@@ -78,8 +79,19 @@ export const DnDFlow = ({style, customNodes = []}: DnDFlowProps): ReactElement =
         [screenToFlowPosition, setNodes],
     );
 
+    const onCreate = useCallback((type: string): void => {
+        const newNode = {
+            id: getId(),
+            type,
+            position: {x: 0, y: 0},
+            data: {},
+        };
+
+        setNodes((nds) => nds.concat(newNode));
+    }, [setNodes]);
+
     const nodeTypes = useMemo(() => {
-        const nodes:Record<string, ComponentType<NodeProps & {
+        const nodes: Record<string, ComponentType<NodeProps & {
             data: unknown;
             type: string;
         }>> = {};
@@ -112,6 +124,6 @@ export const DnDFlow = ({style, customNodes = []}: DnDFlowProps): ReactElement =
             </ReactFlow>
         </div>
 
-        <ToolBar tools={customNodes}/>
+        <ToolBar tools={customNodes} createNode={onCreate}/>
     </>;
 };
