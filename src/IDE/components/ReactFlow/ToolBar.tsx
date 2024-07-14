@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import {DragEvent, ReactElement} from "react";
+import {DragEvent, ReactElement, useCallback, useEffect} from "react";
 import {FasIcon} from "../Bulma/FasIcon.tsx";
 import {CustomEdge, CustomNode} from "./types.ts";
 
@@ -16,6 +16,21 @@ export const ToolBar = (props: ToolBarProps): ReactElement => {
         event.dataTransfer.effectAllowed = 'move';
     };
 
+    const runSimulation = useCallback(({key}: KeyboardEvent): void => {
+        if (key === ' ') {
+            props.onSimulate();
+        }
+    }, [props]);
+
+
+    useEffect(() => {
+        document.addEventListener("keydown", runSimulation, false);
+
+        return (): void => {
+            document.removeEventListener("keydown", runSimulation, false);
+        };
+    }, [runSimulation]);
+
     return <div className="level">
         <div className="level-item">
             <span className="p-2">
@@ -26,7 +41,7 @@ export const ToolBar = (props: ToolBarProps): ReactElement => {
                             button: true,
                         })}
                         onClick={props.onSimulate}
-                    ><FasIcon icon="fa-play" /></button>
+                    ><FasIcon icon="fa-forward-step"/></button>
             </div>
             </span>
             {props.nodes === undefined ? undefined : <span className="p-2">
@@ -44,21 +59,21 @@ export const ToolBar = (props: ToolBarProps): ReactElement => {
                         >{label}</button>)}
             </div>
             </span>}
-            {props.edges === undefined ? undefined : <span>
-                <div className="buttons has-addons is-centered is-transparent">
-                    <span className="button is-static">Edges</span>
-                    {props.edges.map(({type, label}) =>
-                        <button
-                            key={type}
-                            className={classNames({
-                                button: true,
-                            })}
-                            onDragStart={(event) => onDragStart(event, type)}
-                            draggable
-                            // onClick={() => props.createNode(type)}
-                        >{label}</button>)}
-            </div>
-            </span>}
+            {/*{props.edges === undefined ? undefined : <span>*/}
+            {/*    <div className="buttons has-addons is-centered is-transparent">*/}
+            {/*        <span className="button is-static">Edges</span>*/}
+            {/*        {props.edges.map(({type, label}) =>*/}
+            {/*            <button*/}
+            {/*                key={type}*/}
+            {/*                className={classNames({*/}
+            {/*                    button: true,*/}
+            {/*                })}*/}
+            {/*                onDragStart={(event) => onDragStart(event, type)}*/}
+            {/*                draggable*/}
+            {/*                // onClick={() => props.createNode(type)}*/}
+            {/*            >{label}</button>)}*/}
+            {/*</div>*/}
+            {/*</span>}*/}
         </div>
     </div>;
 };

@@ -14,7 +14,8 @@ export const SourceNode = memo(({isConnectable}:NodeProps): ReactElement => {
 SourceNode.displayName = 'Source Node';
 
 export const SourceNodeToolBar: CustomNode = {
-    label: 'Source Node',
+    label: <FasIcon icon="fa-play" iconStyle={{transform: 'rotate(-90deg)'}} size="small"
+                    containerClasses={{'has-text-success': true}}>Source</FasIcon>,
     type: 'source',
     element: SourceNode,
 } as const;

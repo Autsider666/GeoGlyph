@@ -14,7 +14,8 @@ export const SinkNode = ({isConnectable}:NodeProps): ReactElement => {
 SinkNode.displayName = 'Sink Node';
 
 export const SinkNodeToolBar: CustomNode = {
-    label: 'Sink Node',
+    label: <FasIcon icon="fa-play" iconStyle={{transform: 'rotate(90deg)'}} size="small"
+                    containerClasses={{'has-text-warning': true}}>Sink</FasIcon>,
     type: 'sink',
     element: SinkNode
 } as const;

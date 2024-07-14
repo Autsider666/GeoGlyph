@@ -1,6 +1,7 @@
 import {Handle, Node, NodeProps, Position, useHandleConnections, useReactFlow} from "@xyflow/react";
 import {ReactElement, useEffect, useState} from "react";
 import {AutoWidth} from "../../Bulma/AutoWidth.tsx";
+import {FasIcon} from "../../Bulma/FasIcon.tsx";
 import {CustomNode} from "../types.ts";
 
 type PoolNodeData = {
@@ -82,7 +83,8 @@ export const PoolNode = ({id, isConnectable, data}: NodeProps<PoolNode>): ReactE
 PoolNode.displayName = 'Pool Node';
 
 export const PoolNodeToolBar: CustomNode<PoolNodeData> = {
-    label: 'Pool Node',
+    label: <FasIcon icon="fa-database" size="small"
+                    containerClasses={{'has-text-success': false}}>Pool</FasIcon>,
     type: 'pool',
     // @ts-expect-error Valid for TS, not for PHPStorm
     element: PoolNode
