@@ -1,7 +1,7 @@
 import {Handle, NodeProps, Position} from "@xyflow/react";
 import {memo, ReactElement} from "react";
 import {FasIcon} from "../../Bulma/FasIcon";
-import {Tool} from "../ToolBar";
+import {CustomNode} from "../types.ts";
 
 export const SourceNode = memo(({isConnectable}:NodeProps): ReactElement => {
     return <div className="source node">
@@ -13,8 +13,8 @@ export const SourceNode = memo(({isConnectable}:NodeProps): ReactElement => {
 
 SourceNode.displayName = 'Source Node';
 
-export const SourceNodeToolBar: Tool = {
-    name: 'Source Node',
+export const SourceNodeToolBar: CustomNode = {
+    label: 'Source Node',
     type: 'source',
     element: SourceNode,
 } as const;

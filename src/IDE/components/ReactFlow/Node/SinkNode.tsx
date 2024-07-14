@@ -1,7 +1,7 @@
 import {Handle, NodeProps, Position} from "@xyflow/react";
 import {ReactElement} from "react";
 import {FasIcon} from "../../Bulma/FasIcon";
-import {Tool} from "../ToolBar";
+import {CustomNode} from "../types.ts";
 
 export const SinkNode = ({isConnectable}:NodeProps): ReactElement => {
     return <div className="source node">
@@ -13,8 +13,8 @@ export const SinkNode = ({isConnectable}:NodeProps): ReactElement => {
 
 SinkNode.displayName = 'Sink Node';
 
-export const SinkNodeToolBar: Tool = {
-    name: 'Sink Node',
+export const SinkNodeToolBar: CustomNode = {
+    label: 'Sink Node',
     type: 'sink',
     element: SinkNode
 } as const;

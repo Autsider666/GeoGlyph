@@ -3,6 +3,8 @@ import '@xyflow/react/dist/style.css';
 import {ReactElement} from "react";
 import {BackgroundPattern} from "../components/BackgroundPattern.tsx";
 import {DnDFlow} from "../components/ReactFlow/DnDFlow.tsx";
+import {ValueEdgeToolbar} from "../components/ReactFlow/Edge/ValueEdge.tsx";
+import {PoolNodeToolBar} from "../components/ReactFlow/Node/PoolNode.tsx";
 import {SinkNodeToolBar} from "../components/ReactFlow/Node/SinkNode.tsx";
 import {SourceNodeToolBar} from "../components/ReactFlow/Node/SourceNode.tsx";
 
@@ -17,7 +19,7 @@ export const DisplayReactFlow = (): ReactElement => {
         patternSize={100}
     >
         {(style) => <ReactFlowProvider>
-            <DnDFlow style={style} customNodes={[SourceNodeToolBar, SinkNodeToolBar]}/>
+            <DnDFlow style={style} customNodes={[SourceNodeToolBar, PoolNodeToolBar, SinkNodeToolBar]} customEdges={[ValueEdgeToolbar]}/>
         </ReactFlowProvider>}
     </BackgroundPattern>;
 };

@@ -4,16 +4,19 @@ import {
     Connection,
     Controls,
     Edge,
+    EdgeTypes,
+    MarkerType,
     MiniMap,
     Node,
     NodeProps,
     ReactFlow,
     useEdgesState,
     useNodesState,
-    useReactFlow
+    useReactFlow,
 } from "@xyflow/react";
-import {ComponentType, CSSProperties, DragEvent, ReactElement, useCallback, useMemo} from "react";
-import {Tool, ToolBar} from "./ToolBar.tsx";
+import {ComponentType, CSSProperties, DragEvent, ReactElement, useCallback, useEffect, useMemo, useState} from "react";
+import {ToolBar} from "./ToolBar.tsx";
+import {CustomEdge, CustomNode} from "./types.ts";
 
 // type Node = {
 //     id: string, position: { x: number, y: number }, data: Record<string,unknown>
@@ -37,15 +40,35 @@ const getId = (): string => `dndnode_${id++}`;
 
 type DnDFlowProps = {
     style: CSSProperties,
-    customNodes?: Tool[],
+    customNodes?: CustomNode[],
+    customEdges?: CustomEdge[],
 }
 
-export const DnDFlow = ({style, customNodes = []}: DnDFlowProps): ReactElement => {
+export const DnDFlow = ({style, customNodes = [], customEdges = []}: DnDFlowProps): ReactElement => {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const {screenToFlowPosition} = useReactFlow();
+    const [step, setStep] = useState(0);
+    const {screenToFlowPosition, updateNodeData} = useReactFlow();
 
-    const onConnect = useCallback((params: Connection) => setEdges((currentEdges) => addEdge(params, currentEdges)), [setEdges]);
+    useEffect(() => {
+        for (const {id, data} of nodes) {
+            if (data.step === step) {
+                continue;
+            }
+
+            updateNodeData(id, {step});
+        }
+    }, [step, nodes, updateNodeData]);
+
+    const onConnect = useCallback((params: Connection) => {
+        setEdges((currentEdges) => addEdge({
+            type: 'value',
+            markerEnd: {
+                type: MarkerType.Arrow,
+            },
+            ...params,
+        }, currentEdges));
+    }, [setEdges]);
 
     const onDragOver = useCallback((event: DragEvent) => {
         event.preventDefault();
@@ -103,10 +126,23 @@ export const DnDFlow = ({style, customNodes = []}: DnDFlowProps): ReactElement =
         return nodes;
     }, [customNodes]);
 
+    const edgeTypes = useMemo(() => {
+        const edges: EdgeTypes = {};
+
+        for (const {type, element} of customEdges) {
+            edges[type] = element;
+        }
+
+        return edges;
+    }, [customEdges]);
+
+    const onSimulate = (): void => setStep(step + 1);
+
     return <>
         <div className="fillScreen">
             <ReactFlow
                 nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
                 nodes={nodes}
                 edges={edges}
                 onNodesChange={onNodesChange}
@@ -116,7 +152,7 @@ export const DnDFlow = ({style, customNodes = []}: DnDFlowProps): ReactElement =
                 onDragOver={onDragOver}
                 colorMode={'dark'}
                 fitView
-
+                deleteKeyCode={['Backspace', 'Delete']}
             >
                 <MiniMap/>
                 <Controls/>
@@ -124,6 +160,6 @@ export const DnDFlow = ({style, customNodes = []}: DnDFlowProps): ReactElement =
             </ReactFlow>
         </div>
 
-        <ToolBar tools={customNodes} createNode={onCreate}/>
+        <ToolBar onSimulate={onSimulate} nodes={customNodes} edges={customEdges} createNode={onCreate}/>
     </>;
 };

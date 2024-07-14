@@ -21,6 +21,7 @@ export const FasIcon = (props: FasIconProps): ReactElement => {
             icon: true,
             [`is-${props.size ?? 'normal'}`]: true,
             'is-right': props.align === 'right',
+            'is-left': props.align === 'left',
             ...props.containerClasses
         })}
         style={props.containerStyle}
