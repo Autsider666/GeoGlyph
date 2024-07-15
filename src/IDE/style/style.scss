@@ -72,10 +72,30 @@ $panelWidth: 350px;
 }
 
 .react-flow {
+  .react-flow__node {
+    //border-radius: 100px;
+    //border: 1px solid black;
+    //background-color: gray;
+    //
+    //&.selected {
+    //  background-color: lightgray;
+    //}
+
+    //&.react-flow__node-{
+    //  &sink {
+    //
+    //  }
+    //}
+  }
+
   .node {
     border-radius: 100px;
     border: 1px solid black;
-    background-color: gray
+    background-color: gray;
+
+    &.selected {
+      background-color: lightgray;
+    }
   }
 }
 

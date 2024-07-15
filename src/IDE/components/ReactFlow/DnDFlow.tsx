@@ -9,12 +9,14 @@ import {
     MiniMap,
     Node,
     NodeProps,
+    Panel,
     ReactFlow,
     useEdgesState,
     useNodesState,
     useReactFlow,
 } from "@xyflow/react";
 import {ComponentType, CSSProperties, DragEvent, ReactElement, useCallback, useEffect, useMemo, useState} from "react";
+import {NodePanel} from "./Panel/NodePanel.tsx";
 import {ToolBar} from "./ToolBar.tsx";
 import {CustomEdge, CustomNode} from "./types.ts";
 
@@ -94,7 +96,7 @@ export const DnDFlow = ({style, customNodes = [], customEdges = []}: DnDFlowProp
                 id: getId(),
                 type,
                 position,
-                data: {label: <div>{type} node</div>},
+                data: {},
             };
 
             setNodes((nds) => nds.concat(newNode));
@@ -154,12 +156,17 @@ export const DnDFlow = ({style, customNodes = [], customEdges = []}: DnDFlowProp
                 fitView
                 deleteKeyCode={['Backspace', 'Delete']}
             >
-                <MiniMap/>
-                <Controls/>
+                <MiniMap position="bottom-left"/>
+                <Controls position="top-left"/>
                 <Background style={style} color={"transparent"}/>
+                <Panel position="top-right">
+                    <NodePanel
+                        nodes={nodes.filter(node => node.selected || edges.find(edge => edge.selected && edge.source === node.id))}/>
+                </Panel>
+                <Panel position="bottom-center">
+                    <ToolBar onSimulate={onSimulate} nodes={customNodes} edges={customEdges} createNode={onCreate}/>
+                </Panel>
             </ReactFlow>
         </div>
-
-        <ToolBar onSimulate={onSimulate} nodes={customNodes} edges={customEdges} createNode={onCreate}/>
     </>;
 };

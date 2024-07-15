@@ -16,10 +16,12 @@ export const PoolNode = ({id, isConnectable, data}: NodeProps<PoolNode>): ReactE
     const nodeRef = useRef<HTMLDivElement | null>(null);
     const [lastStep, setLastStep] = useState(data.step);
     const inputConnections = useHandleConnections({
+        nodeId: id,
         type: 'target',
         id: 'input',
     });
     const outputConnections = useHandleConnections({
+        nodeId: id,
         type: 'source',
         id: 'output',
     });
@@ -73,7 +75,7 @@ export const PoolNode = ({id, isConnectable, data}: NodeProps<PoolNode>): ReactE
     return <>
         <div className="pool node" ref={nodeRef}>
             <Handle id="input" type="target" position={Position.Left} isConnectable={isConnectable} style={{top: verticalCenter}}/>
-            <Handle id="output" type="source" position={Position.Right} isConnectable={isConnectable}/>
+            <Handle id="output" type="source" position={Position.Right} isConnectable={isConnectable} style={{top: verticalCenter}}/>
             {/*<FasIcon icon="fa-box" size="large"*/}
             {/*         containerClasses={{'has-text-warning': true}}/>*/}
             <AutoWidth value={data.step}>

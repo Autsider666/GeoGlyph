@@ -1,5 +1,5 @@
 import {BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getSmoothStepPath, useReactFlow} from "@xyflow/react";
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement, useEffect} from "react";
 import {AutoWidth} from "../../Bulma/AutoWidth.tsx";
 import {CustomEdge} from "../types.ts";
 
@@ -25,14 +25,18 @@ export const ValueEdge = ({
         targetY,
         targetPosition,
     });
-    const [value, setValue] = useState(data?.value ?? 1);
     const {updateEdgeData} = useReactFlow();
 
     useEffect(() => {
-        if (value !== data?.value) {
-            updateEdgeData(id, {value});
+        if (data !== undefined) {
+            return;
         }
-    }, [data?.value, id, updateEdgeData, value]);
+
+        updateEdgeData(id, {
+            label: id,
+            value: 1,
+        });
+    }, [data, id, updateEdgeData]);
 
     return <>
         <BaseEdge path={edgePath} markerEnd={markerEnd} style={style}/>
@@ -49,11 +53,11 @@ export const ValueEdge = ({
                 }}
                 className="nodrag nopan"
             >
-                <AutoWidth value={value}>
+                <AutoWidth value={data?.value ?? 1}>
                     {width => <input
                         type="text"
                         className="input is-small is-rounded"
-                        value={value}
+                        value={data?.value ?? 1}
                         onKeyDown={event => {
                             if (event.key === 'Backspace') {
                                 return;
@@ -69,7 +73,8 @@ export const ValueEdge = ({
                                 value = 0;
                             }
 
-                            setValue(value);
+                            // setValue(value);
+                            updateEdgeData(id, {value});
                         }}
                         style={{
                             // display:"block",
