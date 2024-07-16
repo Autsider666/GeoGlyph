@@ -1,5 +1,6 @@
 import {RouteObject} from "react-router-dom";
 import {FasIconType} from "../components/Bulma/FasIcon.tsx";
+import {DisplayProceduralAnimation} from "../pages/DisplayProceduralAnimation.tsx";
 import {DisplayReactDiagram} from "../pages/DisplayReactDiagram.tsx";
 import {DisplayGraph} from "../pages/DisplayGraph.tsx";
 import {DisplayReactFlow} from "../pages/DisplayReactFlow.tsx";
@@ -47,6 +48,14 @@ export const Routes: Route[] = [
         },
         path: 'react-flow',
         element: <DisplayReactFlow/>
+    },
+    {
+        menu: {
+            name: 'Procedural Animation',
+            type: 'start',
+        },
+        path: 'procedural-animation',
+        element: <DisplayProceduralAnimation/>
     },
     {
         menu: {
