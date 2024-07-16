@@ -1,7 +1,5 @@
-import {Actor, Engine, Keys, Ray, RayCastHit, Vector} from "excalibur";
+import {Actor, ActorArgs, CollisionType, Engine, Keys, Ray, RayCastHit, Vector} from "excalibur";
 import {FieldOfViewLayer} from "./FieldOfViewLayer.ts";
-
-export type PlayerViewCone = { pos: Vector, radius: number, startAngle: number, endAngle: number, falloff: number };
 
 export class Player extends Actor {
     public direction: Vector = Vector.Zero;
@@ -12,6 +10,15 @@ export class Player extends Actor {
     public fieldOfViewStartAngle: number = 0;
     public fieldOfViewEndAngle: number = 0;
     public isRunning: boolean = false;
+
+    constructor(props?: ActorArgs) {
+        super({
+            collisionType: CollisionType.Passive,
+            ...props,
+        });
+
+        // this.addComponent(new KeyboardControlledComponent());
+    }
 
     onInitialize(engine: Engine): void {
         const speed: number = 1;
@@ -80,16 +87,6 @@ export class Player extends Actor {
                 graph.opacity = this.canSee(child);
             }
         }
-    }
-
-    public getViewCone(): PlayerViewCone {
-        return {
-            pos: this.pos.clone(),
-            radius: this.visionRadius,
-            startAngle: this.fieldOfViewStartAngle,
-            endAngle: this.fieldOfViewEndAngle,
-            falloff: this.falloff,
-        };
     }
 
     public canSee(target: Actor): number {
