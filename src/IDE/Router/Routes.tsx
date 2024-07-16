@@ -1,8 +1,7 @@
 import {RouteObject} from "react-router-dom";
 import {FasIconType} from "../components/Bulma/FasIcon.tsx";
-import {DisplayProceduralAnimation} from "../pages/DisplayProceduralAnimation.tsx";
-import {DisplayReactDiagram} from "../pages/DisplayReactDiagram.tsx";
 import {DisplayGraph} from "../pages/DisplayGraph.tsx";
+import {DisplayProceduralAnimation} from "../pages/DisplayProceduralAnimation.tsx";
 import {DisplayReactFlow} from "../pages/DisplayReactFlow.tsx";
 import Home from "../pages/Home.tsx";
 import {TestSandbox} from "../pages/TestSandbox.tsx";
@@ -10,7 +9,7 @@ import {TestSandbox} from "../pages/TestSandbox.tsx";
 type Route = {
     menu?: {
         name: string,
-        type: 'brand'|'start'|'end',
+        type: 'brand' | 'start' | 'end',
         icon?: FasIconType,
     }
 } & RouteObject
@@ -18,9 +17,9 @@ type Route = {
 export const Routes: Route[] = [
     {
         menu: {
-          name: 'GeoGlyph',
-          type: 'brand',
-          icon: 'fa-globe',
+            name: 'GeoGlyph',
+            type: 'brand',
+            icon: 'fa-globe',
         },
         path: '',
         element: <Home/>
@@ -32,14 +31,6 @@ export const Routes: Route[] = [
         },
         path: 'graph',
         element: <DisplayGraph/>
-    },
-    {
-        menu: {
-            name: 'React Diagrams',
-            type: 'start',
-        },
-        path: 'react-diagram',
-        element: <DisplayReactDiagram/>
     },
     {
         menu: {

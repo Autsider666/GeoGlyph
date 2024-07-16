@@ -15,7 +15,7 @@ const sigmaStyle: CSSProperties = {
 };
 
 type SigmaGraphProps = {
-    children:ReactElement,
+    children: ReactElement,
 }
 
 const LoadGraph = (): null => {
@@ -28,7 +28,7 @@ const LoadGraph = (): null => {
         loadGraph(GraphGridBuilder.generateGrid(
             5,
             5,
-            {color: "#FA4F40",size: 15},
+            {color: "#FA4F40", size: 15},
             {},
         ));
     }, [loadGraph]);
@@ -36,7 +36,7 @@ const LoadGraph = (): null => {
     return null;
 };
 
-export const SigmaGraph = (props:SigmaGraphProps):ReactElement => {
+export const SigmaGraph = (props: SigmaGraphProps): ReactElement => {
     const sigmaSettings: Partial<Settings> = useMemo(
         () => ({
             defaultDrawNodeHover: drawHover,

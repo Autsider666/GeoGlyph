@@ -13,15 +13,15 @@ type StatsPanelProps = {
     initializeExpanded?: boolean,
 }
 
-export const StatsPanel = (props:StatsPanelProps): ReactElement => {
+export const StatsPanel = (props: StatsPanelProps): ReactElement => {
     const [stats, setStats] = useState<Stats>({nodes: 0, edges: 0});
     const sigma = useSigma();
     const graph = sigma.getGraph();
 
     useEffect(() => {
         requestAnimationFrame(() => {
-            const newStats:Stats = { nodes: 0, edges: 0 };
-            graph.forEachNode((_, { hidden }) => !hidden && newStats.nodes++);
+            const newStats: Stats = {nodes: 0, edges: 0};
+            graph.forEachNode((_, {hidden}) => !hidden && newStats.nodes++);
             graph.forEachEdge((_, _2, _3, _4, source, target) =>
                 !source.hidden && !target.hidden && newStats.edges++
             );

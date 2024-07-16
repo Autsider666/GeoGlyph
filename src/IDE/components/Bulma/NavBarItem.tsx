@@ -11,5 +11,6 @@ export const NavBarItem = (props: NavBarItemProps): ReactElement => {
         return <div className="navbar-item">{props.children}</div>;
     }
 
-    return <NavLink to={props.link} className={({isActive}) => isActive ? 'navbar-item is-active' : 'navbar-item'}>{props.children}</NavLink>;
+    return <NavLink to={props.link}
+                    className={({isActive}) => isActive ? 'navbar-item is-active' : 'navbar-item'}>{props.children}</NavLink>;
 };

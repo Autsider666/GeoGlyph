@@ -7,7 +7,7 @@ type AutoWidthInputProps = {
     onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const AutoWidthInput = ({value,onChange}: AutoWidthInputProps): ReactElement => {
+export const AutoWidthInput = ({value, onChange}: AutoWidthInputProps): ReactElement => {
     const span = useRef<HTMLSpanElement | null>(null);
     const [width, setWidth] = useState(0);
 

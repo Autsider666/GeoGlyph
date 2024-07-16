@@ -19,7 +19,8 @@ export const DisplayReactFlow = (): ReactElement => {
         patternSize={100}
     >
         {(style) => <ReactFlowProvider>
-            <DnDFlow style={style} customNodes={[SourceNodeToolBar, PoolNodeToolBar, SinkNodeToolBar]} customEdges={[ValueEdgeToolbar]}/>
+            <DnDFlow style={style} customNodes={[SourceNodeToolBar, PoolNodeToolBar, SinkNodeToolBar]}
+                     customEdges={[ValueEdgeToolbar]}/>
         </ReactFlowProvider>}
     </BackgroundPattern>;
 };

@@ -3,11 +3,11 @@ import {ReactElement} from "react";
 import {Range} from "../../../Utility/Type/Range.ts";
 
 type GridProps = {
-    children: ReactElement|ReactElement[],
-    width?: Range<1,12>,
-    gap?: Range<0,8>,
-    columnGap?: Range<0,8>,
-    rowGap?: Range<0,8>,
+    children: ReactElement | ReactElement[],
+    width?: Range<1, 12>,
+    gap?: Range<0, 8>,
+    columnGap?: Range<0, 8>,
+    rowGap?: Range<0, 8>,
 }
 
 export const Grid = (props: GridProps): ReactElement => {

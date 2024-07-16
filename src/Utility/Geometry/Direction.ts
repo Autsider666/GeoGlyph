@@ -40,7 +40,7 @@ export class Direction {
     ) {
     }
 
-    toString():string {
+    toString(): string {
         return `dX:${this.dX}, dY:${this.dY}`;
     }
 }

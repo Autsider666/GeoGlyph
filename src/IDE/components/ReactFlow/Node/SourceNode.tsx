@@ -3,9 +3,9 @@ import {memo, ReactElement} from "react";
 import {FasIcon} from "../../Bulma/FasIcon";
 import {CustomNode} from "../types.ts";
 
-export const SourceNode = memo(({isConnectable}:NodeProps): ReactElement => {
+export const SourceNode = memo(({isConnectable}: NodeProps): ReactElement => {
     return <div className="source node">
-        <Handle id="output" type="source" position={Position.Right} isConnectable={isConnectable} />
+        <Handle id="output" type="source" position={Position.Right} isConnectable={isConnectable}/>
         <FasIcon icon="fa-play" iconStyle={{transform: 'rotate(-90deg)'}} size="large"
                  containerClasses={{'has-text-success': true}}/>
     </div>;

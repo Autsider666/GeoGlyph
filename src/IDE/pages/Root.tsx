@@ -4,7 +4,7 @@ import {MenuNavBar} from "../components/Menu/MenuNavBar.tsx";
 
 export const Root = (): ReactElement => {
     return <>
-        <MenuNavBar />
+        <MenuNavBar/>
         <Outlet/>
     </>;
 };

@@ -35,7 +35,7 @@ const generateStyle = ({
         backgroundColor: backgroundColor,
     };
 
-    const halfSize = round(typeSize/2);
+    const halfSize = round(typeSize / 2);
     const offset = round(patternSize / 2);
 
     switch (type) {
@@ -58,7 +58,7 @@ const generateStyle = ({
     linear-gradient(90deg, ${patternColor} ${typeSize}px, transparent ${typeSize}px),
     linear-gradient(${patternColor} ${halfSize}px, transparent ${halfSize}px),
     linear-gradient(90deg, ${patternColor} ${halfSize}px, transparent ${halfSize}px)`;
-            style.backgroundSize = `${patternSize}px ${patternSize}px, ${patternSize}px ${patternSize}px, ${round(patternSize/5)}px ${round(patternSize/5)}px, ${round(patternSize/5)}px ${round(patternSize/5)}px`;
+            style.backgroundSize = `${patternSize}px ${patternSize}px, ${patternSize}px ${patternSize}px, ${round(patternSize / 5)}px ${round(patternSize / 5)}px, ${round(patternSize / 5)}px ${round(patternSize / 5)}px`;
             style.backgroundPosition = `${offset}px ${offset}px, ${offset}px ${offset}px`;
             break;
         default:

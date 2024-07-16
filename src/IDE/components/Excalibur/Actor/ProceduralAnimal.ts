@@ -45,7 +45,7 @@ export class ProceduralAnimal extends Actor {
                 this.nodes.push(node);
             }
 
-            const ignoreFirstNodes: number = Math.min(Math.max(1,this.nodes.length * 0.1),3);
+            const ignoreFirstNodes: number = Math.min(Math.max(1, this.nodes.length * 0.1), 3);
             const radiusModifier = Math.max(this.defaultNodeRadius - 5, 5) / Math.max(1, this.nodes.length - ignoreFirstNodes);
             for (let i = 0; i < this.nodes.length; i++) {
                 if (i < ignoreFirstNodes) {

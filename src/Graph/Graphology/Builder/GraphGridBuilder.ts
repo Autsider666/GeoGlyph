@@ -10,7 +10,7 @@ export class GraphGridBuilder {
     static generateGrid<NodeData extends GridNodeData, EdgeData extends Record<string, unknown>>(
         height: number,
         width: number,
-        defaultNodeData: Omit<NodeData, 'x' | 'y' |'label'>,
+        defaultNodeData: Omit<NodeData, 'x' | 'y' | 'label'>,
         defaultEdgeData: EdgeData,
         graph: Graph<NodeData, EdgeData> = new Graph<NodeData, EdgeData>(),
     ): Graph<GridNodeData> {

@@ -11,7 +11,7 @@ export const Button = (props: ButtonProps): ReactElement => {
 
     return <button
         className={classNames({
-            button:true,
+            button: true,
             ...props.classNames,
         })}
         onClick={props.onClick}
