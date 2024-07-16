@@ -1,74 +1,85 @@
 import {Actor, Engine, Keys, Ray, RayCastHit, Vector} from "excalibur";
+import {FieldOfViewLayer} from "./FieldOfViewLayer.ts";
 
-export type PlayerViewCone = { pos: Vector, radius: number, startAngle: number, endAngle: number };
+export type PlayerViewCone = { pos: Vector, radius: number, startAngle: number, endAngle: number, falloff: number };
 
 export class Player extends Actor {
     public direction: Vector = Vector.Zero;
     public visionRadius: number = 150;
+    public falloff: number = 2 / 3;
+    private readonly baseFieldOfView: number = Math.PI * 2 / 3;
     public fieldOfView: number = Math.PI * 2 / 3;
     public fieldOfViewStartAngle: number = 0;
     public fieldOfViewEndAngle: number = 0;
     public isRunning: boolean = false;
-    public hasMoved: boolean = false;
 
     onInitialize(engine: Engine): void {
         const speed: number = 1;
         engine.inputMapper.on(
             ({keyboard}) => keyboard.isHeld(Keys.W),
             () => {
-                this.hasMoved = true;
                 this.pos.add(new Vector(0, -speed * (this.isRunning ? 2 : 1)), this.pos);
             },
         );
         engine.inputMapper.on(
             ({keyboard}) => keyboard.isHeld(Keys.S),
             () => {
-                this.hasMoved = true;
                 this.pos.add(new Vector(0, speed * (this.isRunning ? 2 : 1)), this.pos);
             },
         );
         engine.inputMapper.on(
             ({keyboard}) => keyboard.isHeld(Keys.A),
             () => {
-                this.hasMoved = true;
                 this.pos.add(new Vector(-speed * (this.isRunning ? 2 : 1), 0), this.pos);
             },
         );
         engine.inputMapper.on(
             ({keyboard}) => keyboard.isHeld(Keys.D),
             () => {
-                this.hasMoved = true;
                 this.pos.add(new Vector(speed * (this.isRunning ? 2 : 1), 0), this.pos);
             },
         );
         engine.inputMapper.on(
-            ({keyboard}) => keyboard.isHeld(Keys.ShiftLeft),
+            ({keyboard}) => keyboard.wasPressed(Keys.ShiftLeft),
             () => this.isRunning = true,
         );
         engine.inputMapper.on(
             ({keyboard}) => keyboard.wasReleased(Keys.ShiftLeft),
-            () => this.isRunning = false,
+            () => {
+                this.isRunning = false;
+            },
         );
     }
 
     onPreUpdate(engine: Engine): void {
         const pointerPos = engine.input.pointers.primary.lastWorldPos;
 
-        const modifier = this.isRunning && this.hasMoved ? 1.5 : 1;
         this.direction = pointerPos.sub(this.pos).normalize();
+        const modifier = this.isRunning ? 1.5 : 1;
         const centerAngle = this.direction.toAngle();
-        this.fieldOfViewStartAngle = centerAngle - this.fieldOfView / 2 / modifier;
+
+        this.fieldOfView = this.baseFieldOfView / modifier;
+        this.fieldOfViewStartAngle = centerAngle - this.fieldOfView / 2;
         if (this.fieldOfViewStartAngle < 0) {
             this.fieldOfViewStartAngle += Math.PI * 2;
         }
-        this.fieldOfViewEndAngle = centerAngle + this.fieldOfView / 2 / modifier;
+        this.fieldOfViewEndAngle = centerAngle + this.fieldOfView / 2;
         if (this.fieldOfViewEndAngle < 0) {
             this.fieldOfViewEndAngle += Math.PI * 2;
         }
 
-        this.hasMoved = false;
+        for (const child of engine.currentScene.actors) {
+            if (child instanceof Player || child instanceof FieldOfViewLayer) {
+                continue;
+            }
 
-        // console.log({start: this.fieldOfViewStartAngle, end: this.fieldOfViewEndAngle});
+            child.z = -10;
+
+            const graph = child.graphics.current;
+            if (graph) {
+                graph.opacity = this.canSee(child);
+            }
+        }
     }
 
     public getViewCone(): PlayerViewCone {
@@ -77,6 +88,7 @@ export class Player extends Actor {
             radius: this.visionRadius,
             startAngle: this.fieldOfViewStartAngle,
             endAngle: this.fieldOfViewEndAngle,
+            falloff: this.falloff,
         };
     }
 
