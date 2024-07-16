@@ -6,7 +6,7 @@ import {ExcaliburContainer} from "../components/Excalibur/ExcaliburContainer.tsx
 const random = new Random();
 const shadow = new ShadowLayer();
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 1; i++) {
     shadow.addChild(new Actor({
         pos: new Vector(random.integer(0, self.innerWidth), random.integer(0, self.innerHeight)),
         radius: random.integer(10, 50),
