@@ -1,8 +1,11 @@
-import {DisplayMode, Engine, Vector} from "excalibur";
+import {Actor, Engine} from "excalibur";
 import {ReactElement, useEffect, useRef, useState} from "react";
-import {ProceduralAnimal} from "./Actor/ProceduralAnimal.ts";
 
-export const ExcaliburContainer = (): ReactElement => {
+type ExcaliburContainerProps = {
+    actors?: Actor[],
+}
+
+export const ExcaliburContainer = ({actors = []}: ExcaliburContainerProps): ReactElement => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [gameEngine, setGameEngine] = useState<Engine | undefined>();
 
@@ -27,25 +30,27 @@ export const ExcaliburContainer = (): ReactElement => {
             return;
         }
 
-        console.log(gameEngine);
-
         // @ts-expect-error No clue why my ide doesn't understand this.
         const resetGame = (): void => gameEngine?.stop();
 
         resetGame();
         const game = new Engine({
             canvasElement: canvasRef.current,
-            displayMode: DisplayMode.FitContainerAndFill,
+            width: self.innerWidth,
+            height: self.innerHeight - 52,
+            // displayMode: DisplayMode.FitContainer,
         });
 
-        game.add(new ProceduralAnimal(new Vector(200, 200)));
-        console.log(1);
+        for (const actor of actors) {
+            game.add(actor);
+        }
+
         game.start();
 
         setGameEngine(game);
 
         return resetGame;
-    }, [gameEngine]);
+    }, [actors, gameEngine]);
 
     return <canvas style={{width: '100%'}} ref={canvasRef}></canvas>;
 };
