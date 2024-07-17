@@ -1,4 +1,7 @@
-import {Actor, ActorArgs, CollisionType, Engine, Keys, Ray, RayCastHit, Vector} from "excalibur";
+import {Actor, ActorArgs, CollisionType, Engine, Ray, RayCastHit, Vector} from "excalibur";
+import {
+    KeyboardControlledComponent
+} from "../../../../../Utility/Excalibur/ECS/Component/Movement/KeyboardControlledComponent.ts";
 import {FieldOfViewLayer} from "./FieldOfViewLayer.ts";
 
 export class Player extends Actor {
@@ -13,49 +16,11 @@ export class Player extends Actor {
 
     constructor(props?: ActorArgs) {
         super({
-            collisionType: CollisionType.Passive,
+            collisionType: CollisionType.PreventCollision,
             ...props,
         });
 
-        // this.addComponent(new KeyboardControlledComponent());
-    }
-
-    onInitialize(engine: Engine): void {
-        const speed: number = 1;
-        engine.inputMapper.on(
-            ({keyboard}) => keyboard.isHeld(Keys.W),
-            () => {
-                this.pos.add(new Vector(0, -speed * (this.isRunning ? 2 : 1)), this.pos);
-            },
-        );
-        engine.inputMapper.on(
-            ({keyboard}) => keyboard.isHeld(Keys.S),
-            () => {
-                this.pos.add(new Vector(0, speed * (this.isRunning ? 2 : 1)), this.pos);
-            },
-        );
-        engine.inputMapper.on(
-            ({keyboard}) => keyboard.isHeld(Keys.A),
-            () => {
-                this.pos.add(new Vector(-speed * (this.isRunning ? 2 : 1), 0), this.pos);
-            },
-        );
-        engine.inputMapper.on(
-            ({keyboard}) => keyboard.isHeld(Keys.D),
-            () => {
-                this.pos.add(new Vector(speed * (this.isRunning ? 2 : 1), 0), this.pos);
-            },
-        );
-        engine.inputMapper.on(
-            ({keyboard}) => keyboard.wasPressed(Keys.ShiftLeft),
-            () => this.isRunning = true,
-        );
-        engine.inputMapper.on(
-            ({keyboard}) => keyboard.wasReleased(Keys.ShiftLeft),
-            () => {
-                this.isRunning = false;
-            },
-        );
+        this.addComponent(new KeyboardControlledComponent(25));
     }
 
     onPreUpdate(engine: Engine): void {

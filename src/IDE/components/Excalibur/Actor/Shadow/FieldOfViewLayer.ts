@@ -1,4 +1,4 @@
-import {Actor, Canvas, Color, Engine, Vector} from "excalibur";
+import {Actor, Canvas, Engine, Vector} from "excalibur";
 import {Player} from "./Player.ts";
 
 export abstract class FieldOfViewLayer extends Actor {
@@ -7,10 +7,6 @@ export abstract class FieldOfViewLayer extends Actor {
         protected readonly graphic: Canvas,
     ) {
         super({
-            // pos,
-            width: 500,
-            height: 500,
-            color: Color.Gray,
             anchor: Vector.Zero,
         });
 

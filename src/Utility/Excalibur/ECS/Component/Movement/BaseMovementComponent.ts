@@ -21,6 +21,5 @@ export abstract class BaseMovementComponent extends BaseComponent {
         normalizedDirection = normalizedDirection.scale(Math.min(this.speed, maxDistance ?? this.speed));
         this.owner.vel.x = normalizedDirection.x;
         this.owner.vel.y = normalizedDirection.y;
-
     }
 }
