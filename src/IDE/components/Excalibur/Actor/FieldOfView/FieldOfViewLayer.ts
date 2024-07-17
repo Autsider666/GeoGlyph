@@ -17,6 +17,8 @@ export abstract class FieldOfViewLayer extends Actor {
 
     protected drawFieldOfView(
         ctx: CanvasRenderingContext2D,
+        startAngle?: number,
+        endAngle?: number,
     ): void {
         ctx.globalCompositeOperation = 'destination-out';
 
@@ -39,8 +41,8 @@ export abstract class FieldOfViewLayer extends Actor {
             centerX,
             centerY,
             this.player.visionRadius,
-            this.player.fieldOfViewStartAngle,
-            this.player.fieldOfViewEndAngle,
+            startAngle ?? this.player.fieldOfViewStartAngle,
+            endAngle ?? this.player.fieldOfViewEndAngle,
         );
 
         ctx.closePath();

@@ -27,7 +27,7 @@ export class ShadowLayer extends FieldOfViewLayer {
                         ctx.globalCompositeOperation = 'destination-out'; // Used to be destination-out
                     }
 
-                    this.drawFieldOfView(ctx);
+                    this.drawFieldOfView(ctx,0,Math.PI*2);
                 }
             })
         );
