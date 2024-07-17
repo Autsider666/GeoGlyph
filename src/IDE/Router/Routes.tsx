@@ -3,9 +3,8 @@ import {FasIconType} from "../components/Bulma/FasIcon.tsx";
 import {DisplayGraph} from "../pages/DisplayGraph.tsx";
 import {DisplayProceduralAnimation} from "../pages/DisplayProceduralAnimation.tsx";
 import {DisplayReactFlow} from "../pages/DisplayReactFlow.tsx";
-import {DisplayShadow} from "../pages/DisplayShadow.tsx";
+import {DisplayFieldOfView} from "../pages/DisplayFieldOfView.tsx";
 import Home from "../pages/Home.tsx";
-import {TestSandbox} from "../pages/TestSandbox.tsx";
 
 type Route = {
     menu?: {
@@ -55,14 +54,6 @@ export const Routes: Route[] = [
             type: 'start',
         },
         path: 'shadows',
-        element: <DisplayShadow/>
-    },
-    {
-        menu: {
-            name: 'Test Sandbox',
-            type: 'end',
-        },
-        path: 'test',
-        element: <TestSandbox/>
+        element: <DisplayFieldOfView/>
     },
 ];

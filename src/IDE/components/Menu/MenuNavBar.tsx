@@ -9,8 +9,6 @@ const generateElementsFor = (type: string): ReactElement[] => Routes.filter(rout
     .filter(element => element !== undefined);
 
 export const MenuNavBar = (): ReactElement => {
-
-
     return <NavBar
         brand={generateElementsFor('brand')}
         start={Routes.filter(route => route.menu?.type === 'start')
@@ -22,14 +20,22 @@ export const MenuNavBar = (): ReactElement => {
                 item: menu.name,
                 link: path
             }) : undefined).filter(element => element !== undefined)}
-        end={Routes.filter(route => route.menu?.type === 'end')
-            .map(({
-                      menu,
-                      path
-                  }) => menu && path !== undefined ? ({
-                key: path,
-                item: menu.name,
-                link: path
-            }) : undefined).filter(element => element !== undefined)}
+        // end={Routes.filter(route => route.menu?.type === 'end')
+        //     .map(({
+        //               menu,
+        //               path
+        //           }) => menu && path !== undefined ? ({
+        //         key: path,
+        //         item: menu.name,
+        //         link: path
+        //     }) : undefined).filter(element => element !== undefined)}
+        end={[
+            {
+                item: 'Repository',
+                key: 'github',
+                link: 'https://github.com/Autsider666/GeoGraph',
+                target: '_blank',
+            }
+        ]}
     />;
 };

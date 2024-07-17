@@ -1,8 +1,8 @@
 import {Actor, Color, Random, Vector} from "excalibur";
 import {ReactElement} from "react";
-import {FogLayer} from "../components/Excalibur/Actor/Shadow/FogLayer.ts";
-import {Player} from "../components/Excalibur/Actor/Shadow/Player.ts";
-import {ShadowLayer} from "../components/Excalibur/Actor/Shadow/ShadowLayer.ts";
+import {FogLayer} from "../components/Excalibur/Actor/FieldOfView/FogLayer.ts";
+import {Player} from "../components/Excalibur/Actor/FieldOfView/Player.ts";
+import {ShadowLayer} from "../components/Excalibur/Actor/FieldOfView/ShadowLayer.ts";
 import {ExcaliburContainer} from "../components/Excalibur/ExcaliburContainer.tsx";
 
 const random = new Random();
@@ -26,6 +26,6 @@ for (let i = 0; i < 10; i++) {
     }));
 }
 
-export const DisplayShadow = (): ReactElement => {
+export const DisplayFieldOfView = (): ReactElement => {
     return <ExcaliburContainer actors={actors}/>;
 };

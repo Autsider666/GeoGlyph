@@ -1,11 +1,12 @@
 import classNames from "classnames";
-import {ReactElement, ReactNode, useState} from "react";
+import {HTMLAttributeAnchorTarget, ReactElement, ReactNode, useState} from "react";
 import {NavBarItem} from "./NavBarItem.tsx";
 
 type NavBarItem = {
     key: string,
     item: ReactNode,
     link?: string,
+    target?: HTMLAttributeAnchorTarget,
 }
 
 type NavBarProps = {
@@ -52,7 +53,7 @@ export const NavBar = (props: NavBarProps): ReactElement => {
                 {props.end?.length ? (
                     <div className="navbar-end">
                         {props.end.map(
-                            ({key, item, link}) => <NavBarItem key={key} link={link}>{item}</NavBarItem>
+                            ({key, item, link, target}) => <NavBarItem key={key} link={link} target={target}>{item}</NavBarItem>
                         )}
                     </div>
                 ) : undefined}
