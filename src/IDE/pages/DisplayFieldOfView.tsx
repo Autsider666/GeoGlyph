@@ -6,17 +6,21 @@ import {ShadowLayer} from "../components/Excalibur/Actor/FieldOfView/ShadowLayer
 import {ExcaliburContainer} from "../components/Excalibur/ExcaliburContainer.tsx";
 
 const random = new Random();
+const players:Player[] =[];
+for (let dX = 0; dX < 1; dX++) {
+    for (let dY = 0; dY < 1; dY++) {
+        players.push(new Player({
+            pos: new Vector(200 + 200 * dX, 200 + 200 * dY),
+            radius: 10,
+            color: Color.Red,
+        }));
+    }
+}
 
-const player = new Player({
-    pos: new Vector(200, 200),
-    radius: 10,
-    color: Color.Red,
-});
+const actors: Actor[] = [...players];
 
-const actors: Actor[] = [player];
-
-actors.push(new ShadowLayer(player));
-actors.push(new FogLayer(player));
+actors.push(new ShadowLayer(players));
+actors.push(new FogLayer(players));
 
 for (let i = 0; i < 10; i++) {
     actors.push(new Actor({

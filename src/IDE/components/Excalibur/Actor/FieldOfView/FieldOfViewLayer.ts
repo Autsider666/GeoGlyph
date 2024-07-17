@@ -3,7 +3,7 @@ import {Player} from "./Player.ts";
 
 export abstract class FieldOfViewLayer extends Actor {
     protected constructor(
-        protected readonly player: Player,
+        protected readonly players: Player[],
         protected readonly graphic: Canvas,
     ) {
         super({
@@ -23,30 +23,32 @@ export abstract class FieldOfViewLayer extends Actor {
         ctx.globalCompositeOperation = 'destination-out';
 
         ctx.globalAlpha = 1;
-        ctx.fillStyle = this.posToGradient(
-            ctx,
-            this.player.pos,
-            this.player.visionRadius,
-            'rgba(0,0,0,0)',
-            'rgba(0,0,0,1)',
-            this.player.falloff
-        );
+        for (const player of this.players) {
+            ctx.fillStyle = this.posToGradient(
+                ctx,
+                player.pos,
+                player.visionRadius,
+                'rgba(0,0,0,0)',
+                'rgba(0,0,0,1)',
+                player.falloff
+            );
 
-        const centerX = this.player.pos.x;
-        const centerY = this.player.pos.y;
+            const centerX = player.pos.x;
+            const centerY = player.pos.y;
 
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(
-            centerX,
-            centerY,
-            this.player.visionRadius,
-            startAngle ?? this.player.fieldOfViewStartAngle,
-            endAngle ?? this.player.fieldOfViewEndAngle,
-        );
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(
+                centerX,
+                centerY,
+                player.visionRadius,
+                startAngle ?? player.fieldOfViewStartAngle,
+                endAngle ?? player.fieldOfViewEndAngle,
+            );
 
-        ctx.closePath();
-        ctx.fill();
+            ctx.closePath();
+            ctx.fill();
+        }
     }
 
     protected posToGradient(

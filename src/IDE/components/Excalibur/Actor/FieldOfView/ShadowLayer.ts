@@ -4,7 +4,7 @@ import {Player} from "./Player.ts";
 
 export class ShadowLayer extends FieldOfViewLayer {
     constructor(
-        player: Player,
+        players: Player[],
         {
             alpha = 1,
             color = '#000000'
@@ -13,7 +13,7 @@ export class ShadowLayer extends FieldOfViewLayer {
         let initialRun: boolean = true;
 
         super(
-            player,
+            players,
             new DirtyCanvas({
                 width: 500,
                 height: 500,

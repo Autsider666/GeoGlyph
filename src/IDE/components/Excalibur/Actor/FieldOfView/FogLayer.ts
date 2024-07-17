@@ -4,14 +4,14 @@ import {Player} from "./Player.ts";
 
 export class FogLayer extends FieldOfViewLayer {
     constructor(
-        player: Player,
+        players: Player[],
         {
             alpha = 0.75,
             color = '#000000'
         }: {alpha?: number, color?:string} = {}
     ) {
         super(
-            player,
+            players,
             new Canvas({
                 width: 500,
                 height: 500,
