@@ -1,4 +1,4 @@
-import {Actor, ActorArgs, CollisionType, Vector} from "excalibur";
+import {Actor, ActorArgs, CollisionType, Engine, Keys, Vector} from "excalibur";
 import {AngularInertiaComponent} from "../../../../../Utility/Excalibur/ECS/Component/AngularInertiaComponent.ts";
 import {MovableComponent} from "../../../../../Utility/Excalibur/Movement/Component/MovableComponent.ts";
 import {ViewpointComponent} from "../../../../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
@@ -12,7 +12,12 @@ export class Player extends Actor {
     private fieldOfView: number = RadianHelper.Circle / 3;
     // public fieldOfViewStartAngle: number = 0;
     // public fieldOfViewEndAngle: number = 0;
-    // public isRunning: boolean = false;
+
+
+    public isRunning: boolean = false;
+
+    // Stats
+    private speed: number = 50;
 
     // private firstTangent: Actor = new Actor({radius: 5, color: Color.Red});
     // private secondTangent: Actor = new Actor({radius: 5, color: Color.Red});
@@ -23,20 +28,23 @@ export class Player extends Actor {
             ...props,
         });
 
-        this.addComponent(new AngularInertiaComponent(200));
-        this.addComponent(new MovableComponent(50));
-        this.addComponent(new ViewpointComponent(
-            RadianHelper.Circle / 3,
-            250,
-        ));
-
-        // this.addComponent(new KeyboardControlledComponent(25));
+        this.addComponent(new AngularInertiaComponent(() => 200 * (this.isRunning ? 2 : 1)));
+        this.addComponent(new MovableComponent(() => this.speed * (this.isRunning ? 3 : 1)));
+        this.addComponent(new ViewpointComponent([
+            {
+                getAngle: (): number => RadianHelper.Circle / 3 * (this.isRunning ? 1.5 : 1),
+                getRange: (): number => 250 / (this.isRunning ? 1.5 : 1),
+            }, {
+                getRange: (): number => (props?.radius ?? props?.width ?? props?.height ?? 0) * 3,
+                getFalloff: (): number => 0.75,
+            }
+        ]));
     }
 
-    // onInitialize(engine: Engine): void {
-    //     engine.currentScene.add(this.firstTangent);
-    //     engine.currentScene.add(this.secondTangent);
-    // }
+    onInitialize(engine: Engine): void {
+        engine.inputMapper.on(({keyboard}) => keyboard.wasPressed(Keys.ShiftLeft), () => this.isRunning = true);
+        engine.inputMapper.on(({keyboard}) => keyboard.wasReleased(Keys.ShiftLeft), () => this.isRunning = false);
+    }
 
     // onPreUpdate(engine: Engine): void {
     //     const pointerPos = engine.input.pointers.primary.lastWorldPos;

@@ -16,10 +16,10 @@ export class KeyboardControlledComponent extends BaseMovementComponent {
     private readonly keysToWatch = new Set<Keys>();
 
     constructor(
-        speed: number,
+        getSpeed: ()=>number,
         keyEvents?: Map<Keys, KeyEventCallback>,
     ) {
-        super(speed);
+        super(getSpeed);
 
         keyEvents?.forEach((callback, key) => this.onKey(key, callback));
     }

@@ -2,12 +2,10 @@ import {Actor, Entity} from "excalibur";
 import {BaseComponent} from "../BaseComponent.ts";
 
 export class AngularInertiaComponent extends BaseComponent {
-    private readonly angularInertia: number;
+    private static defaultInertia: number = 250;
 
-    constructor(inertia: number = 250) {
+    constructor(private readonly getInertia: () => number = () => AngularInertiaComponent.defaultInertia) {
         super();
-
-        this.angularInertia = Math.PI / inertia;
     }
 
     onAdd(owner: Actor): void {
@@ -37,13 +35,14 @@ export class AngularInertiaComponent extends BaseComponent {
         }
 
         const angularDifference = Math.abs(owner.rotation - targetAngle);
-        if (angularDifference > this.angularInertia) {
+        const angularInertia = Math.PI / this.getInertia();
+        if (angularDifference > angularInertia) {
             if (angularDifference - Math.PI === 0) {
-                owner.rotation += this.angularInertia * (Math.random() > 0.5 ? -1 : 1);
+                owner.rotation += angularInertia * (Math.random() > 0.5 ? -1 : 1);
             } else if (targetAngle > owner.rotation) {
-                owner.rotation += this.angularInertia;
+                owner.rotation += angularInertia;
             } else {
-                owner.rotation -= this.angularInertia;
+                owner.rotation -= angularInertia;
             }
 
         } else {

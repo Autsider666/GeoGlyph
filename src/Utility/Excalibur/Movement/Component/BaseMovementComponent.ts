@@ -2,7 +2,7 @@ import {Vector} from "excalibur";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 
 export abstract class BaseMovementComponent extends BaseComponent {
-    constructor(protected speed: number = 1) {
+    constructor(protected getSpeed: ()=>number = ()=>1) {
         super();
     }
 
@@ -18,8 +18,9 @@ export abstract class BaseMovementComponent extends BaseComponent {
         }
 
         let normalizedDirection = direction.normalize();
-        // this.owner.emit('moving', {direction: normalizedDirection.clone()});
-        normalizedDirection = normalizedDirection.scale(Math.min(this.speed, maxDistance ?? this.speed));
+
+        const speed = this.getSpeed();
+        normalizedDirection = normalizedDirection.scale(Math.min(speed, maxDistance ?? speed));
         this.owner.vel.x = normalizedDirection.x;
         this.owner.vel.y = normalizedDirection.y;
     }

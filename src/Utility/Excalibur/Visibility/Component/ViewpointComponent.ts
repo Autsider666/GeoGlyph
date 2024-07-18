@@ -3,11 +3,19 @@ import {RadianHelper} from "../../../RadianHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
 
+type ViewPointData = {
+    getAngle?: () => number,
+    getRange?: () => number,
+    getFalloff?: () => number,
+}
+
 export class ViewpointComponent extends BaseComponent implements ViewPoint {
+    private static defaultAngle: number = RadianHelper.Circle;
+    private static defaultRange: number = Infinity;
+    private static defaultFalloff: number = 0;
+
     constructor(
-        public readonly angle: number = RadianHelper.Circle,
-        public readonly range: number = Infinity,
-        public readonly falloff: number = 0,
+        private readonly viewPoints: ViewPointData[]
     ) {
         super();
     }
@@ -20,38 +28,46 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
         }
 
         const pos = owner.pos;
-        const direction = owner.rotation;
-        const startAngle = direction - this.angle / 2;
-        const endAngle = direction + this.angle / 2;
-
-        ctx.globalCompositeOperation = 'destination-out';
-
-        ctx.globalAlpha = 1;
-
-        ctx.fillStyle = this.posToGradient(
-            ctx,
-            pos,
-            this.range,
-            'rgba(0,0,0,0)',
-            'rgba(0,0,0,1)',
-            this.falloff
-        );
-
         const centerX = pos.x;
         const centerY = pos.y;
+        const direction = owner.rotation;
 
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(
-            centerX,
-            centerY,
-            this.range,
-            startAngle,
-            endAngle,
-        );
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.globalAlpha = 1;
 
-        ctx.closePath();
-        ctx.fill();
+        for (const {
+            getAngle = (): number => ViewpointComponent.defaultAngle,
+            getRange = (): number => ViewpointComponent.defaultRange,
+            getFalloff = (): number => ViewpointComponent.defaultFalloff,
+        } of this.viewPoints) {
+            const angle = getAngle();
+            const startAngle = direction - angle / 2;
+            const endAngle = direction + angle / 2;
+
+
+            const range = getRange();
+            ctx.fillStyle = this.posToGradient(
+                ctx,
+                pos,
+                range,
+                'rgba(0,0,0,0)',
+                'rgba(0,0,0,1)',
+                getFalloff()
+            );
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(
+                centerX,
+                centerY,
+                range,
+                startAngle,
+                endAngle,
+            );
+
+            ctx.closePath();
+            ctx.fill();
+        }
     }
 
     protected posToGradient(
