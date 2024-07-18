@@ -1,9 +1,9 @@
 import {RouteObject} from "react-router-dom";
 import {FasIconType} from "../components/Bulma/FasIcon.tsx";
+import {DisplayFieldOfView} from "../pages/DisplayFieldOfView.tsx";
 import {DisplayGraph} from "../pages/DisplayGraph.tsx";
 import {DisplayProceduralAnimation} from "../pages/DisplayProceduralAnimation.tsx";
 import {DisplayReactFlow} from "../pages/DisplayReactFlow.tsx";
-import {DisplayFieldOfView} from "../pages/DisplayFieldOfView.tsx";
 import Home from "../pages/Home.tsx";
 
 type Route = {

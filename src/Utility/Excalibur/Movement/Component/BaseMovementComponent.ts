@@ -1,5 +1,5 @@
 import {Vector} from "excalibur";
-import {BaseComponent} from "../BaseComponent.ts";
+import {BaseComponent} from "../../ECS/BaseComponent.ts";
 
 export abstract class BaseMovementComponent extends BaseComponent {
     constructor(protected speed: number = 1) {
@@ -12,7 +12,8 @@ export abstract class BaseMovementComponent extends BaseComponent {
         }
 
         if (direction.x === 0 && direction.y === 0) {
-            // this.owner.emit('moving', {direction});
+            this.owner.vel.x = direction.x;
+            this.owner.vel.y = direction.y;
             return;
         }
 

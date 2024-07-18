@@ -1,5 +1,5 @@
 import {Actor, EventEmitter, Keys, PreUpdateEvent} from "excalibur";
-import {DirectionQueue} from "../../../DirectionQueue.ts";
+import {DirectionQueue} from "../../DirectionQueue.ts";
 import {BaseMovementComponent} from "./BaseMovementComponent.ts";
 
 type KeyEventCallback = () => void;
@@ -16,7 +16,7 @@ export class KeyboardControlledComponent extends BaseMovementComponent {
     private readonly keysToWatch = new Set<Keys>();
 
     constructor(
-        speed:number,
+        speed: number,
         keyEvents?: Map<Keys, KeyEventCallback>,
     ) {
         super(speed);

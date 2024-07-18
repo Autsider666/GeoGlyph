@@ -1,21 +1,20 @@
-import {Actor, ActorArgs, CollisionType, Color, Engine, Vector} from "excalibur";
-import {
-    KeyboardControlledComponent
-} from "../../../../../Utility/Excalibur/ECS/Component/Movement/KeyboardControlledComponent.ts";
-import {FieldOfViewLayer} from "./FieldOfViewLayer.ts";
+import {Actor, ActorArgs, CollisionType, Vector} from "excalibur";
+import {MovableComponent} from "../../../../../Utility/Excalibur/Movement/Component/MovableComponent.ts";
+import {ViewpointComponent} from "../../../../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
+import {RadianHelper} from "../../../../../Utility/RadianHelper.ts";
 
 export class Player extends Actor {
-    public direction: Vector = Vector.Zero;
-    public visionRadius: number = 250;
-    public falloff: number = 0;
-    private readonly baseFieldOfView: number = Math.PI * 2 / 3;
-    public fieldOfView: number = Math.PI * 2 / 3;
-    public fieldOfViewStartAngle: number = 0;
-    public fieldOfViewEndAngle: number = 0;
-    public isRunning: boolean = false;
+    private direction: Vector = Vector.Zero;
+    private visionRadius: number = 250;
+    // public falloff: number = 0;
+    // private readonly baseFieldOfView: number = RadianHelper.Circle / 3;
+    private fieldOfView: number = RadianHelper.Circle / 3;
+    // public fieldOfViewStartAngle: number = 0;
+    // public fieldOfViewEndAngle: number = 0;
+    // public isRunning: boolean = false;
 
-    private firstTangent: Actor = new Actor({radius: 5, color: Color.Red});
-    private secondTangent: Actor = new Actor({radius: 5, color: Color.Red});
+    // private firstTangent: Actor = new Actor({radius: 5, color: Color.Red});
+    // private secondTangent: Actor = new Actor({radius: 5, color: Color.Red});
 
     constructor(props?: ActorArgs) {
         super({
@@ -23,44 +22,50 @@ export class Player extends Actor {
             ...props,
         });
 
-        this.addComponent(new KeyboardControlledComponent(25));
+        this.addComponent(new MovableComponent(50));
+        this.addComponent(new ViewpointComponent(
+            RadianHelper.Circle / 3,
+            250,
+        ));
+
+        // this.addComponent(new KeyboardControlledComponent(25));
     }
 
-    onInitialize(engine: Engine): void {
-        engine.currentScene.add(this.firstTangent);
-        engine.currentScene.add(this.secondTangent);
-    }
+    // onInitialize(engine: Engine): void {
+    //     engine.currentScene.add(this.firstTangent);
+    //     engine.currentScene.add(this.secondTangent);
+    // }
 
-    onPreUpdate(engine: Engine): void {
-        const pointerPos = engine.input.pointers.primary.lastWorldPos;
-
-        this.direction = pointerPos.sub(this.pos).normalize();
-        const modifier = this.isRunning ? 1.5 : 1;
-        const centerAngle = this.direction.toAngle();
-
-        this.fieldOfView = this.baseFieldOfView / modifier;
-        this.fieldOfViewStartAngle = centerAngle - this.fieldOfView / 2;
-        if (this.fieldOfViewStartAngle < 0) {
-            this.fieldOfViewStartAngle += Math.PI * 2;
-        }
-        this.fieldOfViewEndAngle = centerAngle + this.fieldOfView / 2;
-        if (this.fieldOfViewEndAngle < 0) {
-            this.fieldOfViewEndAngle += Math.PI * 2;
-        }
-
-        for (const child of engine.currentScene.actors) {
-            if (child instanceof Player || child instanceof FieldOfViewLayer || child === this.firstTangent || child === this.secondTangent) {
-                continue;
-            }
-
-            child.z = -10;
-
-            const graph = child.graphics.current;
-            if (graph) {
-                graph.opacity = this.canSee(child);
-            }
-        }
-    }
+    // onPreUpdate(engine: Engine): void {
+    //     const pointerPos = engine.input.pointers.primary.lastWorldPos;
+    //
+    //     this.direction = pointerPos.sub(this.pos).normalize();
+    //     const modifier = this.isRunning ? 1.5 : 1;
+    //     const centerAngle = this.direction.toAngle();
+    //
+    //     this.fieldOfView = this.baseFieldOfView / modifier;
+    //     this.fieldOfViewStartAngle = centerAngle - this.fieldOfView / 2;
+    //     if (this.fieldOfViewStartAngle < 0) {
+    //         this.fieldOfViewStartAngle += RadianHelper.Circle;
+    //     }
+    //     this.fieldOfViewEndAngle = centerAngle + this.fieldOfView / 2;
+    //     if (this.fieldOfViewEndAngle < 0) {
+    //         this.fieldOfViewEndAngle += RadianHelper.Circle;
+    //     }
+    //
+    //     // for (const child of engine.currentScene.actors) {
+    //     //     if (child instanceof Player || child instanceof VisibilityLayer || child === this.firstTangent || child === this.secondTangent) {
+    //     //         continue;
+    //     //     }
+    //     //
+    //     //     child.z = -10;
+    //     //
+    //     //     const graph = child.graphics.current;
+    //     //     if (graph) {
+    //     //         graph.opacity = this.canSee(child);
+    //     //     }
+    //     // }
+    // }
 
     // Works well for eyes (or turrets?) following a target
     private calculateTangents(viewPoint: Vector, centerCircle: Vector, radiusCircle: number, maxDistance: number): [Vector, Vector] | [Vector] | undefined {
@@ -104,7 +109,7 @@ export class Player extends Actor {
     }
 
     public canSee(target: Actor): number {
-        const objectRadius = target.collider.get().radius;
+        const objectRadius = target.collider.get().radius; //FIXME this only works for CircleCollider
 
         // Calculate vector from player to object center
         const dx = target.pos.x - this.pos.x;
@@ -152,21 +157,49 @@ export class Player extends Actor {
         const visibleArea = visibleFraction * circleArea;
         const visiblePercentage = visibleArea / circleArea;
 
-        if (visiblePercentage < 0) {
-            return 0;
-        }
-
-        const tangents = this.calculateTangents(this.pos, target.pos, objectRadius, this.visionRadius);
-        if (tangents) {
-            const [first, second] = tangents;
-
-            this.scene?.add(this.firstTangent);
-            this.firstTangent.pos = first;
-            if (second) {
-                this.secondTangent.pos = second;
-                this.scene?.add(this.secondTangent);
-            }
-        }
+        // if (visiblePercentage < 0) {
+        //     return 0;
+        // }
+        //
+        // const tangents = this.calculateTangents(this.pos, target.pos, objectRadius, this.visionRadius);
+        // if (tangents) {
+        //     const [first, second] = tangents;
+        //
+        //     this.scene?.add(this.firstTangent);
+        //     this.firstTangent.pos = first;
+        //
+        //     const targetCollider = target.collider.get();
+        //
+        //     if (!targetCollider.contains(first)) {
+        //         const direction = target.center.sub(first);
+        //         const ray = new Ray(first, direction);
+        //
+        //         const hit = targetCollider.rayCast(ray);
+        //
+        //         const data: Record<string, unknown> = {tangent: first};
+        //         if (hit) {
+        //             data.hit = hit;
+        //             data.hitCoordinate = hit.point;
+        //             data.differenceBetweenCoordinate = hit.point.distance(first);
+        //             data.isHitCoordinateInCollider = targetCollider.contains(hit.point);
+        //         }
+        //
+        //         const pointCollider = new EdgeCollider({
+        //             begin: first,
+        //             end: target.pos,
+        //         });
+        //
+        //         data.closestLine = targetCollider.getClosestLineBetween(pointCollider);
+        //
+        //
+        //         console.log(data);
+        //     }
+        //
+        //     if (second) {
+        //         this.secondTangent.pos = second;
+        //         this.scene?.add(this.secondTangent);
+        //     }
+        // }
 
         // Clamp percentage to range [0, 1]
         return Math.max(0, Math.min(1, visiblePercentage * 10));

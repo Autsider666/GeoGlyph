@@ -1,28 +1,26 @@
-import {Canvas} from "excalibur";
-import {FieldOfViewLayer} from "./FieldOfViewLayer.ts";
-import {Player} from "./Player.ts";
+import {Actor, Canvas} from "excalibur";
+import {VisibilityLayerComponent} from "../Component/VisibilityLayerComponent.ts";
 
-export class FogLayer extends FieldOfViewLayer {
+export class FogLayer extends Actor {
     constructor(
-        players: Player[],
         {
             alpha = 0.75,
             color = '#000000'
-        }: {alpha?: number, color?:string} = {}
+        }: { alpha?: number, color?: string } = {}
     ) {
-        super(
-            players,
+        super();
+
+        this.addComponent(new VisibilityLayerComponent(
             new Canvas({
                 width: 500,
                 height: 500,
+                // cache: true,
                 draw: (ctx): void => {
                     ctx.globalAlpha = alpha;
                     ctx.fillStyle = color;
                     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-                    this.drawFieldOfView(ctx);
                 }
             }),
-        );
+        ));
     }
 }

@@ -1,37 +1,25 @@
-import {Actor, Engine} from "excalibur";
-import {ReactElement, useEffect, useRef, useState} from "react";
+import {Actor, Engine, Scene} from "excalibur";
+import {ReactElement, useEffect, useRef} from "react";
 
 type ExcaliburContainerProps = {
     actors?: Actor[],
+    createScene?: () => Scene,
 }
 
-export const ExcaliburContainer = ({actors = []}: ExcaliburContainerProps): ReactElement => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [gameEngine, setGameEngine] = useState<Engine | undefined>();
+let gameEngine: Engine | undefined = undefined;
 
-    // const gameEngine = useMemo(() => {
-    //     if (!canvasRef.current) {
-    //         return undefined;
-    //     }
-    //
-    //     const engine = new Engine({
-    //         canvasElement: canvasRef.current,
-    //         displayMode: DisplayMode.FitContainerAndFill,
-    //     });
-    //
-    //     engine.start();
-    //
-    //     return engine;
-    //
-    // }, [canvasRef.current]);
+export const ExcaliburContainer = ({actors = [], createScene}: ExcaliburContainerProps): ReactElement => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         if (!canvasRef.current || gameEngine) {
             return;
         }
 
-        // @ts-expect-error No clue why my ide doesn't understand this.
-        const resetGame = (): void => gameEngine?.stop();
+        const resetGame = (): void => {
+            gameEngine?.stop();
+            gameEngine = undefined;
+        };
 
         resetGame();
         const game = new Engine({
@@ -41,16 +29,23 @@ export const ExcaliburContainer = ({actors = []}: ExcaliburContainerProps): Reac
             // displayMode: DisplayMode.FitContainer,
         });
 
-        for (const actor of actors) {
-            game.add(actor);
+        const currentScene = createScene ? createScene() : game.currentScene;
+        if (createScene) {
+            game.addScene('scene', currentScene);
         }
 
-        game.start();
+        for (const actor of actors) {
+            currentScene.add(actor);
+        }
 
-        setGameEngine(game);
+        game.start().then(() => {
+            game.goToScene('scene');
+        });
+
+        gameEngine = game;
 
         return resetGame;
-    }, [actors, gameEngine]);
+    }, [actors, createScene]);
 
     return <canvas style={{width: '100%'}} ref={canvasRef}></canvas>;
 };

@@ -1,10 +1,9 @@
-import {DirtyCanvas} from "../../../../../Utility/Excalibur/DirtyCanvas.ts";
-import {FieldOfViewLayer} from "./FieldOfViewLayer.ts";
-import {Player} from "./Player.ts";
+import {Actor} from "excalibur";
+import {DirtyCanvas} from "../../DirtyCanvas.ts";
+import {VisibilityLayerComponent} from "../Component/VisibilityLayerComponent.ts";
 
-export class ShadowLayer extends FieldOfViewLayer {
+export class ShadowLayer extends Actor {
     constructor(
-        players: Player[],
         {
             alpha = 1,
             color = '#000000'
@@ -12,11 +11,13 @@ export class ShadowLayer extends FieldOfViewLayer {
     ) {
         let initialRun: boolean = true;
 
-        super(
-            players,
+        super();
+
+        this.addComponent(new VisibilityLayerComponent(
             new DirtyCanvas({
                 width: 500,
                 height: 500,
+                // cache: true,
                 draw: (ctx): void => {
                     if (initialRun) {
                         initialRun = false;
@@ -26,10 +27,8 @@ export class ShadowLayer extends FieldOfViewLayer {
                         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                         ctx.globalCompositeOperation = 'destination-out'; // Used to be destination-out
                     }
-
-                    this.drawFieldOfView(ctx,0,Math.PI*2);
                 }
             })
-        );
+        ));
     }
 }

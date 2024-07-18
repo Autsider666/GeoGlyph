@@ -53,7 +53,8 @@ export const NavBar = (props: NavBarProps): ReactElement => {
                 {props.end?.length ? (
                     <div className="navbar-end">
                         {props.end.map(
-                            ({key, item, link, target}) => <NavBarItem key={key} link={link} target={target}>{item}</NavBarItem>
+                            ({key, item, link, target}) => <NavBarItem key={key} link={link}
+                                                                       target={target}>{item}</NavBarItem>
                         )}
                     </div>
                 ) : undefined}

@@ -1,5 +1,3 @@
- 
-
 declare module 'csstype' {
     interface Properties {
 
