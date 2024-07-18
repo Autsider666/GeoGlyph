@@ -6,7 +6,7 @@ import {ShadowLayer} from "../components/Excalibur/Actor/FieldOfView/ShadowLayer
 import {ExcaliburContainer} from "../components/Excalibur/ExcaliburContainer.tsx";
 
 const random = new Random();
-const players:Player[] =[];
+const players: Player[] = [];
 for (let dX = 0; dX < 1; dX++) {
     for (let dY = 0; dY < 1; dY++) {
         players.push(new Player({
@@ -18,7 +18,6 @@ for (let dX = 0; dX < 1; dX++) {
 }
 
 const actors: Actor[] = [...players];
-
 actors.push(new ShadowLayer(players));
 actors.push(new FogLayer(players));
 
@@ -29,6 +28,8 @@ for (let i = 0; i < 10; i++) {
         color: Color.Green,
     }));
 }
+
+// actors.push(new ImprovedFieldOfViewLayer(players, actors));
 
 export const DisplayFieldOfView = (): ReactElement => {
     return <ExcaliburContainer actors={actors}/>;
