@@ -1,4 +1,5 @@
 import {Actor, ActorArgs, CollisionType, Vector} from "excalibur";
+import {AngularInertiaComponent} from "../../../../../Utility/Excalibur/ECS/Component/AngularInertiaComponent.ts";
 import {MovableComponent} from "../../../../../Utility/Excalibur/Movement/Component/MovableComponent.ts";
 import {ViewpointComponent} from "../../../../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {RadianHelper} from "../../../../../Utility/RadianHelper.ts";
@@ -16,14 +17,13 @@ export class Player extends Actor {
     // private firstTangent: Actor = new Actor({radius: 5, color: Color.Red});
     // private secondTangent: Actor = new Actor({radius: 5, color: Color.Red});
 
-    private angularMomentum: number = 0;
-
     constructor(props?: ActorArgs) {
         super({
             collisionType: CollisionType.PreventCollision,
             ...props,
         });
 
+        this.addComponent(new AngularInertiaComponent(200));
         this.addComponent(new MovableComponent(50));
         this.addComponent(new ViewpointComponent(
             RadianHelper.Circle / 3,
@@ -31,36 +31,6 @@ export class Player extends Actor {
         ));
 
         // this.addComponent(new KeyboardControlledComponent(25));
-    }
-
-    onPostUpdate(): void {
-        if (this.vel.x === 0 && this.vel.y === 0) {
-            return;
-        }
-
-        const dPhi = Math.PI / 250;
-
-        let targetAngle: number = this.vel.toAngle();
-        if (this.rotation - Math.PI > targetAngle) {
-            targetAngle += 2 * Math.PI;
-        }
-        if (targetAngle - Math.PI > this.rotation) {
-            targetAngle -= 2 * Math.PI;
-        }
-
-        const angularDifference = Math.abs(this.rotation - targetAngle);
-        if (angularDifference > dPhi) {
-            if (angularDifference - Math.PI === 0) {
-                this.rotation += dPhi * (Math.random() > 0.5 ? -1 : 1);
-            } else if (targetAngle > this.rotation) {
-                this.rotation += dPhi;
-            } else {
-                this.rotation -= dPhi;
-            }
-
-        } else {
-            this.rotation = targetAngle;
-        }
     }
 
     // onInitialize(engine: Engine): void {
