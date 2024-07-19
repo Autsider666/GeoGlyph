@@ -1,5 +1,6 @@
 import {Actor, Circle, Random, Rectangle, Scene, Vector} from "excalibur";
 import {CommandHandler} from "../../../../Utility/CommandHandling/CommandHandler.ts";
+import {SelectionAreaHandler} from "../../../../Utility/Excalibur/Actor/SelectionAreaHandler.ts";
 import {FogLayer} from "../../../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
 import {VisibilitySystem} from "../../../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
 import {ColorPalette} from "../../../ColorPalette.ts";
@@ -22,10 +23,12 @@ export class VisibilityScene extends Scene {
         this.world.add(new FogLayer());
         // this.world.add(new ShadowLayer());
 
+        this.world.add(new SelectionAreaHandler());
+
         const playerRadius = 10;
 
         const random = new Random();
-        for (let dX = 0; dX < 1; dX++) {
+        for (let dX = 0; dX < 2; dX++) {
             for (let dY = 0; dY < 1; dY++) {
                 const player = new Player({
                     pos: new Vector(200 + 200 * dX, 200 + 200 * dY),

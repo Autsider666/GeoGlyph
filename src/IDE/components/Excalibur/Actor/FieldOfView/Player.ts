@@ -17,7 +17,7 @@ export class Player extends Actor {
 
     constructor(props?: ActorArgs) {
         super({
-            collisionType: CollisionType.PreventCollision,
+            collisionType: CollisionType.Passive,
             ...props,
         });
 
