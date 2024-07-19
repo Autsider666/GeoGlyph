@@ -29,6 +29,8 @@ export const ExcaliburContainer = ({actors = [], createScene}: ExcaliburContaine
             // displayMode: DisplayMode.FitContainer,
         });
 
+        canvasRef.current.oncontextmenu = (): boolean => false;
+
         const currentScene = createScene ? createScene() : game.currentScene;
         if (createScene) {
             game.addScene('scene', currentScene);

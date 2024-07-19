@@ -1,5 +1,6 @@
 import {Actor, ActorArgs, CollisionType, Engine, Keys, Vector} from "excalibur";
 import {AngularInertiaComponent} from "../../../../../Utility/Excalibur/ECS/Component/AngularInertiaComponent.ts";
+import {SelectableComponent} from "../../../../../Utility/Excalibur/ECS/Component/SelectableComponent.ts";
 import {MovableComponent} from "../../../../../Utility/Excalibur/Movement/Component/MovableComponent.ts";
 import {ViewpointComponent} from "../../../../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {RadianHelper} from "../../../../../Utility/RadianHelper.ts";
@@ -7,20 +8,12 @@ import {RadianHelper} from "../../../../../Utility/RadianHelper.ts";
 export class Player extends Actor {
     private direction: Vector = Vector.Zero;
     private visionRadius: number = 250;
-    // public falloff: number = 0;
-    // private readonly baseFieldOfView: number = RadianHelper.Circle / 3;
     private fieldOfView: number = RadianHelper.Circle / 3;
-    // public fieldOfViewStartAngle: number = 0;
-    // public fieldOfViewEndAngle: number = 0;
-
 
     public isRunning: boolean = false;
 
     // Stats
     private speed: number = 50;
-
-    // private firstTangent: Actor = new Actor({radius: 5, color: Color.Red});
-    // private secondTangent: Actor = new Actor({radius: 5, color: Color.Red});
 
     constructor(props?: ActorArgs) {
         super({
@@ -39,6 +32,8 @@ export class Player extends Actor {
                 getFalloff: (): number => 0.75,
             }
         ]));
+
+        this.addComponent(new SelectableComponent());
     }
 
     onInitialize(engine: Engine): void {

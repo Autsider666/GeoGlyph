@@ -2,6 +2,7 @@ import {Actor, Engine, Entity} from "excalibur";
 import {DirectionalMovementCommand} from "../../../Utility/CommandHandling/Command/DirectionalMovementCommand.ts";
 import {CommandHandler} from "../../../Utility/CommandHandling/CommandHandler.ts";
 import {DirectionQueue} from "../../../Utility/Excalibur/DirectionQueue.ts";
+import {SelectedTag} from "../../../Utility/Excalibur/ECS/Component/SelectableComponent.ts";
 
 export class DirectInputController extends Entity {
     private readonly directionQueue = new DirectionQueue();
@@ -15,6 +16,10 @@ export class DirectInputController extends Entity {
 
     onPreUpdate(engine: Engine): void {
         this.directionQueue.update(engine);
+
+        if (this.movementCommand.actor?.hasTag(SelectedTag) !== true) {
+            return;
+        }
 
         this.commandHandler.addCommand(this.movementCommand);
     }
