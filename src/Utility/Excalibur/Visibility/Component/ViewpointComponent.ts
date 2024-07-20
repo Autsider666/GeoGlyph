@@ -95,7 +95,7 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
         let objectArea: number | undefined;
         const collider = target.collider.get();
         if (collider === undefined) {
-            console.log('Undefined collider on:', target);
+            // console.log('Undefined collider on:', target);
             return 1;
         }
 

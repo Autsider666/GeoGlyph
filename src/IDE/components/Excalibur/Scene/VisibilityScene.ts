@@ -18,7 +18,7 @@ export class VisibilityScene extends Scene {
         this.world.add(VisibilitySystem);
         this.world.add(EnemyVisibilitySystem);
         this.world.add(new DirectInputSystem(this.world, this.commandHandler));
-        this.world.add(new EnemySpawnerSystem(this.world, 1, 300));
+        this.world.add(new EnemySpawnerSystem(this.world, 50, 300));
     }
 
     onActivate(): void {

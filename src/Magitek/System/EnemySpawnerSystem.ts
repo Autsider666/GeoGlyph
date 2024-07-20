@@ -62,6 +62,7 @@ export class EnemySpawnerSystem extends System {
         monster.pos = location;
 
         this.scene.add(monster);
+        console.log('Monster spawned');
     }
 
     private getSpawnLocation(): Vector | undefined {
