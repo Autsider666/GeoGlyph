@@ -43,7 +43,7 @@ export class EnemyVisibilitySystem extends System {
         });
     }
 
-    update(): void {
+    update(): void { // TODO slower updates should be possible right? Or only when something moves (maybe max distance away from machina
         for (const enemyActor of this.enemyActors) {
             let visibility: number = 0;
             for (const friendlyActor of this.friendlyActors) {

@@ -61,6 +61,14 @@ export class SelectionMarker extends Actor {
         this.animate(delta);
     }
 
+    public changeColor(color: Color): void {
+        if (this.graphic.strokeColor?.equal(color)) {
+            return;
+        }
+
+        this.graphic.strokeColor = color;
+    }
+
     private encompass(actor: Actor): void {
         if (!this.autoFit) {
             return;

@@ -5,6 +5,7 @@ import {SelectableComponent, SelectedTag} from "../../Utility/Excalibur/ECS/Comp
 import {MovableComponent} from "../../Utility/Excalibur/Movement/Component/MovableComponent.ts";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {RadianHelper} from "../../Utility/RadianHelper.ts";
+import {HighlightsTargetComponent} from "../Component/HighlightsTargetComponent.ts";
 import {SearchesTargetComponent} from "../Component/SearchesTargetComponent.ts";
 import {EnemyTag, FriendlyTag, VisibleTag} from "./tags.ts";
 
@@ -19,7 +20,7 @@ const graphic = new Circle({
 
 export class Machina extends Actor {
     private visionRadius: number = 250;
-    private fieldOfView: number = RadianHelper.Circle / 3;
+    private fieldOfView: number = RadianHelper.Circle / 6;
 
     public isRunning: boolean = false;
 
@@ -37,7 +38,7 @@ export class Machina extends Actor {
 
         this.graphics.use(graphic);
 
-        this.addComponent(new AngularInertiaComponent(() => 200 * this.calculateMultiplier(2)));
+        this.addComponent(new AngularInertiaComponent(() => 150 * this.calculateMultiplier(2)));
         this.addComponent(new MovableComponent(() => this.speed * this.calculateMultiplier(3)));
         this.addComponent(new ViewpointComponent([
             {
@@ -48,6 +49,8 @@ export class Machina extends Actor {
                 getFalloff: (): number => 0.75,
             }
         ]));
+
+        this.addComponent(new HighlightsTargetComponent());
 
         this.addComponent(new SelectableComponent());
 
