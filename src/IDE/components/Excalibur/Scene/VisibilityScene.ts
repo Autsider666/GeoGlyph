@@ -1,11 +1,13 @@
-import {Actor, Circle, Random, Rectangle, Scene, Vector} from "excalibur";
-import {SelectionAreaHandler} from "../../../../Utility/Excalibur/InputHandling/Actor/SelectionAreaHandler.ts";
+import {Actor, Random, Rectangle, Scene, Vector} from "excalibur";
+import {Machina} from "../../../../Magitek/Actor/Machina.ts";
+import {EnemySpawnerComponent} from "../../../../Magitek/Component/EnemySpawnerComponent.ts";
+import {EnemySpawnerSystem} from "../../../../Magitek/System/EnemySpawnerSystem.ts";
 import {CommandHandler} from "../../../../Utility/Excalibur/CommandHandling/CommandHandler.ts";
+import {SelectionAreaHandler} from "../../../../Utility/Excalibur/InputHandling/Actor/SelectionAreaHandler.ts";
 import {DirectInputSystem} from "../../../../Utility/Excalibur/InputHandling/System/DirectInputSystem.ts";
 import {FogLayer} from "../../../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
 import {VisibilitySystem} from "../../../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
 import {ColorPalette} from "../../../ColorPalette.ts";
-import {Player} from "../Actor/FieldOfView/Player.ts";
 
 export class VisibilityScene extends Scene {
     private readonly commandHandler: CommandHandler = new CommandHandler();
@@ -14,6 +16,7 @@ export class VisibilityScene extends Scene {
         this.backgroundColor = ColorPalette.backgroundDarkColor;
         this.world.add(VisibilitySystem);
         this.world.add(new DirectInputSystem(this.world, this.commandHandler));
+        this.world.add(new EnemySpawnerSystem(this.world, 1, 300));
     }
 
     onActivate(): void {
@@ -24,26 +27,10 @@ export class VisibilityScene extends Scene {
 
         this.world.add(new SelectionAreaHandler());
 
-        const playerRadius = 10;
-
         const random = new Random();
         for (let dX = 0; dX < 2; dX++) {
             for (let dY = 0; dY < 2; dY++) {
-                const player = new Player({
-                    pos: new Vector(200 + 200 * dX, 200 + 200 * dY),
-                    radius: playerRadius,
-                    // color: ColorPalette.accentLightColor,
-                });
-
-                player.graphics.use(new Circle({
-                    radius: playerRadius,
-                    color: ColorPalette.accentDarkColor,
-
-                    lineWidth: 2,
-                    strokeColor: ColorPalette.accentLightColor,
-                }));
-
-                this.add(player);
+                this.add(new Machina(new Vector(200 + 200 * dX, 200 + 200 * dY)));
             }
         }
 
@@ -65,6 +52,8 @@ export class VisibilityScene extends Scene {
                 lineWidth: 2,
                 strokeColor: ColorPalette.accentLightColor,
             }));
+
+            actor.addComponent(new EnemySpawnerComponent());
 
             this.add(actor);
         }

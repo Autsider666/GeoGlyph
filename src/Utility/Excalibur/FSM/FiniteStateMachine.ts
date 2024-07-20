@@ -1,17 +1,22 @@
-import {Actor} from "excalibur";
-import {State} from "./State.ts";
+export type State<StateTarget> = (param: FiniteStateMachine<StateTarget>, target: StateTarget) => void;
 
-export class FiniteStateMachine {
-    private readonly stateStack: State[] = [];
+export class FiniteStateMachine<StateTarget> {
+    private readonly stateStack: State<StateTarget>[] = [];
 
-    public update(actor: Actor): void {
+    constructor(private readonly fallbackState?: StateTarget) {
+    }
+
+    public update(target: StateTarget): void {
         const state = this.stateStack[0];
         if (state) {
-            state(this, actor);
+            state(this, target);
+        } else if (this.fallbackState !== undefined) {
+            // @ts-expect-error IDE again
+            this.fallbackState(this, target);
         }
     }
 
-    public pushState(state: State): void {
+    public pushState(state: State<StateTarget>): void {
         this.stateStack.push(state);
     }
 

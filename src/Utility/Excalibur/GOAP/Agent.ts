@@ -1,16 +1,15 @@
 import {Queue} from "../../Queue.ts";
-import {FiniteStateMachine} from "../FSM/FiniteStateMachine.ts";
-import {State} from "../FSM/State.ts";
+import {FiniteStateMachine, State} from "../FSM/FiniteStateMachine.ts";
 import {Action} from "./Action.ts";
 import {GoapInterface} from "./GoapInterface.ts";
 import {Planner} from "./Planner.ts";
 import {AgentObject} from "./types.ts";
 
 export class Agent {
-    private readonly stateMachine: FiniteStateMachine = new FiniteStateMachine();
-    private readonly idleState: State;
-    private readonly moveToState: State;
-    private readonly performActionState: State;
+    private readonly stateMachine: FiniteStateMachine<AgentObject> = new FiniteStateMachine<AgentObject>();
+    private readonly idleState: State<AgentObject>;
+    private readonly moveToState: State<AgentObject>;
+    private readonly performActionState: State<AgentObject>;
 
     private readonly availableActions: Set<Action>;
     private currentActions: Queue<Action> = new Queue<Action>();
@@ -42,8 +41,8 @@ export class Agent {
         this.availableActions.delete(action);
     }
 
-    private createIdleState(): State {
-        return (stateMachine: FiniteStateMachine, agent: AgentObject) => {
+    private createIdleState(): State<AgentObject> {
+        return (stateMachine: FiniteStateMachine<AgentObject>, agent: AgentObject) => {
             const worldState = this.dataProvider.getWorldState();
             const goal = this.dataProvider.createGoalState();
 
@@ -60,8 +59,8 @@ export class Agent {
         };
     }
 
-    private createMoveToState(): State {
-        return (stateMachine: FiniteStateMachine) => {
+    private createMoveToState(): State<AgentObject> {
+        return (stateMachine: FiniteStateMachine<AgentObject>) => {
             const action = this.currentActions.peek();
             if (!action) {
                 stateMachine.popState();
@@ -80,8 +79,8 @@ export class Agent {
         };
     }
 
-    private createPerformActionState(): State {
-        return (stateMachine: FiniteStateMachine, agent: AgentObject) => {
+    private createPerformActionState(): State<AgentObject> {
+        return (stateMachine: FiniteStateMachine<AgentObject>, agent: AgentObject) => {
             let action = this.currentActions.peek();
             if (action && action.done) {
                 this.currentActions.dequeue();

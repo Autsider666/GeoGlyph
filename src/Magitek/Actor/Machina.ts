@@ -1,11 +1,23 @@
-import {Actor, ActorArgs, CollisionType, Engine, Keys, Vector} from "excalibur";
-import {AngularInertiaComponent} from "../../../../../Utility/Excalibur/ECS/Component/AngularInertiaComponent.ts";
-import {SelectableComponent} from "../../../../../Utility/Excalibur/ECS/Component/SelectableComponent.ts";
-import {MovableComponent} from "../../../../../Utility/Excalibur/Movement/Component/MovableComponent.ts";
-import {ViewpointComponent} from "../../../../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
-import {RadianHelper} from "../../../../../Utility/RadianHelper.ts";
+import {Actor, Circle, CollisionType, Engine, Keys, Vector} from "excalibur";
+import {ColorPalette} from "../../IDE/ColorPalette.ts";
+import {AngularInertiaComponent} from "../../Utility/Excalibur/ECS/Component/AngularInertiaComponent.ts";
+import {SelectableComponent} from "../../Utility/Excalibur/ECS/Component/SelectableComponent.ts";
+import {MovableComponent} from "../../Utility/Excalibur/Movement/Component/MovableComponent.ts";
+import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
+import {RadianHelper} from "../../Utility/RadianHelper.ts";
+import {SearchesTargetComponent} from "../Component/SearchesTargetComponent.ts";
+import {EnemyTag, FriendlyTag} from "./tags.ts";
 
-export class Player extends Actor {
+const radius = 10;
+const graphic = new Circle({
+    radius: radius,
+    color: ColorPalette.accentDarkColor,
+
+    lineWidth: 2,
+    strokeColor: ColorPalette.accentLightColor,
+});
+
+export class Machina extends Actor {
     private direction: Vector = Vector.Zero;
     private visionRadius: number = 250;
     private fieldOfView: number = RadianHelper.Circle / 3;
@@ -15,11 +27,16 @@ export class Player extends Actor {
     // Stats
     private speed: number = 50;
 
-    constructor(props?: ActorArgs) {
+    constructor(pos: Vector) {
         super({
+            pos,
             collisionType: CollisionType.Passive,
-            ...props,
+            radius,
         });
+
+        this.addTag(FriendlyTag);
+
+        this.graphics.use(graphic);
 
         this.addComponent(new AngularInertiaComponent(() => 200 * (this.isRunning ? 2 : 1)));
         this.addComponent(new MovableComponent(() => this.speed * (this.isRunning ? 3 : 1)));
@@ -28,12 +45,17 @@ export class Player extends Actor {
                 getAngle: (): number => RadianHelper.Circle / 3 * (this.isRunning ? 1.5 : 1),
                 getRange: (): number => 250 / (this.isRunning ? 1.5 : 1),
             }, {
-                getRange: (): number => (props?.radius ?? props?.width ?? props?.height ?? 0) * 3,
+                getRange: (): number => radius * 3,
                 getFalloff: (): number => 0.75,
             }
         ]));
 
         this.addComponent(new SelectableComponent());
+
+        this.addComponent(new SearchesTargetComponent({
+            queryTags: [EnemyTag],
+            maxDistance: 250, // TODO replace with callback
+        }));
     }
 
     onInitialize(engine: Engine): void {

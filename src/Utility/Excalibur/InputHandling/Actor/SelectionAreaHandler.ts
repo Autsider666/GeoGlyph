@@ -12,6 +12,7 @@ import {
     Vector
 } from "excalibur";
 import {ColorPalette} from "../../../../IDE/ColorPalette.ts";
+import {FriendlyTag} from "../../../../Magitek/Actor/tags.ts";
 import {SelectedTag} from "../../ECS/Component/SelectableComponent.ts";
 
 export class SelectionAreaHandler extends Actor {
@@ -72,9 +73,13 @@ export class SelectionAreaHandler extends Actor {
                 }
             }
 
-            this.selectableEntities.forEach(entity => {
+            for (const entity of this.selectableEntities) {
+                if (!entity.hasTag(FriendlyTag)) {
+                    continue;
+                }
+
                 entity.addTag(SelectedTag);
-            });
+            }
 
             this.rectangularCollider.points = [];
             this.rectangularCollider.flagDirty();
