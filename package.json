@@ -18,6 +18,7 @@
     "classnames": "^2.5.1",
     "excalibur": "^0.30.0-alpha.1105",
     "graphology": "^0.25.4",
+    "graphology-shortest-path": "^2.1.0",
     "react": "^18.3.1",
     "react-animate-height": "^3.2.3",
     "react-dom": "^18.3.1",

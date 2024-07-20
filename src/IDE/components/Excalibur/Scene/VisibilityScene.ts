@@ -1,5 +1,5 @@
 import {Actor, Circle, Random, Rectangle, Scene, Vector} from "excalibur";
-import {SelectionAreaHandler} from "../../../../Utility/Excalibur/Actor/SelectionAreaHandler.ts";
+import {SelectionAreaHandler} from "../../../../Utility/Excalibur/InputHandling/Actor/SelectionAreaHandler.ts";
 import {CommandHandler} from "../../../../Utility/Excalibur/CommandHandling/CommandHandler.ts";
 import {DirectInputSystem} from "../../../../Utility/Excalibur/InputHandling/System/DirectInputSystem.ts";
 import {FogLayer} from "../../../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";

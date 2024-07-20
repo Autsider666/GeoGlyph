@@ -11,8 +11,8 @@ import {
     Shape,
     Vector
 } from "excalibur";
-import {ColorPalette} from "../../../IDE/ColorPalette.ts";
-import {SelectedTag} from "../ECS/Component/SelectableComponent.ts";
+import {ColorPalette} from "../../../../IDE/ColorPalette.ts";
+import {SelectedTag} from "../../ECS/Component/SelectableComponent.ts";
 
 export class SelectionAreaHandler extends Actor {
     private readonly graphic: Rectangle;

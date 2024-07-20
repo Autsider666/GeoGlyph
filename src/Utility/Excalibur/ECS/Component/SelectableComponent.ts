@@ -1,6 +1,6 @@
 import {Actor} from "excalibur";
 import {ColorPalette} from "../../../../IDE/ColorPalette.ts";
-import {SelectionMarker} from "../../Actor/SelectionMarker.ts";
+import {SelectionMarker} from "../../InputHandling/Actor/SelectionMarker.ts";
 import {BaseComponent} from "../BaseComponent.ts";
 
 export const SelectedTag: string = 'SELECTED' as const;

@@ -1,5 +1,5 @@
 import {Actor, Circle, Color, Engine} from "excalibur";
-import {ParentIndependentAngle} from "../Rotation/Component/ParentIndipendantAngle.ts";
+import {ParentIndependentAngle} from "../../Rotation/Component/ParentIndipendantAngle.ts";
 
 type SelectionCircleAttributes = {
     color?: Color,
