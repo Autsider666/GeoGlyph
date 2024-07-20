@@ -2,6 +2,7 @@ import {Actor, Random, Rectangle, Scene, Vector} from "excalibur";
 import {Machina} from "../../../../Magitek/Actor/Machina.ts";
 import {EnemySpawnerComponent} from "../../../../Magitek/Component/EnemySpawnerComponent.ts";
 import {EnemySpawnerSystem} from "../../../../Magitek/System/EnemySpawnerSystem.ts";
+import {EnemyVisibilitySystem} from "../../../../Magitek/System/EnemyVisibilitySystem.ts";
 import {CommandHandler} from "../../../../Utility/Excalibur/CommandHandling/CommandHandler.ts";
 import {SelectionAreaHandler} from "../../../../Utility/Excalibur/InputHandling/Actor/SelectionAreaHandler.ts";
 import {DirectInputSystem} from "../../../../Utility/Excalibur/InputHandling/System/DirectInputSystem.ts";
@@ -15,6 +16,7 @@ export class VisibilityScene extends Scene {
     onInitialize(): void {
         this.backgroundColor = ColorPalette.backgroundDarkColor;
         this.world.add(VisibilitySystem);
+        this.world.add(EnemyVisibilitySystem);
         this.world.add(new DirectInputSystem(this.world, this.commandHandler));
         this.world.add(new EnemySpawnerSystem(this.world, 1, 300));
     }
