@@ -12,4 +12,8 @@ export class HasLifetimeComponent extends PreUpdateListeningComponent {
             this.owner?.kill();
         }
     }
+
+    reset(lifetime: number): void {
+        this.remainingLifetime = lifetime;
+    }
 }

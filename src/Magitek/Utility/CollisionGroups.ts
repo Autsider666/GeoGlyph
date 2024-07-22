@@ -1,7 +1,7 @@
-import {CollisionGroupManager} from "excalibur";
+import {CollisionGroup, CollisionGroupManager} from "excalibur";
 import {EnemyTag, FriendlyTag} from "../Actor/tags.ts";
 
-export class CollisionGroups {
-    static readonly Friendly = CollisionGroupManager.create(FriendlyTag);
-    static readonly Enemy = CollisionGroupManager.create(EnemyTag);
-}
+export const CollisionGroups = {
+    Friendly: CollisionGroupManager.create(FriendlyTag),
+    Enemy: CollisionGroupManager.create(EnemyTag),
+} as const satisfies Record<string, CollisionGroup>;

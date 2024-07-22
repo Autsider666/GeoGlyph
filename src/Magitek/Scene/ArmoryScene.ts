@@ -1,11 +1,12 @@
 import {Actor, CollisionType, Scene, Vector} from "excalibur";
 import {ColorPalette} from "../../IDE/ColorPalette.ts";
 import {ArmoryDummy} from "../Actor/ArmoryDummy.ts";
+import {BaseGun} from "../Actor/Equipment/BaseGun.ts";
 import {CollisionGroups} from "../Utility/CollisionGroups.ts";
 
 export class ArmoryScene extends Scene {
     constructor(
-        private readonly weapon: Actor,
+        private readonly weapon: BaseGun,
         private readonly dummy: Actor,
         width: number,
         height: number,
