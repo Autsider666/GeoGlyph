@@ -2,7 +2,7 @@ import {Vector} from "excalibur";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 
 export abstract class BaseMovementComponent extends BaseComponent {
-    constructor(protected getSpeed: ()=>number = ()=>1) {
+    constructor(protected getSpeed: () => number = () => 1) {
         super();
     }
 

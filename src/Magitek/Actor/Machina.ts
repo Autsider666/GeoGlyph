@@ -62,7 +62,7 @@ export class Machina extends Actor {
             maxDistance: 250, // TODO replace with callback
         }));
 
-        this.addChild(new MachineGun(new Vector(radius*2, 0)));
+        this.addChild(new MachineGun(new Vector(radius * 2, 0)));
     }
 
     onInitialize(engine: Engine): void {

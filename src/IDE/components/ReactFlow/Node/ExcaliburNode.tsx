@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {ExcaliburContainer} from "../../Excalibur/ExcaliburContainer.tsx";
+import {ExcaliburContainer} from "../../../../Utility/Excalibur/ExcaliburContainer.tsx";
 import {CustomNode} from "../types.ts";
 
 export const ExcaliburNode = (): ReactElement => {

@@ -49,7 +49,7 @@ export class SelectionAreaHandler extends Actor {
     onInitialize(engine: Engine): void {
         const selectedQuery = engine.currentScene.world.queryTags([SelectedTag]);
 
-        engine.input.pointers.primary.on('down', ({pointerType,button, worldPos}) => {
+        engine.input.pointers.primary.on('down', ({pointerType, button, worldPos}) => {
             if (pointerType !== PointerType.Mouse || button !== 'Left') {
                 return;
             }
@@ -67,7 +67,7 @@ export class SelectionAreaHandler extends Actor {
             this.dragStartPosition = undefined;
             this.graphics.visible = false;
 
-            while(selectedQuery.entities.length !== 0) {
+            while (selectedQuery.entities.length !== 0) {
                 for (const entity of selectedQuery.entities) {
                     entity.removeTag(SelectedTag);
                 }

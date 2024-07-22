@@ -20,7 +20,7 @@ export abstract class BaseComponent extends Component {
 
         if (speed !== undefined || maxDistance !== undefined) {
             direction = direction.normalize();
-            if (speed !== undefined){
+            if (speed !== undefined) {
                 direction = direction.scale(Math.min(speed, maxDistance ?? speed));
             }
         }

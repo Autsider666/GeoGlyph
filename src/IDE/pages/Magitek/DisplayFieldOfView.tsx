@@ -1,11 +1,11 @@
-import {Scene} from "excalibur";
 import {ReactElement} from "react";
-import {ExcaliburContainer} from "../../components/Excalibur/ExcaliburContainer.tsx";
 import {ArenaScene} from "../../../Magitek/Scene/ArenaScene.ts";
+import {ExcaliburContainer} from "../../../Utility/Excalibur/ExcaliburContainer.tsx";
 
-
-const createScene = (): Scene => new ArenaScene();
+const scenes = {
+    'arena': new ArenaScene(),
+};
 
 export const DisplayFieldOfView = (): ReactElement => {
-    return <ExcaliburContainer createScene={createScene}/>;
+    return <ExcaliburContainer scene="arena" scenes={scenes}/>;
 };
