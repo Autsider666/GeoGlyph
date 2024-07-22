@@ -4,11 +4,18 @@ import {ReactElement, useEffect, useRef} from "react";
 type ExcaliburContainerProps = {
     actors?: Actor[],
     createScene?: () => Scene,
+    width?: number,
+    height?: number,
 }
 
 let gameEngine: Engine | undefined = undefined;
 
-export const ExcaliburContainer = ({actors = [], createScene}: ExcaliburContainerProps): ReactElement => {
+export const ExcaliburContainer = ({
+                                       actors = [],
+                                       createScene,
+                                       width = self.innerWidth,
+                                       height = self.innerHeight - 52
+                                   }: ExcaliburContainerProps): ReactElement => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
@@ -24,8 +31,8 @@ export const ExcaliburContainer = ({actors = [], createScene}: ExcaliburContaine
         resetGame();
         const game = new Engine({
             canvasElement: canvasRef.current,
-            width: self.innerWidth,
-            height: self.innerHeight - 52,
+            width,
+            height,
             // displayMode: DisplayMode.FitContainer,
         });
 
@@ -47,7 +54,7 @@ export const ExcaliburContainer = ({actors = [], createScene}: ExcaliburContaine
         gameEngine = game;
 
         return resetGame;
-    }, [actors, createScene]);
+    }, [actors, createScene, height, width]);
 
     return <canvas style={{width: '100%'}} ref={canvasRef}></canvas>;
 };

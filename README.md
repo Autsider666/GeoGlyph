@@ -32,7 +32,7 @@ Got mesmerized by [the beautiful video by Argonaut](https://www.youtube.com/watc
 ### Libraries
 - [Excalibur](https://excaliburjs.com/)
 
-## [(Directional) Field of View with Fog of war](src/IDE/pages/DisplayFieldOfView.tsx)
+## [(Directional) Field of View with Fog of war](src/IDE/pages/Magitek/DisplayFieldOfView.tsx)
 Woke up with a way to implement this, having failed at implementing it multiple times using Excalibur.
 
 ### Ideas

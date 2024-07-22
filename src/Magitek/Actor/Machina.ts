@@ -7,6 +7,8 @@ import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/V
 import {RadianHelper} from "../../Utility/RadianHelper.ts";
 import {HighlightsTargetComponent} from "../Component/HighlightsTargetComponent.ts";
 import {SearchesTargetComponent} from "../Component/SearchesTargetComponent.ts";
+import {CollisionGroups} from "../Utility/CollisionGroups.ts";
+import {MachineGun} from "./Equipment/MachineGun.ts";
 import {EnemyTag, FriendlyTag, VisibleTag} from "./tags.ts";
 
 const radius = 10;
@@ -30,8 +32,9 @@ export class Machina extends Actor {
     constructor(pos: Vector) {
         super({
             pos,
-            collisionType: CollisionType.Passive,
             radius,
+            collisionType: CollisionType.Passive,
+            collisionGroup: CollisionGroups.Friendly,
         });
 
         this.addTag(FriendlyTag);
@@ -58,6 +61,8 @@ export class Machina extends Actor {
             queryTags: [EnemyTag, VisibleTag],
             maxDistance: 250, // TODO replace with callback
         }));
+
+        this.addChild(new MachineGun(new Vector(radius*2, 0)));
     }
 
     onInitialize(engine: Engine): void {

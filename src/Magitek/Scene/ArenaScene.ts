@@ -1,16 +1,16 @@
 import {Actor, Random, Rectangle, Scene, Vector} from "excalibur";
-import {Machina} from "../../../../Magitek/Actor/Machina.ts";
-import {EnemySpawnerComponent} from "../../../../Magitek/Component/EnemySpawnerComponent.ts";
-import {EnemySpawnerSystem} from "../../../../Magitek/System/EnemySpawnerSystem.ts";
-import {EnemyVisibilitySystem} from "../../../../Magitek/System/EnemyVisibilitySystem.ts";
-import {CommandHandler} from "../../../../Utility/Excalibur/CommandHandling/CommandHandler.ts";
-import {SelectionAreaHandler} from "../../../../Utility/Excalibur/InputHandling/Actor/SelectionAreaHandler.ts";
-import {DirectInputSystem} from "../../../../Utility/Excalibur/InputHandling/System/DirectInputSystem.ts";
-import {FogLayer} from "../../../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
-import {VisibilitySystem} from "../../../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
-import {ColorPalette} from "../../../ColorPalette.ts";
+import {Machina} from "../Actor/Machina.ts";
+import {EnemySpawnerComponent} from "../Component/EnemySpawnerComponent.ts";
+import {EnemySpawnerSystem} from "../System/EnemySpawnerSystem.ts";
+import {EnemyVisibilitySystem} from "../System/EnemyVisibilitySystem.ts";
+import {CommandHandler} from "../../Utility/Excalibur/CommandHandling/CommandHandler.ts";
+import {SelectionAreaHandler} from "../../Utility/Excalibur/InputHandling/Actor/SelectionAreaHandler.ts";
+import {DirectInputSystem} from "../../Utility/Excalibur/InputHandling/System/DirectInputSystem.ts";
+import {FogLayer} from "../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
+import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
+import {ColorPalette} from "../../IDE/ColorPalette.ts";
 
-export class VisibilityScene extends Scene {
+export class ArenaScene extends Scene {
     private readonly commandHandler: CommandHandler = new CommandHandler();
 
     onInitialize(): void {

@@ -1,10 +1,11 @@
 import {RouteObject} from "react-router-dom";
 import {FasIconType} from "../components/Bulma/FasIcon.tsx";
-import {DisplayFieldOfView} from "../pages/DisplayFieldOfView.tsx";
 import {DisplayGraph} from "../pages/DisplayGraph.tsx";
 import {DisplayProceduralAnimation} from "../pages/DisplayProceduralAnimation.tsx";
 import {DisplayReactFlow} from "../pages/DisplayReactFlow.tsx";
 import Home from "../pages/Home.tsx";
+import {DisplayArmory} from "../pages/Magitek/DisplayArmory.tsx";
+import {DisplayFieldOfView} from "../pages/Magitek/DisplayFieldOfView.tsx";
 
 type Route = {
     menu?: {
@@ -55,5 +56,13 @@ export const Routes: Route[] = [
         },
         path: 'shadows',
         element: <DisplayFieldOfView/>
+    },
+    {
+        menu: {
+            name: 'Armory',
+            type: 'start',
+        },
+        path: 'armory',
+        element: <DisplayArmory/>
     },
 ];
