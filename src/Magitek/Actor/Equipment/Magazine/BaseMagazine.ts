@@ -17,7 +17,6 @@ export abstract class BaseMagazine {
     private readonly _size: number;
     private bullets: BaseBullet[] = [];
     private bulletIndex: number = 0;
-    private hits: number = 0;
     private _reloadTime: number = 0;
 
     public readonly events: EventEmitter<Events> = new EventEmitter<Events>();
@@ -70,10 +69,6 @@ export abstract class BaseMagazine {
                 }
 
                 this.events.emit('bulletDeath', bullet.hit);
-
-                if (bullet.hit) {
-                    this.hits++;
-                }
 
                 const parent = bullet.parent;
                 if (parent === null) {

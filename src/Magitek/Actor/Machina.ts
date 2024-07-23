@@ -8,7 +8,8 @@ import {RadianHelper} from "../../Utility/RadianHelper.ts";
 import {HighlightsTargetComponent} from "../Component/HighlightsTargetComponent.ts";
 import {SearchesTargetComponent} from "../Component/SearchesTargetComponent.ts";
 import {CollisionGroups} from "../Utility/CollisionGroups.ts";
-import {OldMachineGun} from "./Equipment/OldMachineGun.ts";
+import {MachineGun} from "./Equipment/MachineGun.ts";
+import {RegularMagazine} from "./Equipment/Magazine/RegularMagazine.ts";
 import {EnemyTag, FriendlyTag, VisibleTag} from "./tags.ts";
 
 const radius = 10;
@@ -62,7 +63,7 @@ export class Machina extends Actor {
             maxDistance: 250, // TODO replace with callback
         }));
 
-        this.addChild(new OldMachineGun(new Vector(radius * 2, 0)));
+        this.addChild(new MachineGun('Friendly', new RegularMagazine()));
     }
 
     onInitialize(engine: Engine): void {

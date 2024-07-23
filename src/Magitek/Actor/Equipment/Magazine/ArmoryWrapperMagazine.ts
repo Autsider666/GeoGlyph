@@ -6,6 +6,7 @@ import {BaseMagazine, Events} from "./BaseMagazine.ts";
 
 export class ArmoryWrapperMagazine extends BaseMagazine {
     public readonly events: EventEmitter<Events>;
+    private readonly hits: boolean[] = [];
 
     constructor(private readonly magazine: BaseMagazine) {
         super({
@@ -13,6 +14,13 @@ export class ArmoryWrapperMagazine extends BaseMagazine {
         });
 
         this.events = magazine.events;
+
+        this.events.on('bulletDeath', (target) => {
+            this.hits.push(target !== undefined);
+            while (this.hits.length > this.size) {
+                this.hits.splice(0, 1);
+            }
+        });
     }
 
     getMagazine(): BaseMagazine {
@@ -27,7 +35,7 @@ export class ArmoryWrapperMagazine extends BaseMagazine {
         return this.magazine.reloadTime;
     }
 
-    set reloadTime(reloadTime:number) {
+    set reloadTime(reloadTime: number) {
         this.magazine.reloadTime = reloadTime;
     }
 
@@ -49,5 +57,21 @@ export class ArmoryWrapperMagazine extends BaseMagazine {
 
     override bind(gun: BaseGun): void {
         this.magazine.bind(gun);
+    }
+
+    getStats(): {
+        maxBullets: number,
+        remainingBullets: number,
+        hits: number,
+        accuracy: number,
+    } {
+        const hits = this.hits.filter(hit => hit).length;
+
+        return {
+            accuracy: this.hits.length === 0 ? 0 : hits / this.hits.length * 100,
+            hits,
+            maxBullets: this.size,
+            remainingBullets: this.count,
+        };
     }
 }

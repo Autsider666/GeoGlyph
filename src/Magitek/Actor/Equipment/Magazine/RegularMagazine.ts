@@ -6,7 +6,7 @@ import {BaseMagazine} from "./BaseMagazine.ts";
 export class RegularMagazine extends BaseMagazine {
     constructor() {
         super({
-            size: 60,
+            size: 100,
         });
     }
 

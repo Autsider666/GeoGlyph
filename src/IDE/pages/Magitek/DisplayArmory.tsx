@@ -54,33 +54,19 @@ export const DisplayArmory = (): ReactElement => {
     const [distance, setDistance] = useState(defaultDummyDistance);
     const [position, setPosition] = useState(10);
     const [speed, setSpeed] = useState(defaultDummySpeed);
-    const [hits, setHits] = useState(0);
-    const [ammoStats, setAmmoStats] = useState({
-        total: ammo.size,
-        current: ammo.count,
-    });
+    const [ammoStats, setAmmoStats] = useState(ammo.getStats());
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setAmmoStats({total: ammo.size, current: ammo.count});
+            setAmmoStats(ammo.getStats());
             setPosition(Math.round(armoryDummy.pos.y));
-
-            if (ammoStats.current === ammo.count) {
-                setHits(0);
-            }
         }, 100);
 
-        const subscription = ammo.events.on('bulletDeath', (target) => {
-            if (target !== undefined) {
-                setHits(hits + 1);
-            }
-        });
 
         return (): void => {
             clearInterval(interval);
-            subscription.close();
         };
-    }, [ammoStats, hits]);
+    }, [ammoStats]);
 
     return <div className="section">
         <div className="container is-fluid">
@@ -89,15 +75,15 @@ export const DisplayArmory = (): ReactElement => {
         <progress
             className={classNames({
                 progress: true,
-                'is-success': ammoStats.current / ammoStats.total > 0.25 && ammo.reloadTime <= 0,
-                'is-warning': ammoStats.current / ammoStats.total <= 0.25 && ammo.reloadTime <= 0,
+                'is-success': ammoStats.remainingBullets / ammoStats.maxBullets > 0.25 && ammo.reloadTime <= 0,
+                'is-warning': ammoStats.remainingBullets / ammoStats.maxBullets <= 0.25 && ammo.reloadTime <= 0,
                 'is-info': ammo.reloadTime > 0,
             })}
 
-            value={ammo.reloadTime <= 0 ? ammoStats.current : 2000 - ammo.reloadTime}
-            max={ammo.reloadTime <= 0 ? ammoStats.total : 2000}
+            value={ammo.reloadTime <= 0 ? ammoStats.remainingBullets : 2000 - ammo.reloadTime}
+            max={ammo.reloadTime <= 0 ? ammoStats.maxBullets : 2000}
         ></progress>
-        <div>Accuracy: {hits}/{ammoStats.total} = {(hits / ammoStats.total * 100).toFixed(2)}%</div>
+        <div>Accuracy: {(ammoStats.accuracy).toFixed(2)}%</div>
         <div className="block">
             <div className="field">
                 <label className="label">

@@ -1,4 +1,4 @@
-import {CollisionGroups} from "../../../Utility/CollisionGroups.ts";
+import {CollisionGroupType} from "../../../Utility/CollisionGroups.ts";
 
 type Attributes = {
     range: number,
@@ -6,7 +6,7 @@ type Attributes = {
     lifetime: number,
     rateOfFire: number,
     fieldOfView: number,
-    collisionGroup?: keyof typeof CollisionGroups
+    collisionGroup?: CollisionGroupType
 };
 
 export class BulletAttributes {
@@ -55,7 +55,7 @@ export class BulletAttributes {
         return this.attributes.fieldOfView;
     }
 
-    get collisionGroup(): keyof typeof CollisionGroups | undefined {
+    get collisionGroup(): CollisionGroupType | undefined {
         return this.attributes.collisionGroup;
     }
 }
