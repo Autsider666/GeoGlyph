@@ -84,4 +84,52 @@ export class RadianHelper {
 
         return angle;
     }
+
+    public static orderClockwise(center: Vector, points: Vector[]): Vector[] {
+        return points.sort((a, b): number => {
+            const angleA = a.sub(center).toAngle();
+            const angleB = b.sub(center).toAngle();
+
+            if (angleA === angleB) {
+                return 0;
+            }
+
+            return angleA < angleB ? -1 : 1;
+        });
+    }
+
+    // Works well for eyes (or turrets?) following a target
+    public static calculateTangents(viewPoint: Vector, centerCircle: Vector, radiusCircle: number, maxDistance: number): [Vector, Vector] | [Vector] | undefined {
+        const {x, y} = viewPoint;
+
+        const dx = x - centerCircle.x;
+        const dy = y - centerCircle.y;
+        const dr2 = dx * dx + dy * dy;
+
+        if (dr2 <= radiusCircle * radiusCircle) {
+            return undefined; // Viewpoint is inside or on the circle
+        }
+
+        const D = Math.sqrt(dr2 - radiusCircle * radiusCircle);
+        const a = radiusCircle * radiusCircle / dr2;
+        const b = radiusCircle * D / dr2;
+
+        // Calculate tangent points
+        const tangent1 = new Vector(a * dx + b * dy + centerCircle.x, a * dy - b * dx + centerCircle.y);
+        const tangent2 = new Vector(a * dx - b * dy + centerCircle.x, a * dy + b * dx + centerCircle.y);
+
+        // Check if tangents are within maxDistance from viewpoint
+        const distToTangent1 = Math.sqrt((tangent1.x - x) * (tangent1.x - x) + (tangent1.y - y) * (tangent1.y - y));
+        const distToTangent2 = Math.sqrt((tangent2.x - x) * (tangent2.x - x) + (tangent2.y - y) * (tangent2.y - y));
+
+        if (distToTangent1 <= maxDistance && distToTangent2 <= maxDistance) {
+            return [tangent1, tangent2];
+        } else if (distToTangent1 <= maxDistance) {
+            return [tangent1];
+        } else if (distToTangent2 <= maxDistance) {
+            return [tangent2];
+        } else {
+            return undefined; // No valid tangents within maxDistance
+        }
+    }
 }

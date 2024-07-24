@@ -23,4 +23,8 @@ export class FogLayer extends Actor {
             }),
         ));
     }
+
+    // onPreUpdate(engine: Engine): void {
+    //     this.pos = engine.screenToWorldCoordinates(Vector.Zero);
+    // }
 }

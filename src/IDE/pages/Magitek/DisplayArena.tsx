@@ -6,6 +6,6 @@ const scenes = {
     'arena': new ArenaScene(),
 };
 
-export const DisplayFieldOfView = (): ReactElement => {
+export const DisplayArena = (): ReactElement => {
     return <ExcaliburContainer scene="arena" scenes={scenes}/>;
 };

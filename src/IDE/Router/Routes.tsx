@@ -5,7 +5,8 @@ import {DisplayProceduralAnimation} from "../pages/DisplayProceduralAnimation.ts
 import {DisplayReactFlow} from "../pages/DisplayReactFlow.tsx";
 import Home from "../pages/Home.tsx";
 import {DisplayArmory} from "../pages/Magitek/DisplayArmory.tsx";
-import {DisplayFieldOfView} from "../pages/Magitek/DisplayFieldOfView.tsx";
+import {DisplayArena} from "../pages/Magitek/DisplayArena.tsx";
+import {DisplayExperimental} from "../pages/Magitek/DisplayExperimental.tsx";
 
 type Route = {
     menu?: {
@@ -51,18 +52,26 @@ export const Routes: Route[] = [
     },
     {
         menu: {
-            name: 'Shadows',
+            name: 'Arena',
             type: 'start',
         },
-        path: 'shadows',
-        element: <DisplayFieldOfView/>
+        path: 'magitek/arena',
+        element: <DisplayArena/>
     },
     {
         menu: {
             name: 'Armory',
             type: 'start',
         },
-        path: 'armory',
+        path: 'magitek/armory',
         element: <DisplayArmory/>
+    },
+    {
+        menu: {
+            name: 'Experimental',
+            type: 'start',
+        },
+        path: 'magitek/experimental',
+        element: <DisplayExperimental/>
     },
 ];
