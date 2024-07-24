@@ -7,5 +7,8 @@ const scenes = {
 };
 
 export const DisplayExperimental = (): ReactElement => {
-    return <ExcaliburContainer scene="experimental" scenes={scenes}/>;
+    return <ExcaliburContainer scene="experimental" scenes={scenes} options={{
+        width: 700,
+        height: 700,
+    }}/>;
 };

@@ -6,6 +6,7 @@ import {DisplayReactFlow} from "../pages/DisplayReactFlow.tsx";
 import Home from "../pages/Home.tsx";
 import {DisplayArmory} from "../pages/Magitek/DisplayArmory.tsx";
 import {DisplayArena} from "../pages/Magitek/DisplayArena.tsx";
+import {DisplayDebug} from "../pages/Magitek/DisplayDebug.tsx";
 import {DisplayExperimental} from "../pages/Magitek/DisplayExperimental.tsx";
 
 type Route = {
@@ -73,5 +74,13 @@ export const Routes: Route[] = [
         },
         path: 'magitek/experimental',
         element: <DisplayExperimental/>
+    },
+    {
+        menu: {
+            name: 'Debug',
+            type: 'start',
+        },
+        path: 'debug',
+        element: <DisplayDebug/>
     },
 ];

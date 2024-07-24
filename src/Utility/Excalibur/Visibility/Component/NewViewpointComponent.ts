@@ -2,7 +2,7 @@ import {
     Actor,
     Circle,
     CircleCollider,
-    Color,
+    Color, CompositeCollider,
     Engine,
     GraphicsGroup,
     Line,
@@ -68,16 +68,22 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
 
                 const visibleEdges: Edge[] = this.getVisibleEdges(engine, owner, visionBlocker, edges, tempCollisionSolutionCache);
 
-                this.debugDraw(engine, owner, visibleEdges);
+                // this.debugDraw(engine, owner, visibleEdges);
 
                 // this.initializedEntities.add(visionBlocker.id);
 
                 this.visibleEdges = this.visibleEdges.concat(visibleEdges);
             }
 
+            //TODO add border edges
+            // for (const worldEdge of engine.screen.getWorldBounds().getPoints()) {
+            //     edges.push(worldEdge);
+            //     console.log(worldEdge);
+            // }
+
             this.visibleEdges = this.visibleEdges.sort((a: Edge, b: Edge) => {
                 if (a.angle === b.angle) {
-                    // return 0;
+                    return 0;
                     if (a.distance === b.distance) {
                         throw new Error('Ok, so we need edge filtering');
                     }
@@ -205,6 +211,8 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                     ctx.fill();
                 } else if (collider instanceof PolygonCollider) {
                     CanvasHelper.drawPolygon(ctx, collider.bounds.getPoints());
+                } else if (collider instanceof CompositeCollider) {
+                    continue; //TODO draw composite collider?
                 } else {
                     console.log('Unimplemented Collider type: ', collider);
                 }
@@ -221,6 +229,16 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
         if (collider instanceof CircleCollider) {
             return RadianHelper.calculateTangents(owner.pos, target.pos, collider.radius, 10000) ?? [];
         }
+
+        // if (collider instanceof CompositeCollider) {
+        //     const bounds = collider.bounds;
+        //     const horizontalOffset = bounds.left;
+        //     const verticalOffset = bounds.top;
+        //
+        //     const edges = bounds.getPoints().map(point => point.cl);
+        //
+        //     return RadianHelper.calculateTangents(owner.pos, target.pos, collider.radius, 10000) ?? [];
+        // }
 
         return collider.bounds.getPoints();
     }
@@ -298,7 +316,8 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
             if (hit && hit.collider.owner !== blocker) {
                 // Not the same as blocker
 
-                const contacts = hit.collider.collide(blocker.collider.get());
+                const blockerCollider = blocker.collider.get();
+                const contacts = blockerCollider instanceof CompositeCollider ? blockerCollider.collide(hit.collider) : hit.collider.collide(blockerCollider);
                 for (const contact of contacts) {
                     if (tempCollisionSolutionCache.includes(contact.id)) {
                         continue;
@@ -306,7 +325,7 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
 
                     tempCollisionSolutionCache.push(contact.id);
 
-                    visibleEdges.push(this.toEdge(contact.info.point, owner, blocker, null, Color.Pink));
+                    // visibleEdges.push(this.toEdge(contact.info.point, owner, blocker, null, Color.Pink)); //FIXME uncomment
                 }
 
                 if (contacts.length === 0) {
