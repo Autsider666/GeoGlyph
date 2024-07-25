@@ -24,7 +24,7 @@ type Edge = {
 } & VisibilityEdge;
 
 export class NewViewpointComponent extends BaseComponent implements ViewPoint {
-    private static defaultAngle: number = RadianHelper.Circle;
+    // private static defaultAngle: number = RadianHelper.Circle;
     private static defaultRange: number = Infinity;
     private static defaultFalloff: number = 0;
     private readonly initializedEntities = new Set<number>(); //TODO remove
@@ -39,7 +39,6 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
     }
 
     onAdd(owner: Actor): void {
-
         owner.on('preupdate', ({engine}) => {
             if (this.previousPos === undefined) {
                 this.visibleEdges.length = 0;
@@ -60,17 +59,12 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
 
             this.visibleEdges = [];
             const visionBlockers = engine.currentScene.world.query([BlockVisibilityComponent]).entities;
-            // const tempCollisionSolutionCache: string[] = []; //FIXME fix asap
             for (const visionBlocker of visionBlockers) {
                 if (visionBlocker.id === owner.id || !(visionBlocker instanceof Actor) || this.initializedEntities.has(visionBlocker.id)) {
                     continue;
                 }
 
-                // const edges = this.getEdges(owner, visionBlocker);
-
-                // const visibleEdges: Edge[] = this.getVisibleEdges(engine, owner, visionBlocker, edges, tempCollisionSolutionCache);
-
-                const visibleEdges = visionBlocker.get(BlockVisibilityComponent).getEdges(owner, true);
+                const visibleEdges = visionBlocker.get(BlockVisibilityComponent).getEdges(owner, false);
 
                 for (const visibleEdge of visibleEdges) {
                     if (visibleEdge.marker) {
@@ -78,14 +72,8 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                     }
                 }
 
-                // this.debugDraw(engine, owner, visibleEdges);
-
-                // this.initializedEntities.add(visionBlocker.id);
-
                 this.visibleEdges = this.visibleEdges.concat(visibleEdges);
             }
-
-            // console.log(this.visibleEdges.map(edge => ({id: edge.object.name, extendable: edge.extendable})));
 
             this.visibleEdges = this.visibleEdges.sort((a: Edge, b: Edge) => {
                 if (a.angle === b.angle) {
@@ -144,38 +132,37 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                 getFalloff()
             );
 
-            ctx.fill(this.generateVisibilityPolygon(owner, range));
+            ctx.fill(this.generateVisibilityPolygon(owner));
+        }
+    }
 
-            for (const visibleActor of ArrayHelper.onlyUnique(this.visibleEdges.map(edge => edge.object))) {
-                const collider = visibleActor.collider.get();
-                if (collider === undefined) {
-                    throw new Error('Hmmm, should never happen after the filtering');
-                }
+    public drawVisibleActors(ctx: CanvasRenderingContext2D):void {
+        for (const visibleActor of ArrayHelper.onlyUnique(this.visibleEdges.map(edge => edge.object))) {
+            const collider = visibleActor.collider.get();
+            if (collider === undefined) {
+                throw new Error('Hmmm, should never happen after the filtering');
+            }
 
-                if (collider instanceof CircleCollider) {
-                    ctx.arc(
-                        visibleActor.pos.x,
-                        visibleActor.pos.y,
-                        collider.radius,
-                        0,
-                        RadianHelper.Circle,
-                    );
-                    ctx.fill();
-                } else if (collider instanceof PolygonCollider) {
-                    CanvasHelper.drawPolygon(ctx, collider.bounds.getPoints());
-                } else if (collider instanceof CompositeCollider) {
-                    continue; //TODO draw composite collider?
-                } else {
-                    console.log('Unimplemented Collider type: ', collider);
-                }
+            if (collider instanceof CircleCollider) {
+                ctx.arc(
+                    visibleActor.pos.x,
+                    visibleActor.pos.y,
+                    collider.radius,
+                    0,
+                    RadianHelper.Circle,
+                );
+                ctx.fill();
+            } else if (collider instanceof PolygonCollider) {
+                CanvasHelper.drawPolygon(ctx, collider.bounds.getPoints());
+            } else if (collider instanceof CompositeCollider) {
+                continue; //TODO draw composite collider?
+            } else {
+                console.log('Unimplemented Collider type: ', collider);
             }
         }
     }
 
-    private generateVisibilityPolygon(owner: Actor, range: number): Path2D {
-        console.log('=== Start ===');
-        // const target: string = 'Top Center';
-        const target: string = 'Top Left';
+    private generateVisibilityPolygon(owner: Actor): Path2D {
 
         let extraEdge: Vector | undefined;
         const polygon = new Path2D();
@@ -194,9 +181,10 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                     isHorizontal: edge.collider.bounds.top === edge.coordinate.y || edge.collider.bounds.bottom === edge.coordinate.y,
                     isVertical: edge.collider.bounds.left === edge.coordinate.x || edge.collider.bounds.right === edge.coordinate.x,
                 };
-                if (edge.object.name === target)
-                    console.log(`=== Extendable ${edge.coordinate} ===`);
-                const directionToRange = edge.coordinate.sub(owner.pos).normalize().scale(range);
+                const directionToRange = edge.coordinate.sub(owner.pos);
+                // const directionToRange = edge.coordinate.sub(owner.pos).normalize().scale(range);
+                // const directionToRange = Vector.fromAngle(edge.angle); // Glitches while moving
+
 
                 const hits = this.rayCast(owner.pos, directionToRange, {
                     // maxDistance: range + 1,
@@ -212,30 +200,21 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                             isHorizontal: hit.collider.bounds.top === hit.point.y || hit.collider.bounds.bottom === hit.point.y,
                             isVertical: hit.collider.bounds.left === hit.point.x || hit.collider.bounds.right === hit.point.x,
                         };
-                        if (edge.object.name === target) {
-                            console.log('--- Hit ---');
-                            console.log(hit.collider.owner.name, hit.distance, hit, !edge.coordinate.equals(hit.point));
-                            // console.log(hit.normal.dot(hit.point.sub(owner.pos).normalize()));
-                            if (hit.collider.owner.name !== edge.object.name) {
-                                console.log({
-                                    horizontal: edge.coordinate.y === hit.point.y,
-                                    vertical: edge.coordinate.x === hit.point.x,
-                                });
-                            }
+
+                        // Check if ray is horizontal to see if it should go past it
+                        if (edge.coordinate.y === hit.point.y && (edgePos.isTop && hitPos.isTop || edgePos.isBottom && hitPos.isBottom)) {
+                            return false;
                         }
 
-                        // if (edgePos.isTop && hitPos.isBottom) {
-                        //     return true;
-                        // }
+                        // Check if ray is vertical to see if it should go past it
+                        if (edge.coordinate.x === hit.point.x && (edgePos.isLeft && hitPos.isLeft || edgePos.isRight && hitPos.isRight)) {
+                            return false;
+                        }
 
-                        return !hitPos.isHorizontal || !hitPos.isVertical;
+                        return true;
                     },
-                    searchAllColliders: true,
+                    searchAllColliders: false,
                 });
-
-                if (edge.object.name === target) {
-                    console.log(hits);
-                }
 
                 const extendedEdge = hits[0]?.point ?? owner.pos.add(directionToRange);
 
@@ -257,191 +236,4 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
 
         return polygon;
     }
-
-// private getEdges(owner: Actor, target: Actor): Vector[] {
-//     const collider = target.collider.get();
-//     if (collider === undefined) {
-//         return [];
-//     }
-//
-//     if (collider instanceof CircleCollider) {
-//         return RadianHelper.calculateTangents(owner.pos, target.pos, collider.radius, 10000) ?? [];
-//     }
-//
-//     // if (collider instanceof CompositeCollider) {
-//     //     const bounds = collider.bounds;
-//     //     const horizontalOffset = bounds.left;
-//     //     const verticalOffset = bounds.top;
-//     //
-//     //     const edges = bounds.getPoints().map(point => point.cl);
-//     //
-//     //     return RadianHelper.calculateTangents(owner.pos, target.pos, collider.radius, 10000) ?? [];
-//     // }
-//
-//     return collider.bounds.getPoints();
-// }
-//
-// private debugDraw(_: Engine, owner: Actor, edges: Edge[]): void {
-//     const blockerIterator: Record<number, number> = {};
-//     for (const edge of edges) { //FIXME make it work with persistent actors
-//         const blockerId = edge.object.id;
-//         if (blockerIterator[blockerId] === undefined) {
-//             blockerIterator[blockerId] = 0;
-//         }
-//
-//
-//         const coordinate = new Actor({
-//             pos: edge.coordinate.sub(owner.pos),
-//             radius: 5,
-//             color: edge.color ?? Color.Red,
-//         });
-//         coordinate.z = 1;
-//
-//         const group = new GraphicsGroup({
-//             members: [
-//                 {
-//                     graphic: new Circle({
-//                         radius: 4,
-//                         color: edge.color ?? Color.Red,
-//                     }),
-//                     offset: new Vector(-5, -5),
-//                     useBounds: false
-//                 },
-//                 {
-//                     graphic: new Line({
-//                         start: Vector.Zero,
-//                         end: owner.pos.sub(edge.coordinate),
-//                         color: edge.color ?? Color.Yellow,
-//                         thickness: 2,
-//                     }),
-//                     offset: Vector.Zero,
-//                     useBounds: false
-//                 },
-//             ],
-//             useAnchor: false,
-//         });
-//
-//         coordinate.graphics.use(group);
-//         coordinate.addTag(`debugDraw`);
-//         coordinate.addTag(`debugDraw-${blockerId}`);
-//
-//         owner.addChild(coordinate);
-//
-//         // const line = new Actor({pos: edge.pos});
-//         // line.graphics.anchor = Vector.Zero;
-//         // line.graphics.use(new Line({
-//         //     start: Vector.Zero,
-//         //     end: owner.pos.sub(edge.pos),
-//         //     color: Color.Yellow,
-//         //     thickness: 2,
-//         // }));
-//         // coordinate.addChild(line);
-//     }
-// }
-//
-// private getVisibleEdges(engine: Engine, owner: Actor, blocker: Actor, edges: Vector[], tempCollisionSolutionCache: string[]): Edge[] {
-//     const visibleEdges: Edge[] = [];
-//     for (const edge of edges) {
-//         const ray = new Ray(owner.pos, edge.sub(owner.pos));
-//         // const hit = blocker.collider.get().rayCast(ray);
-//         const hits = engine.currentScene.physics.rayCast(ray, {
-//             searchAllColliders: true,
-//             filter: hit => hit.collider.owner.hasTag(BlocksVisibilityTag),
-//             maxDistance: edge.distance(owner.pos) * 2,
-//         });
-//
-//         const hit = hits[0];
-//         if (hit && hit.collider.owner !== blocker) {
-//             // Not the same as blocker
-//
-//             const blockerCollider = blocker.collider.get();
-//             const contacts = blockerCollider instanceof CompositeCollider ? blockerCollider.collide(hit.collider) : hit.collider.collide(blockerCollider);
-//             for (const contact of contacts) {
-//                 if (tempCollisionSolutionCache.includes(contact.id)) {
-//                     continue;
-//                 }
-//
-//                 tempCollisionSolutionCache.push(contact.id);
-//
-//                 // visibleEdges.push(this.toEdge(contact.info.point, owner, blocker, null, Color.Pink)); //FIXME uncomment
-//             }
-//
-//             if (contacts.length === 0) {
-//                 if (owner.pos.distance(edge) < owner.pos.distance(hit.point)) {
-//                     visibleEdges.push(this.toEdge(edge, owner, blocker, hit.point, Color.Orange));
-//                     // visibleEdges.push(this.toEdge(hit.point, owner, blocker, Color.White));
-//                 } else { // Something closer in the way
-//                     // visibleEdges.push(this.toEdge(hit.point, owner, blocker, undefined, Color.Black));
-//                 }
-//             }
-//
-//             continue;
-//         }
-//
-//         if (hit && hit.distance + 1 < edge.distance(owner.pos)) {
-//             // Same as blocker, but not visible
-//
-//             // visibleEdges.push(this.toEdge(edge, owner, blocker, Color.White));
-//             continue;
-//         }
-//
-//
-//         const pos: Vector = hit?.point ?? edge;
-//
-//         if (pos.x === Infinity || pos.x === -Infinity) {
-//             continue;
-//         }
-//
-//         const extendedEdge = !hit || blocker.collider.get() instanceof CircleCollider;
-//
-//         visibleEdges.push(this.toEdge(pos, owner, blocker, extendedEdge, extendedEdge ? Color.DarkGray : Color.Red));
-//     }
-//
-//     if (visibleEdges.length === 0) {
-//         return [];
-//     }
-//
-//     let minEdge: Edge | undefined;
-//     let maxEdge: Edge | undefined;
-//     for (const edge of visibleEdges) {
-//         if (edge.angle < (minEdge?.angle ?? Infinity)) {
-//             minEdge = edge;
-//         }
-//
-//         if (edge.angle > (maxEdge?.angle ?? -Infinity)) {
-//             maxEdge = edge;
-//         }
-//     }
-//
-//     if (!minEdge || !maxEdge) {
-//         throw new Error('Todo');
-//     }
-//
-//     if (minEdge.extendable === false) {
-//         minEdge.extendable = true;
-//         minEdge.color = Color.Black; //FIXME marks non side edges if colliding
-//     }
-//
-//     if (maxEdge.extendable === false) {
-//         maxEdge.extendable = true;
-//         maxEdge.color = Color.Yellow;
-//     }
-//
-//     return visibleEdges;
-// }
-
-// private toEdge(edge: Vector, owner: Actor, blocker: Actor, extend?: boolean | Vector | null, color?: Color): Edge {
-//     return {
-//         angle: edge.sub(owner.pos).toAngle(),
-//         isPolygon: blocker.collider.get() instanceof PolygonCollider, //TODO remove
-//         object: blocker,
-//         coordinate: edge,
-//         distance: owner.pos.distance(edge),
-//         centerDiff: blocker.pos.distance(edge),
-//         extendable: extend !== undefined ? extend : false,// !hit || blocker.collider.get() instanceof CircleCollider,
-//         color,
-//     };
-// }
-
-
 }

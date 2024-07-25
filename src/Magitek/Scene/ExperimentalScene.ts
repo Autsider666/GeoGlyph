@@ -82,8 +82,8 @@ export class ExperimentalScene extends Scene {
 
         const viewPoint = new Actor({
             name: 'Player',
-            x: 100, //300
-            y: 150, //300
+            x: 165, //300
+            y: 100, //300
             radius: 10,
             color: ColorPalette.accentLightColor,
         });
