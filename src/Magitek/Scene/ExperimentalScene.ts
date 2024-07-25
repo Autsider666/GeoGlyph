@@ -80,10 +80,27 @@ export class ExperimentalScene extends Scene {
         }));
         // this.world.add(new ShadowLayer());
 
+        this.add(this.createViewPoint(
+            'Player',
+            new Vector(165,100),
+            // x: 165, //300
+            // y: 100, //300
+        ));
+
+        for (const object of objects) {
+            object.addComponent(new BlockVisibilityComponent());
+            this.add(object);
+        }
+
+        // this.camera.strategy.lockToActor(viewPoint);
+
+        this.createScreenCollider();
+    }
+
+    private createViewPoint(name: string, position: Vector): Actor {
         const viewPoint = new Actor({
-            name: 'Player',
-            x: 165, //300
-            y: 100, //300
+            name,
+            pos: position,
             radius: 10,
             color: ColorPalette.accentLightColor,
         });
@@ -103,16 +120,7 @@ export class ExperimentalScene extends Scene {
         viewPoint.addComponent(new NewViewpointComponent(viewPoints));
         viewPoint.addComponent(new KeyboardControlledComponent(() => 50));
 
-        this.add(viewPoint);
-
-        for (const object of objects) {
-            object.addComponent(new BlockVisibilityComponent());
-            this.add(object);
-        }
-
-        // this.camera.strategy.lockToActor(viewPoint);
-
-        this.createScreenCollider();
+        return viewPoint;
     }
 
     private createScreenCollider(): void {

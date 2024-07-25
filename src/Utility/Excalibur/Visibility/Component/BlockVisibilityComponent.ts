@@ -9,9 +9,10 @@ import {
     PolygonCollider,
     Vector
 } from "excalibur";
+import {CanvasHelper} from "../../../CanvasHelper.ts";
 import {RadianHelper} from "../../../RadianHelper.ts";
 import {VectorHelper} from "../../../VectorHelper.ts";
-import {PreUpdateListeningComponent} from "../../ECS/PreUpdateListeningComponent.ts";
+import {BaseComponent} from "../../ECS/BaseComponent.ts";
 
 export type VisibilityEdge = {
     coordinate: Vector,
@@ -23,7 +24,7 @@ export type VisibilityEdge = {
     marker?: Actor,
 }
 
-export class BlockVisibilityComponent extends PreUpdateListeningComponent {
+export class BlockVisibilityComponent extends BaseComponent {
     private readonly markers = new Map<string, Actor>();
     private readonly usedMarkers: string[] = [];
     private isVisible: boolean = false;
@@ -36,7 +37,10 @@ export class BlockVisibilityComponent extends PreUpdateListeningComponent {
     }
 
     onAdd(owner: Actor): void {
-        super.onAdd(owner);
+        // owner.on('postdraw', () => {
+        //     console.log(false);
+        //     this.isVisible = false;
+        // });
 
         owner.on('postupdate', () => {
             if (this.usedMarkers.length === 0) {
@@ -80,10 +84,6 @@ export class BlockVisibilityComponent extends PreUpdateListeningComponent {
         return this.isVisible;
     }
 
-    onPreUpdate(): void {
-        this.isVisible = false;
-    }
-
     getEdges(viewpoint: Actor, includeMarker: boolean = false): VisibilityEdge[] {
         if (!this.calculateEdges) {
             return [];
@@ -113,6 +113,39 @@ export class BlockVisibilityComponent extends PreUpdateListeningComponent {
         }
 
         return edges;
+    }
+
+    public drawIfVisible(ctx: CanvasRenderingContext2D): void {
+        if (!this.isVisible) {
+            return;
+        }
+
+        this.isVisible = false;
+
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.globalAlpha = 1;
+
+        const collider = this.owner?.collider.get();
+        if (collider === undefined) {
+            throw new Error('Hmmm, should never happen after the filtering');
+        }
+
+        if (collider instanceof CircleCollider) {
+            ctx.arc(
+                collider.center.x,
+                collider.center.y,
+                collider.radius,
+                0,
+                RadianHelper.Circle,
+            );
+            ctx.fill();
+        } else if (collider instanceof PolygonCollider) {
+            CanvasHelper.drawPolygon(ctx, collider.bounds.getPoints());
+        } else if (collider instanceof CompositeCollider) {
+            return; //TODO draw composite collider?
+        } else {
+            console.log('Unimplemented Collider type: ', collider);
+        }
     }
 
     private calculateEdgesForCircle(viewpoint: Actor, collider: CircleCollider, owner: Actor): VisibilityEdge[] {
@@ -221,16 +254,6 @@ export class BlockVisibilityComponent extends PreUpdateListeningComponent {
             maxDistance: distance + this.tolerance,
             searchAllColliders: true,
         })[0];
-
-        // if (this.owner?.name === 'Screen collider') {
-        //     console.log(this.owner.name, this.owner.pos, edgeCoordinate, hit, collider);
-        //     if (hit) {
-        //         console.log(
-        //             (hit.collider !== collider && hit.collider.composite !== collider) === false,
-        //             Math.abs(distance - hit.distance) <= this.tolerance,
-        //         );
-        //     }
-        // }
 
         if (!hit) {
             return true;

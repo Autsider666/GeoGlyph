@@ -1,7 +1,5 @@
-import {Actor, CircleCollider, Color, CompositeCollider, PolygonCollider, Vector} from "excalibur";
-import {ArrayHelper} from "../../../ArrayHelper.ts";
+import {Actor, Vector} from "excalibur";
 import {CanvasHelper} from "../../../CanvasHelper.ts";
-import {RadianHelper} from "../../../RadianHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
 import {BlockVisibilityComponent, VisibilityEdge} from "./BlockVisibilityComponent.ts";
@@ -12,25 +10,14 @@ type ViewPointData = {
     getFalloff?: () => number,
 }
 
-type Edge = {
-    // coordinate: Vector,
-    // object: Actor,
-    // isPolygon: boolean,
-    // angle: number,
-    // distance: number,
-    // centerDiff: number,
-    // extendable: boolean | Vector | null,
-    color?: Color,
-} & VisibilityEdge;
 
 export class NewViewpointComponent extends BaseComponent implements ViewPoint {
     // private static defaultAngle: number = RadianHelper.Circle;
     private static defaultRange: number = Infinity;
     private static defaultFalloff: number = 0;
     private readonly initializedEntities = new Set<number>(); //TODO remove
-    private previousPos?: Vector;
 
-    private visibleEdges: Edge[] = [];
+    private visibleEdges: VisibilityEdge[] = [];
 
     constructor(
         private readonly viewPoints: ViewPointData[]
@@ -40,17 +27,6 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
 
     onAdd(owner: Actor): void {
         owner.on('preupdate', ({engine}) => {
-            if (this.previousPos === undefined) {
-                this.visibleEdges.length = 0;
-                this.previousPos = owner.pos.clone();
-            }
-
-            if (this.visibleEdges.length > 0 && this.previousPos.equals(owner.pos)) {
-                return;
-            }
-
-            this.previousPos.setTo(owner.pos.x, owner.pos.y);
-
             for (const child of owner.children) {
                 if (child.hasTag('debugDraw')) {
                     child.unparent();
@@ -75,7 +51,7 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                 this.visibleEdges = this.visibleEdges.concat(visibleEdges);
             }
 
-            this.visibleEdges = this.visibleEdges.sort((a: Edge, b: Edge) => {
+            this.visibleEdges = this.visibleEdges.sort((a: VisibilityEdge, b: VisibilityEdge) => {
                 if (a.angle === b.angle) {
                     // console.log(a,b);
                     return 0;
@@ -136,59 +112,39 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
         }
     }
 
-    public drawVisibleActors(ctx: CanvasRenderingContext2D):void {
-        for (const visibleActor of ArrayHelper.onlyUnique(this.visibleEdges.map(edge => edge.object))) {
-            const collider = visibleActor.collider.get();
-            if (collider === undefined) {
-                throw new Error('Hmmm, should never happen after the filtering');
-            }
-
-            if (collider instanceof CircleCollider) {
-                ctx.arc(
-                    visibleActor.pos.x,
-                    visibleActor.pos.y,
-                    collider.radius,
-                    0,
-                    RadianHelper.Circle,
-                );
-                ctx.fill();
-            } else if (collider instanceof PolygonCollider) {
-                CanvasHelper.drawPolygon(ctx, collider.bounds.getPoints());
-            } else if (collider instanceof CompositeCollider) {
-                continue; //TODO draw composite collider?
-            } else {
-                console.log('Unimplemented Collider type: ', collider);
-            }
-        }
-    }
-
     private generateVisibilityPolygon(owner: Actor): Path2D {
-
-        let extraEdge: Vector | undefined;
+        console.log('----------------');
+        let prependableEdge: Vector | undefined;
         const polygon = new Path2D();
         for (const edge of this.visibleEdges) {
-            if (extraEdge) {
-                polygon.lineTo(extraEdge.x, extraEdge.y);
-                extraEdge = undefined;
+            if (prependableEdge) {
+                polygon.lineTo(prependableEdge.x, prependableEdge.y);
+                prependableEdge = undefined;
             }
 
             if (edge.extendable) {
+                if (edge.object.name === 'Top Left') {
+                    console.log(`++++ ${edge.coordinate} ++++`);
+                }
+
                 const edgePos = {
                     isTop: edge.collider.bounds.top === edge.coordinate.y,
                     isBottom: edge.collider.bounds.bottom === edge.coordinate.y,
                     isLeft: edge.collider.bounds.left === edge.coordinate.x,
                     isRight: edge.collider.bounds.right === edge.coordinate.x,
-                    isHorizontal: edge.collider.bounds.top === edge.coordinate.y || edge.collider.bounds.bottom === edge.coordinate.y,
-                    isVertical: edge.collider.bounds.left === edge.coordinate.x || edge.collider.bounds.right === edge.coordinate.x,
                 };
                 const directionToRange = edge.coordinate.sub(owner.pos);
                 // const directionToRange = edge.coordinate.sub(owner.pos).normalize().scale(range);
                 // const directionToRange = Vector.fromAngle(edge.angle); // Glitches while moving
 
-
                 const hits = this.rayCast(owner.pos, directionToRange, {
                     // maxDistance: range + 1,
                     filter: hit => {
+                        if (edge.object.name === 'Top Left') {
+                            console.log(hit.point, hit.collider.owner.name, hit);
+                        }
+
+                        //TODO exclude Screen boundary so visibility is still calculated when used is offscreen?
                         if (!hit.collider.owner.has(BlockVisibilityComponent) || edge.coordinate.equals(hit.point)) {
                             return false;
                         }
@@ -197,8 +153,6 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                             isBottom: hit.collider.bounds.bottom === hit.point.y,
                             isLeft: hit.collider.bounds.left === hit.point.x,
                             isRight: hit.collider.bounds.right === hit.point.x,
-                            isHorizontal: hit.collider.bounds.top === hit.point.y || hit.collider.bounds.bottom === hit.point.y,
-                            isVertical: hit.collider.bounds.left === hit.point.x || hit.collider.bounds.right === hit.point.x,
                         };
 
                         // Check if ray is horizontal to see if it should go past it
@@ -213,25 +167,32 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
 
                         return true;
                     },
-                    searchAllColliders: false,
+                    searchAllColliders: true,
                 });
 
-                const extendedEdge = hits[0]?.point ?? owner.pos.add(directionToRange);
+                if (edge.object.name === 'Top Left') {
+                    console.log(edge.coordinate, hits);
+                }
 
-                const centerAngle = edge.object.pos.sub(owner.pos).toAngle();
-                const angularDifference = centerAngle - edge.angle;
-                if (Math.abs(angularDifference) < Math.PI ? angularDifference > 0 : angularDifference < 0) {
-                    polygon.lineTo(extendedEdge.x, extendedEdge.y);
+                if (hits.length > 0) {
+                    const extendedEdge = hits[0]?.point;// ?? owner.pos.add(directionToRange);
+                    const centerAngle = edge.object.pos.sub(owner.pos).toAngle();
+                    const angularDifference = centerAngle - edge.angle;
+                    if (Math.abs(angularDifference) < Math.PI ? angularDifference > 0 : angularDifference < 0) {
+                        polygon.lineTo(extendedEdge.x, extendedEdge.y);
+                    } else {
+                        prependableEdge = extendedEdge;
+                    }
                 } else {
-                    extraEdge = extendedEdge;
+                    console.log('No hits?');
                 }
             }
 
             polygon.lineTo(edge.coordinate.x, edge.coordinate.y);
         }
 
-        if (extraEdge) {
-            polygon.lineTo(extraEdge.x, extraEdge.y);
+        if (prependableEdge) {
+            polygon.lineTo(prependableEdge.x, prependableEdge.y);
         }
 
         return polygon;

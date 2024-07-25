@@ -4,8 +4,8 @@ import {DisplayGraph} from "../pages/DisplayGraph.tsx";
 import {DisplayProceduralAnimation} from "../pages/DisplayProceduralAnimation.tsx";
 import {DisplayReactFlow} from "../pages/DisplayReactFlow.tsx";
 import Home from "../pages/Home.tsx";
-import {DisplayArmory} from "../pages/Magitek/DisplayArmory.tsx";
 import {DisplayArena} from "../pages/Magitek/DisplayArena.tsx";
+import {DisplayArmory} from "../pages/Magitek/DisplayArmory.tsx";
 import {DisplayDebug} from "../pages/Magitek/DisplayDebug.tsx";
 import {DisplayExperimental} from "../pages/Magitek/DisplayExperimental.tsx";
 

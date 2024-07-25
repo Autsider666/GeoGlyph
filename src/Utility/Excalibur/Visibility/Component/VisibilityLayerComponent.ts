@@ -1,6 +1,7 @@
-import {Actor, Canvas, InitializeEvent, Vector} from "excalibur";
+import {Actor, Canvas, Entity, InitializeEvent, Vector} from "excalibur";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
+import {BlockVisibilityComponent} from "./BlockVisibilityComponent.ts";
 
 export class VisibilityLayerComponent extends BaseComponent {
     constructor(
@@ -18,6 +19,10 @@ export class VisibilityLayerComponent extends BaseComponent {
 
     public drawFieldOfView(viewPoint: ViewPoint): void {
         viewPoint.drawViewPoint(this.graphic.ctx);
+    }
+
+    public drawBlocker(entity: Entity<BlockVisibilityComponent>): void {
+        entity.get(BlockVisibilityComponent).drawIfVisible(this.graphic.ctx);
     }
 
     onInitialize({engine}: InitializeEvent): void {
