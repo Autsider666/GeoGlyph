@@ -56,7 +56,7 @@ const objects: Actor[] = [
         height: 100,
         color: Color.Green,
     }),
-    //BOTTOM RIGHT
+    // //BOTTOM RIGHT
     // new Actor({
     //     name: 'Bottom Right',
     //     x: 450,
@@ -82,8 +82,8 @@ export class ExperimentalScene extends Scene {
 
         const viewPoint = new Actor({
             name: 'Player',
-            x: 300,
-            y: 300,
+            x: 100, //300
+            y: 150, //300
             radius: 10,
             color: ColorPalette.accentLightColor,
         });
@@ -93,8 +93,8 @@ export class ExperimentalScene extends Scene {
             //     getRange: (): number => 1000,
             // },
             {
-                getRange: (): number => 700, //250
-                getFalloff: (): number => 0.9999, //0.75
+                getRange: (): number => 500, //250
+                getFalloff: (): number => 0.25, //0.75
             }
         ];
 
