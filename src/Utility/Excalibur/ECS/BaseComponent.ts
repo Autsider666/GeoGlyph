@@ -1,4 +1,4 @@
-import {Actor, Component, Vector} from "excalibur";
+import {Actor, Component, Ray, RayCastHit, RayCastOptions, Vector} from "excalibur";
 
 export abstract class BaseComponent extends Component {
     declare owner?: Actor;
@@ -27,5 +27,21 @@ export abstract class BaseComponent extends Component {
 
         this.owner.vel.x = direction.x;
         this.owner.vel.y = direction.y;
+    }
+
+    protected rayCast(position: Vector, direction: Vector, options?: RayCastOptions): RayCastHit[] {
+        const physics = this.owner?.scene?.physics;
+        if (!physics) {
+            throw new Error('Can\'t rayCast without physics.');
+        }
+
+        return physics.rayCast(
+            new Ray(position, direction),
+            options,
+        );
+    }
+
+    protected rayCastTo(position: Vector, target: Vector, options?: RayCastOptions): RayCastHit[] {
+        return this.rayCast(position, target.sub(position), options);
     }
 }

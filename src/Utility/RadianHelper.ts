@@ -99,7 +99,7 @@ export class RadianHelper {
     }
 
     // Works well for eyes (or turrets?) following a target
-    public static calculateTangents(viewPoint: Vector, centerCircle: Vector, radiusCircle: number, maxDistance: number): [Vector, Vector] | [Vector] | undefined {
+    public static calculateTangents(viewPoint: Vector, centerCircle: Vector, radiusCircle: number, maxDistance?: number): Vector[] {
         const {x, y} = viewPoint;
 
         const dx = x - centerCircle.x;
@@ -107,7 +107,7 @@ export class RadianHelper {
         const dr2 = dx * dx + dy * dy;
 
         if (dr2 <= radiusCircle * radiusCircle) {
-            return undefined; // Viewpoint is inside or on the circle
+            return []; // Viewpoint is inside or on the circle
         }
 
         const D = Math.sqrt(dr2 - radiusCircle * radiusCircle);
@@ -122,14 +122,15 @@ export class RadianHelper {
         const distToTangent1 = Math.sqrt((tangent1.x - x) * (tangent1.x - x) + (tangent1.y - y) * (tangent1.y - y));
         const distToTangent2 = Math.sqrt((tangent2.x - x) * (tangent2.x - x) + (tangent2.y - y) * (tangent2.y - y));
 
-        if (distToTangent1 <= maxDistance && distToTangent2 <= maxDistance) {
-            return [tangent1, tangent2];
-        } else if (distToTangent1 <= maxDistance) {
-            return [tangent1];
-        } else if (distToTangent2 <= maxDistance) {
-            return [tangent2];
-        } else {
-            return undefined; // No valid tangents within maxDistance
+        const validTangents: Vector[] = [];
+        if (maxDistance === undefined || distToTangent1 <= maxDistance) {
+            validTangents.push(tangent1);
         }
+
+        if (maxDistance === undefined || distToTangent2 <= maxDistance) {
+            validTangents.push(tangent2);
+        }
+
+        return validTangents;
     }
 }
