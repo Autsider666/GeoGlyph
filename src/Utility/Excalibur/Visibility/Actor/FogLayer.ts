@@ -1,19 +1,23 @@
-import {Actor, Canvas} from "excalibur";
+import {Actor, BoundingBox, Canvas, Vector} from "excalibur";
 import {VisibilityLayerComponent} from "../Component/VisibilityLayerComponent.ts";
 
 export class FogLayer extends Actor {
     constructor(
+        bounds:BoundingBox,
         {
             alpha = 0.75,
             color = '#000000'
         }: { alpha?: number, color?: string } = {}
     ) {
-        super();
+        super({
+            pos: bounds.center,
+            anchor: Vector.Zero,
+        });
 
         this.addComponent(new VisibilityLayerComponent(
             new Canvas({
-                width: 500,
-                height: 500,
+                width: bounds.width,
+                height: bounds.height,
                 // cache: true,
                 draw: (ctx): void => {
                     ctx.globalAlpha = alpha;

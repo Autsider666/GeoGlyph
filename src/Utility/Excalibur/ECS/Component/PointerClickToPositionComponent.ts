@@ -7,8 +7,8 @@ export class PointerClickToPositionComponent extends BaseComponent {
     onAdd(owner: Actor): void {
         owner.once('postupdate', ({engine}) => {
             engine.input.pointers.primary.on('up', event => this.handlePointer(event, owner, false));
-            engine.input.pointers.primary.on('down', event => this.handlePointer(event, owner, true));
-            engine.input.pointers.primary.on('move', event => this.handlePointer(event, owner));
+            // engine.input.pointers.primary.on('down', event => this.handlePointer(event, owner, true));
+            // engine.input.pointers.primary.on('move', event => this.handlePointer(event, owner));
         });
     }
 

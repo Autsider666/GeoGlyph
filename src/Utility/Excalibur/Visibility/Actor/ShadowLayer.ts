@@ -1,9 +1,10 @@
-import {Actor} from "excalibur";
+import {Actor, BoundingBox, Vector} from "excalibur";
 import {DirtyCanvas} from "../../DirtyCanvas.ts";
 import {VisibilityLayerComponent} from "../Component/VisibilityLayerComponent.ts";
 
 export class ShadowLayer extends Actor {
     constructor(
+        bounds:BoundingBox,
         {
             alpha = 1,
             color = '#000000'
@@ -11,12 +12,17 @@ export class ShadowLayer extends Actor {
     ) {
         let initialRun: boolean = true;
 
-        super();
+        super({
+            pos: bounds.center,
+            anchor: Vector.Zero,
+            width: bounds.width,
+            height: bounds.height,
+        });
 
         this.addComponent(new VisibilityLayerComponent(
             new DirtyCanvas({
-                width: 500,
-                height: 500,
+                width: bounds.width,
+                height: bounds.height,
                 // cache: true,
                 draw: (ctx): void => {
                     if (initialRun) {

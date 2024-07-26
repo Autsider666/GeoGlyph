@@ -48,18 +48,6 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
                 this.points.push(...ColliderHelper.getColliderPoints(visionBlocker.collider.get(), {viewpoint: owner.pos}));
             }
 
-            const screen = engine.screen.getWorldBounds();
-            this.points.push(
-                screen.topLeft,
-                screen.topRight,
-                screen.bottomLeft,
-                screen.bottomRight,
-            );
-
-            if (!screen.contains(owner.pos)) {
-                this.points.push(owner.pos);
-            }
-
             for (const visibleEdge of visibleEdges) {
                 if (visibleEdge.marker) {
                     engine.add(visibleEdge.marker);

@@ -1,6 +1,7 @@
 import {
     Actor,
     ActorArgs,
+    BoundingBox,
     CompositeCollider,
     EdgeCollider,
     Polygon,
@@ -52,11 +53,11 @@ const objects: Actor[] = [
     //TOP LEFT
     new Actor({
         name: 'Top Left',
-        x: 200,
-        y: 200,
+        pos: new Vector(150, 150),
         width: 100,
         height: 100,
         color: ColorPalette.accentDarkColor,
+        anchor: Vector.Zero,
     }),
     //TOP Center
     // new Actor({
@@ -68,26 +69,25 @@ const objects: Actor[] = [
     // }),
     new Actor({
         name: 'Top Center',
-        x: 400,
-        y: 100,
+        pos: new Vector(350, 50),
         width: 100,
         height: 100,
         color: ColorPalette.accentDarkColor,
+        anchor: Vector.Zero,
     }),
     //TOP RIGHT
     new Actor({
         name: 'Top Right',
-        x: 500,
-        y: 200,
+        pos: new Vector(450, 150),
         width: 100,
         height: 100,
         color: ColorPalette.accentDarkColor,
+        anchor: Vector.Zero,
     }),
     //BOTTOM LEFT
     new Actor({
         name: 'Bottom Left',
-        x: 100,
-        y: 450,
+        pos: new Vector(100, 450),
         width: 50,
         height: 300,
         color: ColorPalette.accentDarkColor,
@@ -153,16 +153,22 @@ export class ExperimentalScene extends Scene {
     }
 
     onActivate(): void {
-        this.world.add(new FogLayer({
+        const worldBounds = BoundingBox.fromDimension(
+            1000, 1000,
+            Vector.Zero,
+            // Vector.Zero,
+        );
+
+        this.add(new FogLayer(worldBounds, {
             alpha: 0.9,
             // color: 'white',
         }));
-        this.world.add(new ShadowLayer());
+        this.add(new ShadowLayer(worldBounds));
 
         const viewPoint = this.createViewPoint(
             'Player',
             // new Vector(180, 400), // Weird position right between square an polygon
-            new Vector(165, 100),
+            new Vector(665, 600),
             // x: 165, //300
             // y: 100, //300
         );
@@ -174,8 +180,9 @@ export class ExperimentalScene extends Scene {
         }
 
         this.camera.strategy.lockToActor(viewPoint);
+        this.camera.strategy.limitCameraBounds(worldBounds);
 
-        // this.createScreenCollider();
+        this.createOuterBoundsCollider(worldBounds);
     }
 
     private createViewPoint(name: string, position: Vector): Actor {
@@ -207,24 +214,23 @@ export class ExperimentalScene extends Scene {
     //
     // }
 
-    private createScreenCollider(): void {
-        const screenBounds = this.engine.screen.getScreenBounds();
+    private createOuterBoundsCollider(bounds: BoundingBox): void {
         const collider = new CompositeCollider([
             new EdgeCollider({
-                begin: new Vector(0, 0),
-                end: new Vector(screenBounds.width, 0),
+                begin: bounds.topLeft,
+                end: new Vector(bounds.width, 0),
             }), // North
             new EdgeCollider({
-                begin: new Vector(screenBounds.width, 0),
-                end: new Vector(screenBounds.width, screenBounds.height)
+                begin: bounds.topRight,
+                end: new Vector(bounds.width, bounds.height)
             }), // East
             new EdgeCollider({
-                begin: new Vector(0, screenBounds.height),
-                end: new Vector(screenBounds.width, screenBounds.height)
+                begin: bounds.bottomLeft,
+                end: new Vector(bounds.width, bounds.height)
             }), // South
             new EdgeCollider({
-                begin: new Vector(0, 0),
-                end: new Vector(0, screenBounds.height),
+                begin: bounds.topLeft,
+                end: new Vector(0, bounds.height),
             }), // West
         ]);
 
