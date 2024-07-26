@@ -53,7 +53,7 @@ const objects: Actor[] = [
     //TOP LEFT
     new Actor({
         name: 'Top Left',
-        pos: new Vector(150, 150),
+        pos: new Vector(300, 400),
         width: 100,
         height: 100,
         color: ColorPalette.accentDarkColor,
@@ -69,7 +69,7 @@ const objects: Actor[] = [
     // }),
     new Actor({
         name: 'Top Center',
-        pos: new Vector(350, 50),
+        pos: new Vector(600, 300),
         width: 100,
         height: 100,
         color: ColorPalette.accentDarkColor,
@@ -78,7 +78,7 @@ const objects: Actor[] = [
     //TOP RIGHT
     new Actor({
         name: 'Top Right',
-        pos: new Vector(450, 150),
+        pos: new Vector(700, 400),
         width: 100,
         height: 100,
         color: ColorPalette.accentDarkColor,
@@ -87,7 +87,7 @@ const objects: Actor[] = [
     //BOTTOM LEFT
     new Actor({
         name: 'Bottom Left',
-        pos: new Vector(100, 450),
+        pos: new Vector(350, 700),
         width: 50,
         height: 300,
         color: ColorPalette.accentDarkColor,
@@ -103,7 +103,7 @@ const objects: Actor[] = [
     // }),
     createPolygonActor({
         name: 'Polygon Bottom Right',
-        pos: new Vector(350, 350),
+        pos: new Vector(600, 600),
         points: [
             new Vector(-100, -100),
             new Vector(0, -50),
@@ -118,7 +118,7 @@ const objects: Actor[] = [
     }),
     createPolygonActor({
         name: 'Polygon Bottom Right',
-        pos: new Vector(550, 450),
+        pos: new Vector(800, 700),
         points: [
             new Vector(-100, -100),
             new Vector(0, -50),
@@ -132,7 +132,7 @@ const objects: Actor[] = [
     }),
     createPolygonActor({
         name: 'Polygon Bottom Right',
-        pos: new Vector(250, 350),
+        pos: new Vector(500, 600),
         points: [
             new Vector(-100, -100),
             new Vector(0, -50),
@@ -168,7 +168,8 @@ export class ExperimentalScene extends Scene {
         const viewPoint = this.createViewPoint(
             'Player',
             // new Vector(180, 400), // Weird position right between square an polygon
-            new Vector(665, 600),
+            // new Vector(665, 600),
+            worldBounds.center,
             // x: 165, //300
             // y: 100, //300
         );
@@ -195,10 +196,10 @@ export class ExperimentalScene extends Scene {
         const viewPoints = [
             // {
             //     getAngle: (): number => Math.PI,
-            //     getRange: (): number => 1000,
+            //     getRange: (): number => 100,
             // },
             {
-                getRange: (): number => 1000, // 150, //250
+                getRange: (): number => 250, // 150, //250
                 getFalloff: (): number => 0, //0.75
             }
         ];
