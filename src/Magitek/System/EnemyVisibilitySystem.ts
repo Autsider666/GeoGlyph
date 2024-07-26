@@ -1,5 +1,6 @@
 import {Actor, System, SystemType, TagQuery, World} from "excalibur";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
+import {VisibilityHelper} from "../../Utility/Excalibur/Visibility/Utility/VisibilityHelper.ts";
 import {EnemyTag, FriendlyTag, VisibleTag} from "../Actor/tags.ts";
 
 export class EnemyVisibilitySystem extends System {
@@ -47,7 +48,8 @@ export class EnemyVisibilitySystem extends System {
         for (const enemyActor of this.enemyActors) {
             let visibility: number = 0;
             for (const friendlyActor of this.friendlyActors) {
-                visibility = Math.max(visibility, friendlyActor.get(ViewpointComponent).canSee(enemyActor) ?? 0);
+                visibility = Math.max(visibility, VisibilityHelper.canSee(enemyActor,friendlyActor.pos,friendlyActor.rotation, Math.PI, 500));
+                // visibility = Math.max(visibility, friendlyActor.get(ViewpointComponent).canSee(enemyActor) ?? 0);
             }
 
 

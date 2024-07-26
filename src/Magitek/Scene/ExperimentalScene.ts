@@ -18,7 +18,6 @@ import {KeyboardControlledComponent} from "../../Utility/Excalibur/Movement/Comp
 import {FogLayer} from "../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
 import {ShadowLayer} from "../../Utility/Excalibur/Visibility/Actor/ShadowLayer.ts";
 import {BlockVisibilityComponent} from "../../Utility/Excalibur/Visibility/Component/BlockVisibilityComponent.ts";
-import {NewViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/NewViewpointComponent.ts";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
 import {EnemyVisibilitySystem} from "../System/EnemyVisibilitySystem.ts";
@@ -174,9 +173,9 @@ export class ExperimentalScene extends Scene {
             this.add(object);
         }
 
-        // this.camera.strategy.lockToActor(viewPoint);
+        this.camera.strategy.lockToActor(viewPoint);
 
-        this.createScreenCollider();
+        // this.createScreenCollider();
     }
 
     private createViewPoint(name: string, position: Vector): Actor {
@@ -192,23 +191,29 @@ export class ExperimentalScene extends Scene {
             //     getRange: (): number => 1000,
             // },
             {
-                getRange: (): number => 150, // 150, //250
+                getRange: (): number => 1000, // 150, //250
                 getFalloff: (): number => 0, //0.75
             }
         ];
 
         viewPoint.addComponent(new PointerClickToPositionComponent());
         viewPoint.addComponent(new ViewpointComponent(viewPoints));
-        viewPoint.addComponent(new NewViewpointComponent(viewPoints));
         viewPoint.addComponent(new KeyboardControlledComponent(() => 100));
 
         return viewPoint;
     }
 
+    // private createScreenEdges():void {
+    //
+    // }
+
     private createScreenCollider(): void {
         const screenBounds = this.engine.screen.getScreenBounds();
         const collider = new CompositeCollider([
-            new EdgeCollider({begin: new Vector(0, 0), end: new Vector(screenBounds.width, 0)}), // North
+            new EdgeCollider({
+                begin: new Vector(0, 0),
+                end: new Vector(screenBounds.width, 0),
+            }), // North
             new EdgeCollider({
                 begin: new Vector(screenBounds.width, 0),
                 end: new Vector(screenBounds.width, screenBounds.height)
@@ -217,7 +222,10 @@ export class ExperimentalScene extends Scene {
                 begin: new Vector(0, screenBounds.height),
                 end: new Vector(screenBounds.width, screenBounds.height)
             }), // South
-            new EdgeCollider({begin: new Vector(0, 0), end: new Vector(0, screenBounds.height)}), // West
+            new EdgeCollider({
+                begin: new Vector(0, 0),
+                end: new Vector(0, screenBounds.height),
+            }), // West
         ]);
 
         this.engine.add(new Actor({
