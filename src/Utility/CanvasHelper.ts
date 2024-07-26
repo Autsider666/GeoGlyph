@@ -1,7 +1,7 @@
 import {Vector} from "excalibur";
 
 export class CanvasHelper {
-    public static posToGradient(
+    public static posToReverseGradient(
         ctx: CanvasRenderingContext2D,
         pos: Vector,
         visionRadius: number,
@@ -12,6 +12,23 @@ export class CanvasHelper {
         const gradient = ctx.createRadialGradient(pos.x, pos.y, visionRadius, pos.x, pos.y, visionRadius * falloff);
         gradient.addColorStop(0, lightColor);
         gradient.addColorStop(1, darkColor);
+
+        return gradient;
+    }
+    public static posToGradient(
+        ctx: CanvasRenderingContext2D,
+        pos: Vector,
+        visionRadius: number,
+        colors: string[],
+        falloff: number,
+    ): CanvasGradient {
+        const gradient = ctx.createRadialGradient(pos.x, pos.y, visionRadius, pos.x, pos.y, visionRadius * falloff);
+        const step = 1 / (colors.length - 1);
+        let currentStep:number = 0;
+        for (const color of colors) {
+            gradient.addColorStop(currentStep, color);
+            currentStep += step;
+        }
 
         return gradient;
     }

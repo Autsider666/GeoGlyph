@@ -31,6 +31,7 @@ export class BlockVisibilityComponent extends BaseComponent {
 
     constructor(
         private readonly tolerance: number = 0.01,
+        private readonly drawWhenVisible:boolean = true,
         private calculateEdges?: (viewpoint: Actor) => VisibilityEdge[],
     ) {
         super();
@@ -84,6 +85,12 @@ export class BlockVisibilityComponent extends BaseComponent {
         return this.isVisible;
     }
 
+
+
+    seen(): void {
+        this.isVisible = true;
+    }
+
     getEdges(viewpoint: Actor, includeMarker: boolean = false): VisibilityEdge[] {
         if (!this.calculateEdges) {
             return [];
@@ -91,7 +98,7 @@ export class BlockVisibilityComponent extends BaseComponent {
 
         const edges = this.calculateEdges(viewpoint);
         if (edges.length > 0) {
-            this.isVisible = true;
+            // this.isVisible = true;
 
             if (includeMarker) {
                 edges.map(edge => {
@@ -116,11 +123,11 @@ export class BlockVisibilityComponent extends BaseComponent {
     }
 
     public drawIfVisible(ctx: CanvasRenderingContext2D): void {
-        if (!this.isVisible) {
+        if (!this.isVisible || !this.drawWhenVisible) {
             return;
         }
 
-        this.isVisible = false;
+        // this.isVisible = false;
 
         ctx.globalCompositeOperation = 'destination-out';
         ctx.globalAlpha = 1;
@@ -142,7 +149,7 @@ export class BlockVisibilityComponent extends BaseComponent {
         } else if (collider instanceof PolygonCollider) {
             CanvasHelper.drawPolygon(ctx, collider.bounds.getPoints());
         } else if (collider instanceof CompositeCollider) {
-            return; //TODO draw composite collider?
+            CanvasHelper.drawPolygon(ctx, this.getUniqueCompositeColliderPoints(collider));
         } else {
             console.log('Unimplemented Collider type: ', collider);
         }
@@ -201,17 +208,7 @@ export class BlockVisibilityComponent extends BaseComponent {
     }
 
     private calculateEdgesForComposite(viewpoint: Actor, collider: CompositeCollider, owner: Actor): VisibilityEdge[] {
-        const edges: Vector[] = [];
-        for (const compositeCollider of collider.getColliders()) {
-            if (compositeCollider instanceof EdgeCollider) {
-                edges.push(compositeCollider.begin);
-                edges.push(compositeCollider.end);
-            } else {
-                throw new Error('Not implemented yet');
-            }
-        }
-
-        const visibleEdgeCoordinates = VectorHelper.getUniqueCoordinates(edges)
+        const visibleEdgeCoordinates = this.getUniqueCompositeColliderPoints(collider)
             .filter(edgeCoordinate => this.isEdgeVisible(viewpoint, edgeCoordinate, collider));
 
         return visibleEdgeCoordinates.map(edgeCoordinate => { //TODO copy pasted, seems to work
@@ -245,6 +242,22 @@ export class BlockVisibilityComponent extends BaseComponent {
                 angle: edgeCoordinate.sub(viewpoint.pos).toAngle(),
             };
         });
+    }
+
+    private getUniqueCompositeColliderPoints(collider:CompositeCollider):Vector[] {
+        let edges: Vector[] = [];
+        for (const compositeCollider of collider.getColliders()) {
+            if (compositeCollider instanceof EdgeCollider) {
+                edges.push(compositeCollider.begin);
+                edges.push(compositeCollider.end);
+            } else if (compositeCollider instanceof PolygonCollider) {
+                edges = edges.concat(compositeCollider.getTransformedPoints());
+            } else {
+                throw new Error('Not implemented yet');
+            }
+        }
+
+        return VectorHelper.getUniqueCoordinates(edges);
     }
 
     private isEdgeVisible(viewpoint: Actor, edgeCoordinate: Vector, collider: Collider): boolean {

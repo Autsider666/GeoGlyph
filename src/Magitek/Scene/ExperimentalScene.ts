@@ -1,68 +1,146 @@
-import {Actor, Color, CompositeCollider, CoordPlane, EdgeCollider, Scene, Vector} from "excalibur";
+import {
+    Actor,
+    ActorArgs,
+    CompositeCollider,
+    EdgeCollider,
+    Polygon,
+    PolygonCollider,
+    PolygonOptions,
+    RasterOptions,
+    Scene,
+    Vector,
+} from "excalibur";
 import {ColorPalette} from "../../IDE/ColorPalette.ts";
 import {
     PointerClickToPositionComponent
 } from "../../Utility/Excalibur/ECS/Component/PointerClickToPositionComponent.ts";
 import {KeyboardControlledComponent} from "../../Utility/Excalibur/Movement/Component/KeyboardControlledComponent.ts";
 import {FogLayer} from "../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
+import {ShadowLayer} from "../../Utility/Excalibur/Visibility/Actor/ShadowLayer.ts";
 import {BlockVisibilityComponent} from "../../Utility/Excalibur/Visibility/Component/BlockVisibilityComponent.ts";
 import {NewViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/NewViewpointComponent.ts";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
 import {EnemyVisibilitySystem} from "../System/EnemyVisibilitySystem.ts";
 
+type PolygonActorArgs = ActorArgs & PolygonOptions & RasterOptions
+
+function createPolygonActor(config: PolygonActorArgs): Actor {
+    const collider = new PolygonCollider({
+        points: config.points,
+    }).triangulate();
+
+    const actor = new Actor({
+        ...config,
+        // @ts-expect-error weird IDE
+        collider,
+        rotation: undefined,
+    });
+
+    actor.graphics.use(new Polygon(config));
+
+    if (config.rotation) {
+        // actor.rotation = config.rotation;
+        actor.rotation = 2;
+    }
+
+    return actor;
+}
+
+
 const objects: Actor[] = [
-    //TOP LEFT
-    new Actor({
-        name: 'Top Left',
-        x: 200,
-        y: 200,
-        width: 100,
-        height: 100,
-        color: Color.Green,
-        coordPlane: CoordPlane.Screen
-    }),
-    //TOP Center
+    // //TOP LEFT
+    // new Actor({
+    //     name: 'Top Left',
+    //     x: 200,
+    //     y: 200,
+    //     width: 100,
+    //     height: 100,
+    //     color: ColorPalette.accentDarkColor,
+    //     coordPlane: CoordPlane.Screen
+    // }),
+    // //TOP Center
+    // // new Actor({
+    // //     name: 'Top Center',
+    // //     x: 450,
+    // //     y: 0,
+    // //     radius: 200,
+    // //     color: Color.Blue,
+    // // }),
     // new Actor({
     //     name: 'Top Center',
-    //     x: 450,
-    //     y: 0,
-    //     radius: 200,
-    //     color: Color.Blue,
+    //     x: 400,
+    //     y: 100,
+    //     width: 100,
+    //     height: 100,
+    //     color: ColorPalette.accentDarkColor,
     // }),
-    new Actor({
-        name: 'Top Center',
-        x: 400,
-        y: 100,
-        width: 100,
-        height: 100,
-        color: Color.Green,
-    }),
-    //TOP RIGHT
-    new Actor({
-        name: 'Top Right',
-        x: 500,
-        y: 200,
-        width: 100,
-        height: 100,
-        color: Color.Green,
-    }),
-    //BOTTOM LEFT
-    new Actor({
-        name: 'Bottom Left',
-        x: 100,
-        y: 450,
-        width: 100,
-        height: 100,
-        color: Color.Green,
-    }),
-    // //BOTTOM RIGHT
+    // //TOP RIGHT
     // new Actor({
-    //     name: 'Bottom Right',
-    //     x: 450,
-    //     y: 425,
-    //     radius: 100,
-    //     color: Color.Blue,
+    //     name: 'Top Right',
+    //     x: 500,
+    //     y: 200,
+    //     width: 100,
+    //     height: 100,
+    //     color: ColorPalette.accentDarkColor,
+    // }),
+    // //BOTTOM LEFT
+    // new Actor({
+    //     name: 'Bottom Left',
+    //     x: 100,
+    //     y: 450,
+    //     width: 100,
+    //     height: 100,
+    //     color: ColorPalette.accentDarkColor,
+    // }),
+    // // //BOTTOM RIGHT
+    // // new Actor({
+    // //     name: 'Bottom Right',
+    // //     x: 450,
+    // //     y: 425,
+    // //     radius: 100,
+    // //     color: Color.Blue,
+    // // }),
+    createPolygonActor({
+        name: 'Polygon Bottom Right',
+        pos: new Vector(350, 350),
+        points: [
+            new Vector(-100, -100),
+            new Vector(0, -50),
+            new Vector(100, -100),
+            new Vector(50, 50),
+            new Vector(-100, 100),
+            new Vector(-50, 50),
+        ],
+        color: ColorPalette.accentLightColor,
+        // rotation: Math.PI / 3,
+    }),
+    // createPolygonActor({
+    //     name: 'Polygon Bottom Right',
+    //     pos: new Vector(450, 425),
+    //     points: [
+    //         new Vector(-100, -100),
+    //         new Vector(0, -50),
+    //         new Vector(100, -100),
+    //         new Vector(50, 50),
+    //         new Vector(-100, 100),
+    //         new Vector(-50, 50),
+    //     ],
+    //     color: ColorPalette.accentLightColor,
+    //     // rotation: Math.PI / 3,
+    // }),
+    // createPolygonActor({
+    //     name: 'Polygon Bottom Right',
+    //     pos: new Vector(250, 350),
+    //     points: [
+    //         new Vector(-100, -100),
+    //         new Vector(0, -50),
+    //         new Vector(100, -100),
+    //         new Vector(50, 50),
+    //         new Vector(-100, 100),
+    //         new Vector(-50, 50),
+    //     ],
+    //     color: ColorPalette.accentLightColor,
     // }),
 ];
 
@@ -75,14 +153,14 @@ export class ExperimentalScene extends Scene {
 
     onActivate(): void {
         this.world.add(new FogLayer({
-            alpha: 0.75,
+            alpha: 0.9,
             // color: 'white',
         }));
-        // this.world.add(new ShadowLayer());
+        this.world.add(new ShadowLayer());
 
         this.add(this.createViewPoint(
             'Player',
-            new Vector(165,100),
+            new Vector(165, 100),
             // x: 165, //300
             // y: 100, //300
         ));
@@ -110,8 +188,8 @@ export class ExperimentalScene extends Scene {
             //     getRange: (): number => 1000,
             // },
             {
-                getRange: (): number => 500, //250
-                getFalloff: (): number => 0.25, //0.75
+                getRange: (): number => 1000, // 150, //250
+                getFalloff: (): number => 0, //0.75
             }
         ];
 
@@ -143,6 +221,6 @@ export class ExperimentalScene extends Scene {
             pos: Vector.Zero,
             anchor: Vector.Zero,
             collider,
-        }).addComponent(new BlockVisibilityComponent()));
+        }).addComponent(new BlockVisibilityComponent(undefined, false)));
     }
 }

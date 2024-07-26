@@ -40,7 +40,7 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                     continue;
                 }
 
-                const visibleEdges = visionBlocker.get(BlockVisibilityComponent).getEdges(owner, false);
+                const visibleEdges = visionBlocker.get(BlockVisibilityComponent).getEdges(owner, true);
 
                 for (const visibleEdge of visibleEdges) {
                     if (visibleEdge.marker) {
@@ -99,21 +99,36 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
 
 
             const range = getRange();
-            ctx.fillStyle = CanvasHelper.posToGradient(
+            ctx.fillStyle = CanvasHelper.posToReverseGradient(
                 ctx,
                 pos,
                 range,
-                'rgba(0,0,0,0)',
-                'rgba(0,0,0,1)',
+                'rgba(0,0,0,0)', // Dark outside
+                'rgba(0,0,0,0.50)', // Light inside
                 getFalloff()
             );
+
+            // ctx.fillStyle = CanvasHelper.posToGradient(
+            //     ctx,
+            //     pos,
+            //     range,
+            //     [
+            //         'rgba(0,0,0,0)',
+            //         'rgba(0,0,0,0.10)',
+            //         'rgba(0,0,0,0.25)',
+            //         'rgba(0,0,0,0.45)',
+            //         'rgba(0,0,0,0.60)',
+            //         'rgba(0,0,0,0.90)',
+            //     ],
+            //     getFalloff()
+            // );
 
             ctx.fill(this.generateVisibilityPolygon(owner));
         }
     }
 
     private generateVisibilityPolygon(owner: Actor): Path2D {
-        console.log('----------------');
+        // console.log('----------------');
         let prependableEdge: Vector | undefined;
         const polygon = new Path2D();
         for (const edge of this.visibleEdges) {
@@ -123,9 +138,9 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
             }
 
             if (edge.extendable) {
-                if (edge.object.name === 'Top Left') {
-                    console.log(`++++ ${edge.coordinate} ++++`);
-                }
+                // if (edge.object.name === 'Top Left') {
+                //     console.log(`++++ ${edge.coordinate} ++++`);
+                // }
 
                 const edgePos = {
                     isTop: edge.collider.bounds.top === edge.coordinate.y,
@@ -140,9 +155,9 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                 const hits = this.rayCast(owner.pos, directionToRange, {
                     // maxDistance: range + 1,
                     filter: hit => {
-                        if (edge.object.name === 'Top Left') {
-                            console.log(hit.point, hit.collider.owner.name, hit);
-                        }
+                        // if (edge.object.name === 'Top Left') {
+                        //     console.log(hit.point, hit.collider.owner.name, hit);
+                        // }
 
                         //TODO exclude Screen boundary so visibility is still calculated when used is offscreen?
                         if (!hit.collider.owner.has(BlockVisibilityComponent) || edge.coordinate.equals(hit.point)) {
@@ -170,9 +185,11 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                     searchAllColliders: true,
                 });
 
-                if (edge.object.name === 'Top Left') {
-                    console.log(edge.coordinate, hits);
-                }
+                // if (edge.object.name === 'Top Left') {
+                //     console.log(edge.coordinate, hits);
+                // }
+
+                edge.object.get(BlockVisibilityComponent).seen();
 
                 if (hits.length > 0) {
                     const extendedEdge = hits[0]?.point;// ?? owner.pos.add(directionToRange);
