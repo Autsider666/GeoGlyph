@@ -15,7 +15,7 @@ export class ColliderHelper {
             );
             ctx.fill();
         } else if (collider instanceof PolygonCollider) {
-            CanvasHelper.drawPolygon(ctx, collider.bounds.getPoints());
+            CanvasHelper.drawPolygon(ctx, this.getPolygonColliderPoints(collider));
         } else if (collider instanceof CompositeCollider) {
             CanvasHelper.drawPolygon(ctx, ColliderHelper.getCompositeColliderPoints(collider));
         } else {
@@ -69,7 +69,7 @@ export class ColliderHelper {
 
     public static getPolygonColliderPoints(collider: PolygonCollider): Vector[] {
         // TODO add convex check
-        return collider.getTransformedPoints();
+        return [...collider.getTransformedPoints()];
     }
 
     public static getCircleColliderPoints(collider: CircleCollider, viewpoint: Vector): Vector[] {

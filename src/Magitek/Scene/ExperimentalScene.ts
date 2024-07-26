@@ -170,10 +170,13 @@ export class ExperimentalScene extends Scene {
             // new Vector(180, 400), // Weird position right between square an polygon
             // new Vector(665, 600),
             worldBounds.center,
-            // x: 165, //300
-            // y: 100, //300
+            100,
+            false,
         );
         this.add(viewPoint);
+
+        this.add(this.createViewPoint('Monster', new Vector(100, 100), undefined, true));
+        // this.add(this.createViewPoint('Ally', worldBounds.center.sub(new Vector(100,-100)), undefined, false));
 
         for (const object of objects) {
             object.addComponent(new BlockVisibilityComponent());
@@ -186,7 +189,7 @@ export class ExperimentalScene extends Scene {
         this.createOuterBoundsCollider(worldBounds);
     }
 
-    private createViewPoint(name: string, position: Vector): Actor {
+    private createViewPoint(name: string, position: Vector, speed: number | undefined, hideViewPoint: boolean): Actor {
         const viewPoint = new Actor({
             name,
             pos: position,
@@ -204,9 +207,12 @@ export class ExperimentalScene extends Scene {
             }
         ];
 
-        viewPoint.addComponent(new PointerClickToPositionComponent());
-        viewPoint.addComponent(new ViewpointComponent(viewPoints));
-        viewPoint.addComponent(new KeyboardControlledComponent(() => 100));
+        if (speed !== undefined) {
+            viewPoint.addComponent(new PointerClickToPositionComponent());
+            viewPoint.addComponent(new KeyboardControlledComponent(() => speed));
+        }
+
+        viewPoint.addComponent(new ViewpointComponent(viewPoints, hideViewPoint));
 
         return viewPoint;
     }

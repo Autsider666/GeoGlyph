@@ -23,7 +23,8 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
     private readonly points: Vector[] = [];
 
     constructor(
-        private readonly viewPoints: ViewPointData[]
+        private readonly viewPoints: ViewPointData[],
+        private readonly disableRendering: boolean = false,
     ) {
         super();
     }
@@ -80,6 +81,10 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
     }
 
     public drawViewPoint(ctx: CanvasRenderingContext2D): void {
+        if (this.disableRendering) {
+            return;
+        }
+
         const owner = this.owner;
         if (!owner) {
             console.warn('Skipped drawing because of lack of owner');
@@ -127,13 +132,12 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
             //     ],
             //     getFalloff()
             // );
-
-            ctx.fill(this.generatePolygonUsingOffsetAngles(owner));
+            this.drawPolygonUsingOffsetAngles(ctx, owner);
             // ctx.fill(this.generateVisibilityPolygon(owner));
         }
     }
 
-    private generatePolygonUsingOffsetAngles(owner: Actor): Path2D {
+    private drawPolygonUsingOffsetAngles(ctx: CanvasRenderingContext2D, owner: Actor): void {
         //Don't put this above +- 0.00001, because it will mess up long distance raycasting
         //Don't put it below +- 0.000001, because it seems to mess up short distance raycasting (use new Vector(180, 400))
         const offset = 0.000001;
@@ -214,9 +218,15 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
                 continue;
             }
 
-            hit.collider.owner.get(BlockVisibilityComponent).seen();
+            if (!this.disableRendering) {
+                hit.collider.owner.get(BlockVisibilityComponent).seen();
+            }
 
             hitsByAngle.push(hit.point);
+        }
+
+        if (hitsByAngle.length < 1) {
+            return;
         }
 
         // hitsByAngle = hitsByAngle.sort((a, b) => a.angle - b.angle);
@@ -230,7 +240,7 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
             polygon.lineTo(point.x, point.y);
         }
 
-        return polygon;
+        ctx.fill(polygon);
     }
 
     // private generateVisibilityPolygon(owner: Actor): Path2D {

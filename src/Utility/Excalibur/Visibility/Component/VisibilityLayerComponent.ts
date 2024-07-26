@@ -15,7 +15,6 @@ export class VisibilityLayerComponent extends BaseComponent {
         owner.anchor = Vector.Zero;
         owner.z = 50;
         owner.graphics.use(this.graphic);
-        // owner.on('initialize', this.onInitialize.bind(this));
     }
 
     public drawFieldOfView(viewPoint: ViewPoint): void {
