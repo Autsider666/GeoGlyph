@@ -25,14 +25,16 @@ export class ShadowLayer extends Actor {
                 height: bounds.height,
                 // cache: true,
                 draw: (ctx): void => {
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = color;
+
                     if (initialRun) {
                         initialRun = false;
 
-                        ctx.globalAlpha = alpha;
-                        ctx.fillStyle = color;
                         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                        ctx.globalCompositeOperation = 'destination-out'; // Used to be destination-out
                     }
+
+                    ctx.globalCompositeOperation = 'destination-out'; // Used to be destination-out
                 }
             })
         ));

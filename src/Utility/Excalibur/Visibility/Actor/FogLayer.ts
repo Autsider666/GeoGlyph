@@ -23,6 +23,7 @@ export class FogLayer extends Actor {
                     ctx.globalAlpha = alpha;
                     ctx.fillStyle = color;
                     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.globalCompositeOperation = 'destination-out';
                 }
             }),
         ));
