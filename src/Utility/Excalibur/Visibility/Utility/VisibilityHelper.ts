@@ -1,8 +1,7 @@
 import {Actor, CircleCollider, PolygonCollider, Vector} from "excalibur";
+import {RadianHelper} from "../../../Helper/RadianHelper.ts";
 
-export class RadianHelper {
-    static readonly Circle: number = Math.PI * 2;
-
+export class VisibilityHelper {
     public static canSee(target: Actor, position: Vector, rotation: number, fieldOfView: number, range: number): number {
         let objectRadius: number | undefined;
         let objectArea: number | undefined;
@@ -34,7 +33,7 @@ export class RadianHelper {
         const angleToObject = Math.atan2(dy, dx);
 
         // Normalize the angle to be within [-PI, PI]
-        const normalizedAngle = this.normalizeAngle(angleToObject - rotation);
+        const normalizedAngle = RadianHelper.normalizeAngle(angleToObject - rotation);
 
         // Calculate angle between player orientation and the edge of the circle
         const angleToEdge = Math.atan2(objectRadius, distanceToCenter);
@@ -43,8 +42,8 @@ export class RadianHelper {
         const maxAngle = normalizedAngle + angleToEdge;
 
         // Normalize minAngle and maxAngle to be within [-PI, PI]
-        const normalizedMinAngle = this.normalizeAngle(minAngle);
-        const normalizedMaxAngle = this.normalizeAngle(maxAngle);
+        const normalizedMinAngle = RadianHelper.normalizeAngle(minAngle);
+        const normalizedMaxAngle = RadianHelper.normalizeAngle(maxAngle);
 
         let maxVisibility: number = 0;
         // Check if object center is within max range
@@ -71,66 +70,5 @@ export class RadianHelper {
 
         // Clamp percentage to range [0, 1]
         return Math.max(0, Math.min(1, maxVisibility * 10));
-    }
-
-    public static normalizeAngle(angle: number): number {
-        while (angle > Math.PI) {
-            angle -= 2 * Math.PI;
-        }
-
-        while (angle <= -Math.PI) {
-            angle += 2 * Math.PI;
-        }
-
-        return angle;
-    }
-
-    public static orderClockwise(center: Vector, points: Vector[]): Vector[] {
-        return points.sort((a, b): number => {
-            const angleA = a.sub(center).toAngle();
-            const angleB = b.sub(center).toAngle();
-
-            if (angleA === angleB) {
-                return 0;
-            }
-
-            return angleA < angleB ? -1 : 1;
-        });
-    }
-
-    // Works well for eyes (or turrets?) following a target
-    public static calculateTangents(viewPoint: Vector, centerCircle: Vector, radiusCircle: number, maxDistance?: number): Vector[] {
-        const {x, y} = viewPoint;
-
-        const dx = x - centerCircle.x;
-        const dy = y - centerCircle.y;
-        const dr2 = dx * dx + dy * dy;
-
-        if (dr2 <= radiusCircle * radiusCircle) {
-            return []; // Viewpoint is inside or on the circle
-        }
-
-        const D = Math.sqrt(dr2 - radiusCircle * radiusCircle);
-        const a = radiusCircle * radiusCircle / dr2;
-        const b = radiusCircle * D / dr2;
-
-        // Calculate tangent points
-        const tangent1 = new Vector(a * dx + b * dy + centerCircle.x, a * dy - b * dx + centerCircle.y);
-        const tangent2 = new Vector(a * dx - b * dy + centerCircle.x, a * dy + b * dx + centerCircle.y);
-
-        // Check if tangents are within maxDistance from viewpoint
-        const distToTangent1 = Math.sqrt((tangent1.x - x) * (tangent1.x - x) + (tangent1.y - y) * (tangent1.y - y));
-        const distToTangent2 = Math.sqrt((tangent2.x - x) * (tangent2.x - x) + (tangent2.y - y) * (tangent2.y - y));
-
-        const validTangents: Vector[] = [];
-        if (maxDistance === undefined || distToTangent1 <= maxDistance) {
-            validTangents.push(tangent1);
-        }
-
-        if (maxDistance === undefined || distToTangent2 <= maxDistance) {
-            validTangents.push(tangent2);
-        }
-
-        return validTangents;
     }
 }

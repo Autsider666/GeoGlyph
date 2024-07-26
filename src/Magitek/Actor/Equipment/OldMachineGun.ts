@@ -1,6 +1,7 @@
 import {Actor, Engine, Random, Vector} from "excalibur";
 import {HasTargetComponent} from "../../../Utility/Excalibur/ECS/Component/HasTargetComponent.ts";
-import {RadianHelper} from "../../../Utility/RadianHelper.ts";
+import {VisibilityHelper} from "../../../Utility/Excalibur/Visibility/Utility/VisibilityHelper.ts";
+import {RadianHelper} from "../../../Utility/Helper/RadianHelper.ts";
 import {CollisionGroups} from "../../Utility/CollisionGroups.ts";
 import {Bullet} from "./Ammo/Bullet.ts";
 
@@ -42,7 +43,7 @@ export class OldMachineGun extends Actor {
         }
 
         const pos = this.globalPos;
-        if (RadianHelper.canSee(target, pos, parent.rotation, this.fieldOfView, this.maxRange) === 0) {
+        if (VisibilityHelper.canSee(target, pos, parent.rotation, this.fieldOfView, this.maxRange) === 0) {
             return;
         }
 

@@ -1,5 +1,5 @@
 import {Actor, Vector} from "excalibur";
-import {CanvasHelper} from "../../../CanvasHelper.ts";
+import {CanvasHelper} from "../../../Helper/CanvasHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
 import {BlockVisibilityComponent, VisibilityEdge} from "./BlockVisibilityComponent.ts";
@@ -17,7 +17,7 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
     private static defaultFalloff: number = 0;
     private readonly initializedEntities = new Set<number>(); //TODO remove
 
-    private visibleEdges: VisibilityEdge[] = [];
+    private readonly visibleEdges: VisibilityEdge[] = [];
 
     constructor(
         private readonly viewPoints: ViewPointData[]
@@ -33,25 +33,25 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                 }
             }
 
-            this.visibleEdges = [];
+            const visibleEdges:VisibilityEdge[] = [];
             const visionBlockers = engine.currentScene.world.query([BlockVisibilityComponent]).entities;
             for (const visionBlocker of visionBlockers) {
                 if (visionBlocker.id === owner.id || !(visionBlocker instanceof Actor) || this.initializedEntities.has(visionBlocker.id)) {
                     continue;
                 }
 
-                const visibleEdges = visionBlocker.get(BlockVisibilityComponent).getEdges(owner, true);
-
-                for (const visibleEdge of visibleEdges) {
-                    if (visibleEdge.marker) {
-                        engine.add(visibleEdge.marker);
-                    }
-                }
-
-                this.visibleEdges = this.visibleEdges.concat(visibleEdges);
+                visibleEdges.push(...visionBlocker.get(BlockVisibilityComponent).getEdges(owner, true));
             }
 
-            this.visibleEdges = this.visibleEdges.sort((a: VisibilityEdge, b: VisibilityEdge) => {
+            for (const visibleEdge of visibleEdges) {
+                if (visibleEdge.marker) {
+                    engine.add(visibleEdge.marker);
+                }
+            }
+
+            this.visibleEdges.length = 0;
+
+            this.visibleEdges.push(...visibleEdges.sort((a: VisibilityEdge, b: VisibilityEdge) => {
                 if (a.angle === b.angle) {
                     // console.log(a,b);
                     return 0;
@@ -70,7 +70,7 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                 }
 
                 return a.angle < b.angle ? -1 : 1;
-            });
+            }));
         });
     }
 

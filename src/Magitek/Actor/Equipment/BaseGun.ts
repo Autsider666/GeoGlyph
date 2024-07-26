@@ -1,6 +1,7 @@
 import {Actor, Engine, Random, Vector} from "excalibur";
 import {HasTargetComponent} from "../../../Utility/Excalibur/ECS/Component/HasTargetComponent.ts";
-import {RadianHelper} from "../../../Utility/RadianHelper.ts";
+import {VisibilityHelper} from "../../../Utility/Excalibur/Visibility/Utility/VisibilityHelper.ts";
+import {RadianHelper} from "../../../Utility/Helper/RadianHelper.ts";
 import {CollisionGroups} from "../../Utility/CollisionGroups.ts";
 import {BulletAttributes} from "./Ammo/BulletAttributes.ts";
 import {BaseMagazine} from "./Magazine/BaseMagazine.ts";
@@ -52,7 +53,7 @@ export abstract class BaseGun extends Actor {
         }
 
         const pos = this.globalPos;
-        if (RadianHelper.canSee(target, pos, parent.rotation, this.attributes.fieldOfView, this.attributes.range) === 0) {
+        if (VisibilityHelper.canSee(target, pos, parent.rotation, this.attributes.fieldOfView, this.attributes.range) === 0) {
             return;
         }
 

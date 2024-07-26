@@ -1,5 +1,5 @@
 import {Actor, CircleCollider, PolygonCollider, Vector} from "excalibur";
-import {RadianHelper} from "../../../RadianHelper.ts";
+import {RadianHelper} from "../../../Helper/RadianHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
 

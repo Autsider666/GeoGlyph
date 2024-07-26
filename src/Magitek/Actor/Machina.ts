@@ -4,7 +4,7 @@ import {AngularInertiaComponent} from "../../Utility/Excalibur/ECS/Component/Ang
 import {SelectableComponent, SelectedTag} from "../../Utility/Excalibur/ECS/Component/SelectableComponent.ts";
 import {MovableComponent} from "../../Utility/Excalibur/Movement/Component/MovableComponent.ts";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
-import {RadianHelper} from "../../Utility/RadianHelper.ts";
+import {RadianHelper} from "../../Utility/Helper/RadianHelper.ts";
 import {HighlightsTargetComponent} from "../Component/HighlightsTargetComponent.ts";
 import {SearchesTargetComponent} from "../Component/SearchesTargetComponent.ts";
 import {CollisionGroups} from "../Utility/CollisionGroups.ts";

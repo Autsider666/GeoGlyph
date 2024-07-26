@@ -1,7 +1,7 @@
-import {Vector} from "excalibur";
+import {GenericVector} from "../Type/Coordinate.ts";
 
-export class VectorHelper {
-    public static getUniqueCoordinates(points: Vector[]): Vector[] {
+export class CoordinateHelper {
+    public static getUniqueCoordinates<Coordinate extends GenericVector = GenericVector>(points: Coordinate[]): Coordinate[] {
         const visitedPoints = new Set<string>();
         return points.filter(function (points) {
             const key = points.x + "," + points.y;
