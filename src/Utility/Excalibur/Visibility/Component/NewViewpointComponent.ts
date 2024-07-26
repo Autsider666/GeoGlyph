@@ -1,5 +1,6 @@
-import {Actor, Vector} from "excalibur";
+import {Actor, RayCastHit, Vector} from "excalibur";
 import {CanvasHelper} from "../../../Helper/CanvasHelper.ts";
+import {CoordinateHelper} from "../../../Helper/CoordinateHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
 import {BlockVisibilityComponent, VisibilityEdge} from "./BlockVisibilityComponent.ts";
@@ -123,95 +124,133 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
             //     getFalloff()
             // );
 
-            ctx.fill(this.generateVisibilityPolygon(owner));
+            ctx.fill(this.generatePolygonUsingOffsetAngles(owner));
+            // ctx.fill(this.generateVisibilityPolygon(owner));
         }
     }
 
-    private generateVisibilityPolygon(owner: Actor): Path2D {
-        // console.log('----------------');
-        let prependableEdge: Vector | undefined;
-        const polygon = new Path2D();
-        for (const edge of this.visibleEdges) {
-            if (prependableEdge) {
-                polygon.lineTo(prependableEdge.x, prependableEdge.y);
-                prependableEdge = undefined;
-            }
+    private generatePolygonUsingOffsetAngles(owner: Actor): Path2D {
+        const points = this.visibleEdges.map(edge => edge.coordinate);
+        const uniquePoints = CoordinateHelper.getUniqueCoordinates(points);
 
-            if (edge.extendable) {
-                // if (edge.object.name === 'Top Left') {
-                //     console.log(`++++ ${edge.coordinate} ++++`);
-                // }
-
-                const edgePos = {
-                    isTop: edge.collider.bounds.top === edge.coordinate.y,
-                    isBottom: edge.collider.bounds.bottom === edge.coordinate.y,
-                    isLeft: edge.collider.bounds.left === edge.coordinate.x,
-                    isRight: edge.collider.bounds.right === edge.coordinate.x,
-                };
-                const directionToRange = edge.coordinate.sub(owner.pos);
-                // const directionToRange = edge.coordinate.sub(owner.pos).normalize().scale(range);
-                // const directionToRange = Vector.fromAngle(edge.angle); // Glitches while moving
-
-                const hits = this.rayCast(owner.pos, directionToRange, {
-                    // maxDistance: range + 1,
-                    filter: hit => {
-                        // if (edge.object.name === 'Top Left') {
-                        //     console.log(hit.point, hit.collider.owner.name, hit);
-                        // }
-
-                        //TODO exclude Screen boundary so visibility is still calculated when used is offscreen?
-                        if (!hit.collider.owner.has(BlockVisibilityComponent) || edge.coordinate.equals(hit.point)) {
-                            return false;
-                        }
-                        const hitPos = {
-                            isTop: hit.collider.bounds.top === hit.point.y,
-                            isBottom: hit.collider.bounds.bottom === hit.point.y,
-                            isLeft: hit.collider.bounds.left === hit.point.x,
-                            isRight: hit.collider.bounds.right === hit.point.x,
-                        };
-
-                        // Check if ray is horizontal to see if it should go past it
-                        if (edge.coordinate.y === hit.point.y && (edgePos.isTop && hitPos.isTop || edgePos.isBottom && hitPos.isBottom)) {
-                            return false;
-                        }
-
-                        // Check if ray is vertical to see if it should go past it
-                        if (edge.coordinate.x === hit.point.x && (edgePos.isLeft && hitPos.isLeft || edgePos.isRight && hitPos.isRight)) {
-                            return false;
-                        }
-
-                        return true;
-                    },
-                    searchAllColliders: true,
-                });
-
-                // if (edge.object.name === 'Top Left') {
-                //     console.log(edge.coordinate, hits);
-                // }
-
-                edge.object.get(BlockVisibilityComponent).seen();
-
-                if (hits.length > 0) {
-                    const extendedEdge = hits[0]?.point;// ?? owner.pos.add(directionToRange);
-                    const centerAngle = edge.object.pos.sub(owner.pos).toAngle();
-                    const angularDifference = centerAngle - edge.angle;
-                    if (Math.abs(angularDifference) < Math.PI ? angularDifference > 0 : angularDifference < 0) {
-                        polygon.lineTo(extendedEdge.x, extendedEdge.y);
-                    } else {
-                        prependableEdge = extendedEdge;
-                    }
-                } else {
-                    console.log('No hits?');
-                }
-            }
-
-            polygon.lineTo(edge.coordinate.x, edge.coordinate.y);
+        const offset = 0.000000001;
+        const uniqueAngles: number[] = [];
+        for (const point of uniquePoints) {
+            const angle = point.sub(owner.pos).toAngle();
+            uniqueAngles.push(angle - offset, angle, angle + offset);
         }
 
-        if (prependableEdge) {
-            polygon.lineTo(prependableEdge.x, prependableEdge.y);
+        let hitsByAngle: { angle: number, hit: RayCastHit }[] = [];
+        for (const angle of uniqueAngles) {
+            const hit = this.rayCast(owner.pos, Vector.fromAngle(angle), {
+                searchAllColliders: false,
+                filter: hit => hit.collider.owner.has(BlockVisibilityComponent),
+            })[0];
+
+            if (!hit) {
+                continue;
+            }
+
+            hit.collider.owner.get(BlockVisibilityComponent).seen();
+
+            hitsByAngle.push({angle, hit});
+        }
+
+        hitsByAngle = hitsByAngle.sort((a, b) => a.angle - b.angle);
+
+        const polygon = new Path2D();
+        for (const {hit} of hitsByAngle) {
+            polygon.lineTo(hit.point.x, hit.point.y);
         }
 
         return polygon;
     }
+
+    // private generateVisibilityPolygon(owner: Actor): Path2D {
+    //     // console.log('----------------');
+    //     let prependableEdge: Vector | undefined;
+    //     const polygon = new Path2D();
+    //     for (const edge of this.visibleEdges) {
+    //         if (prependableEdge) {
+    //             polygon.lineTo(prependableEdge.x, prependableEdge.y);
+    //             prependableEdge = undefined;
+    //         }
+    //
+    //         if (edge.extendable) {
+    //             // if (edge.object.name === 'Top Left') {
+    //             //     console.log(`++++ ${edge.coordinate} ++++`);
+    //             // }
+    //
+    //             const edgePos = {
+    //                 isTop: edge.collider.bounds.top === edge.coordinate.y,
+    //                 isBottom: edge.collider.bounds.bottom === edge.coordinate.y,
+    //                 isLeft: edge.collider.bounds.left === edge.coordinate.x,
+    //                 isRight: edge.collider.bounds.right === edge.coordinate.x,
+    //             };
+    //             const directionToRange = edge.coordinate.sub(owner.pos);
+    //             // const directionToRange = edge.coordinate.sub(owner.pos).normalize().scale(range);
+    //             // const directionToRange = Vector.fromAngle(edge.angle); // Glitches while moving
+    //
+    //             const hits = this.rayCast(owner.pos, directionToRange, {
+    //                 // maxDistance: range + 1,
+    //                 filter: hit => {
+    //                     // if (edge.object.name === 'Top Left') {
+    //                     //     console.log(hit.point, hit.collider.owner.name, hit);
+    //                     // }
+    //
+    //                     //TODO exclude Screen boundary so visibility is still calculated when used is offscreen?
+    //                     if (!hit.collider.owner.has(BlockVisibilityComponent) || edge.coordinate.equals(hit.point)) {
+    //                         return false;
+    //                     }
+    //                     const hitPos = {
+    //                         isTop: hit.collider.bounds.top === hit.point.y,
+    //                         isBottom: hit.collider.bounds.bottom === hit.point.y,
+    //                         isLeft: hit.collider.bounds.left === hit.point.x,
+    //                         isRight: hit.collider.bounds.right === hit.point.x,
+    //                     };
+    //
+    //                     // Check if ray is horizontal to see if it should go past it
+    //                     if (edge.coordinate.y === hit.point.y && (edgePos.isTop && hitPos.isTop || edgePos.isBottom && hitPos.isBottom)) {
+    //                         return false;
+    //                     }
+    //
+    //                     // Check if ray is vertical to see if it should go past it
+    //                     if (edge.coordinate.x === hit.point.x && (edgePos.isLeft && hitPos.isLeft || edgePos.isRight && hitPos.isRight)) {
+    //                         return false;
+    //                     }
+    //
+    //                     return true;
+    //                 },
+    //                 searchAllColliders: true,
+    //             });
+    //
+    //             // if (edge.object.name === 'Top Left') {
+    //             //     console.log(edge.coordinate, hits);
+    //             // }
+    //
+    //             edge.object.get(BlockVisibilityComponent).seen();
+    //
+    //             if (hits.length > 0) {
+    //                 const extendedEdge = hits[0]?.point;// ?? owner.pos.add(directionToRange);
+    //                 const centerAngle = edge.object.pos.sub(owner.pos).toAngle();
+    //                 const angularDifference = centerAngle - edge.angle;
+    //                 if (Math.abs(angularDifference) < Math.PI ? angularDifference > 0 : angularDifference < 0) {
+    //                     polygon.lineTo(extendedEdge.x, extendedEdge.y);
+    //                 } else {
+    //                     prependableEdge = extendedEdge;
+    //                 }
+    //             } else {
+    //                 console.log('No hits?');
+    //             }
+    //         }
+    //
+    //         polygon.lineTo(edge.coordinate.x, edge.coordinate.y);
+    //     }
+    //
+    //     if (prependableEdge) {
+    //         polygon.lineTo(prependableEdge.x, prependableEdge.y);
+    //     }
+    //
+    //     return polygon;
+    // }
 }

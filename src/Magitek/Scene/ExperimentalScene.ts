@@ -49,58 +49,57 @@ function createPolygonActor(config: PolygonActorArgs): Actor {
 
 
 const objects: Actor[] = [
-    // //TOP LEFT
-    // new Actor({
-    //     name: 'Top Left',
-    //     x: 200,
-    //     y: 200,
-    //     width: 100,
-    //     height: 100,
-    //     color: ColorPalette.accentDarkColor,
-    //     coordPlane: CoordPlane.Screen
-    // }),
-    // //TOP Center
-    // // new Actor({
-    // //     name: 'Top Center',
-    // //     x: 450,
-    // //     y: 0,
-    // //     radius: 200,
-    // //     color: Color.Blue,
-    // // }),
+    //TOP LEFT
+    new Actor({
+        name: 'Top Left',
+        x: 200,
+        y: 200,
+        width: 100,
+        height: 100,
+        color: ColorPalette.accentDarkColor,
+    }),
+    //TOP Center
     // new Actor({
     //     name: 'Top Center',
-    //     x: 400,
-    //     y: 100,
-    //     width: 100,
-    //     height: 100,
-    //     color: ColorPalette.accentDarkColor,
+    //     x: 450,
+    //     y: 0,
+    //     radius: 200,
+    //     color: Color.Blue,
     // }),
-    // //TOP RIGHT
+    new Actor({
+        name: 'Top Center',
+        x: 400,
+        y: 100,
+        width: 100,
+        height: 100,
+        color: ColorPalette.accentDarkColor,
+    }),
+    //TOP RIGHT
+    new Actor({
+        name: 'Top Right',
+        x: 500,
+        y: 200,
+        width: 100,
+        height: 100,
+        color: ColorPalette.accentDarkColor,
+    }),
+    //BOTTOM LEFT
+    new Actor({
+        name: 'Bottom Left',
+        x: 100,
+        y: 450,
+        width: 100,
+        height: 100,
+        color: ColorPalette.accentDarkColor,
+    }),
+    // //BOTTOM RIGHT
     // new Actor({
-    //     name: 'Top Right',
-    //     x: 500,
-    //     y: 200,
-    //     width: 100,
-    //     height: 100,
-    //     color: ColorPalette.accentDarkColor,
+    //     name: 'Bottom Right',
+    //     x: 450,
+    //     y: 425,
+    //     radius: 100,
+    //     color: Color.Blue,
     // }),
-    // //BOTTOM LEFT
-    // new Actor({
-    //     name: 'Bottom Left',
-    //     x: 100,
-    //     y: 450,
-    //     width: 100,
-    //     height: 100,
-    //     color: ColorPalette.accentDarkColor,
-    // }),
-    // // //BOTTOM RIGHT
-    // // new Actor({
-    // //     name: 'Bottom Right',
-    // //     x: 450,
-    // //     y: 425,
-    // //     radius: 100,
-    // //     color: Color.Blue,
-    // // }),
     createPolygonActor({
         name: 'Polygon Bottom Right',
         pos: new Vector(350, 350),
@@ -196,7 +195,7 @@ export class ExperimentalScene extends Scene {
         viewPoint.addComponent(new PointerClickToPositionComponent());
         viewPoint.addComponent(new ViewpointComponent(viewPoints));
         viewPoint.addComponent(new NewViewpointComponent(viewPoints));
-        viewPoint.addComponent(new KeyboardControlledComponent(() => 50));
+        viewPoint.addComponent(new KeyboardControlledComponent(() => 250));
 
         return viewPoint;
     }
