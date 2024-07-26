@@ -21,6 +21,7 @@ import {ShadowLayer} from "../../Utility/Excalibur/Visibility/Actor/ShadowLayer.
 import {BlockVisibilityComponent} from "../../Utility/Excalibur/Visibility/Component/BlockVisibilityComponent.ts";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
+import {Machina} from "../Actor/Machina.ts";
 import {EnemyVisibilitySystem} from "../System/EnemyVisibilitySystem.ts";
 
 type PolygonActorArgs = ActorArgs & PolygonOptions & RasterOptions & { angle?: number }
@@ -160,23 +161,27 @@ export class ExperimentalScene extends Scene {
         );
 
         this.add(new FogLayer(worldBounds, {
-            alpha: 0.9,
+            alpha: 0.75,
             // color: 'white',
         }));
         this.add(new ShadowLayer(worldBounds));
 
-        const viewPoint = this.createViewPoint(
-            'Player',
-            // new Vector(180, 400), // Weird position right between square an polygon
-            // new Vector(665, 600),
-            worldBounds.center,
-            100,
-            false,
-        );
+        // const viewPoint = this.createViewPoint(
+        //     'Player',
+        //     // new Vector(180, 400), // Weird position right between square an polygon
+        //     // new Vector(665, 600),
+        //     worldBounds.center,
+        //     100,
+        //     false,
+        // );
+        const viewPoint = new Machina(worldBounds.center, 50);
+        viewPoint.addComponent(new KeyboardControlledComponent(() => 100));
         this.add(viewPoint);
 
+
         this.add(this.createViewPoint('Monster', new Vector(100, 100), undefined, true));
-        // this.add(this.createViewPoint('Ally', worldBounds.center.sub(new Vector(100,-100)), undefined, false));
+        this.add(this.createViewPoint('Ally Top', worldBounds.center.sub(new Vector(0,100)), undefined, false));
+        this.add(this.createViewPoint('Ally Left', worldBounds.center.sub(new Vector(100,-100)), undefined, false));
 
         for (const object of objects) {
             object.addComponent(new BlockVisibilityComponent());
@@ -198,13 +203,18 @@ export class ExperimentalScene extends Scene {
         });
         const viewPoints = [
             // {
-            //     getAngle: (): number => Math.PI,
-            //     getRange: (): number => 100,
+            //     getRange: (): number => 10,
+            //     getFalloff: (): number => 1, //0.75
             // },
             {
-                getRange: (): number => 250, // 150, //250
+                getRange: (): number => 150, // 150, //250
                 getFalloff: (): number => 0, //0.75
-            }
+            },
+            // {
+            //     getAngle: (): number => Math.PI,
+            //     getRange: (): number => 250,
+            //     getFalloff: (): number => 0, //0.75
+            // },
         ];
 
         if (speed !== undefined) {

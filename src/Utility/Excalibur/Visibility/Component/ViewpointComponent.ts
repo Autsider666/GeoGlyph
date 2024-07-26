@@ -1,6 +1,7 @@
 import {Actor, Vector} from "excalibur";
 import {CanvasHelper} from "../../../Helper/CanvasHelper.ts";
 import {CoordinateHelper} from "../../../Helper/CoordinateHelper.ts";
+import {RadianHelper} from "../../../Helper/RadianHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 import {ColliderHelper} from "../../Utility/ColliderHelper.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
@@ -14,7 +15,7 @@ type ViewPointData = {
 
 
 export class ViewpointComponent extends BaseComponent implements ViewPoint {
-    // private static defaultAngle: number = RadianHelper.Circle;
+    private static defaultAngle: number = RadianHelper.Circle;
     private static defaultRange: number = Infinity;
     private static defaultFalloff: number = 0;
     private readonly initializedEntities = new Set<number>(); //TODO remove
@@ -94,18 +95,21 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
         const pos = owner.pos;
         // const centerX = pos.x;
         // const centerY = pos.y;
-        // const direction = owner.rotation;
+        const direction = owner.rotation;
 
         ctx.globalCompositeOperation = 'destination-out';
         ctx.globalAlpha = 1;
+
+        // ctx.save();
+        // const viewCone = new Path2D();
         for (const {
-            // getAngle = (): number => NewViewpointComponent.defaultAngle,
+            getAngle = (): number => ViewpointComponent.defaultAngle,
             getRange = (): number => ViewpointComponent.defaultRange,
             getFalloff = (): number => ViewpointComponent.defaultFalloff,
         } of this.viewPoints) {
-            // const angle = getAngle();
-            // const startAngle = direction - angle / 2;
-            // const endAngle = direction + angle / 2;
+            const angle = getAngle();
+            const startAngle = direction - angle / 2;
+            const endAngle = direction + angle / 2;
 
 
             const range = getRange();
@@ -114,30 +118,50 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
                 pos,
                 range,
                 'rgba(0,0,0,0)', // Dark outside
-                'rgba(0,0,0,0.50)', // Light inside
+                'rgba(0,0,0,1)', // Light inside
                 getFalloff()
             );
 
-            // ctx.fillStyle = CanvasHelper.posToGradient(
-            //     ctx,
-            //     pos,
-            //     range,
-            //     [
-            //         'rgba(0,0,0,0)',
-            //         'rgba(0,0,0,0.10)',
-            //         'rgba(0,0,0,0.25)',
-            //         'rgba(0,0,0,0.45)',
-            //         'rgba(0,0,0,0.60)',
-            //         'rgba(0,0,0,0.90)',
-            //     ],
-            //     getFalloff()
-            // );
-            this.drawPolygonUsingOffsetAngles(ctx, owner);
-            // ctx.fill(this.generateVisibilityPolygon(owner));
+            // const gradient = ctx.createRadialGradient(pos.x, pos.y, range, pos.x, pos.y, 0);
+            // gradient.addColorStop(0.0, "rgba(0,0,0,0.0)");
+            // gradient.addColorStop(0.7, "rgba(0,0,0,0.7)");
+            // gradient.addColorStop(0.9, "rgba(0,0,0,1.0)");
+            //
+            // ctx.fillStyle = gradient;
+
+            ctx.save();
+            const viewCone = new Path2D();
+            // ctx.fillStyle = 'rgba(0,0,0,1)';
+            viewCone.moveTo(pos.x,pos.y);
+            viewCone.arc(
+                pos.x,
+                pos.y,
+                range,
+                startAngle,
+                endAngle,
+            );
+
+
+            ctx.clip(viewCone);
+            ctx.fill(this.createPolygonUsingOffsetAngles(owner));
+            ctx.restore();
         }
+
+        // ctx.fillStyle = CanvasHelper.posToReverseGradient(
+        //     ctx,
+        //     pos,
+        //     250,
+        //     'rgba(0,0,0,0)', // Dark outside
+        //     'rgba(0,0,0,1)', // Light inside
+        //     0
+        // );
+        //
+        // ctx.clip(viewCone);
+        // ctx.fill(this.createPolygonUsingOffsetAngles(owner));
+        // ctx.restore();
     }
 
-    private drawPolygonUsingOffsetAngles(ctx: CanvasRenderingContext2D, owner: Actor): void {
+    private createPolygonUsingOffsetAngles(owner: Actor): Path2D {
         //Don't put this above +- 0.00001, because it will mess up long distance raycasting
         //Don't put it below +- 0.000001, because it seems to mess up short distance raycasting (use new Vector(180, 400))
         const offset = 0.000001;
@@ -225,22 +249,16 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
             hitsByAngle.push(hit.point);
         }
 
-        if (hitsByAngle.length < 1) {
-            return;
-        }
-
-        // hitsByAngle = hitsByAngle.sort((a, b) => a.angle - b.angle);
-
-        // hitsByAngle = CoordinateHelper.getUniqueCoordinates(hitsByAngle, 4);
-
         const polygon = new Path2D();
-        const {x, y} = hitsByAngle[hitsByAngle.length - 1];
-        polygon.moveTo(x, y);
-        for (const point of hitsByAngle) {
-            polygon.lineTo(point.x, point.y);
+        if (hitsByAngle.length > 0) {
+            const {x, y} = hitsByAngle[hitsByAngle.length - 1];
+            polygon.moveTo(x, y);
+            for (const point of hitsByAngle) {
+                polygon.lineTo(point.x, point.y);
+            }
         }
 
-        ctx.fill(polygon);
+        return polygon;
     }
 
     // private generateVisibilityPolygon(owner: Actor): Path2D {

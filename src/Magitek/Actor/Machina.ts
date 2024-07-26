@@ -30,7 +30,7 @@ export class Machina extends Actor {
     // Stats
     private speed: number = 50;
 
-    constructor(pos: Vector) {
+    constructor(pos: Vector, angularInertia: number = 150) {
         super({
             pos,
             radius,
@@ -42,15 +42,16 @@ export class Machina extends Actor {
 
         this.graphics.use(graphic);
 
-        this.addComponent(new AngularInertiaComponent(() => 150 * this.calculateMultiplier(2)));
+        this.addComponent(new AngularInertiaComponent(() => angularInertia * this.calculateMultiplier(2)));
         this.addComponent(new MovableComponent(() => this.speed * this.calculateMultiplier(3)));
         this.addComponent(new ViewpointComponent([
             {
                 getAngle: (): number => this.fieldOfView * this.calculateMultiplier(1.5),
                 getRange: (): number => this.visionRadius / this.calculateMultiplier(1.5),
+                getFalloff: (): number => 0.50,
             }, {
-                getRange: (): number => radius * 3,
-                getFalloff: (): number => 0.75,
+                getRange: (): number => radius * 5,
+                getFalloff: (): number => 0.50,
             }
         ]));
 
