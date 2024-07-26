@@ -1,7 +1,8 @@
-import {Actor, RayCastHit, Vector} from "excalibur";
+import {Actor, Vector} from "excalibur";
 import {CanvasHelper} from "../../../Helper/CanvasHelper.ts";
 import {CoordinateHelper} from "../../../Helper/CoordinateHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
+import {ColliderHelper} from "../../Utility/ColliderHelper.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
 import {BlockVisibilityComponent, VisibilityEdge} from "./BlockVisibilityComponent.ts";
 
@@ -19,6 +20,7 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
     private readonly initializedEntities = new Set<number>(); //TODO remove
 
     private readonly visibleEdges: VisibilityEdge[] = [];
+    private readonly points: Vector[] = [];
 
     constructor(
         private readonly viewPoints: ViewPointData[]
@@ -34,14 +36,16 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
                 }
             }
 
-            const visibleEdges:VisibilityEdge[] = [];
+            this.points.length = 0;
+            const visibleEdges: VisibilityEdge[] = [];
             const visionBlockers = engine.currentScene.world.query([BlockVisibilityComponent]).entities;
             for (const visionBlocker of visionBlockers) {
                 if (visionBlocker.id === owner.id || !(visionBlocker instanceof Actor) || this.initializedEntities.has(visionBlocker.id)) {
                     continue;
                 }
 
-                visibleEdges.push(...visionBlocker.get(BlockVisibilityComponent).getEdges(owner, true));
+                visibleEdges.push(...visionBlocker.get(BlockVisibilityComponent).getEdges(owner, false));
+                this.points.push(...ColliderHelper.getColliderPoints(visionBlocker.collider.get(), {viewpoint: owner.pos}));
             }
 
             for (const visibleEdge of visibleEdges) {
@@ -130,21 +134,78 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
     }
 
     private generatePolygonUsingOffsetAngles(owner: Actor): Path2D {
-        const points = this.visibleEdges.map(edge => edge.coordinate);
-        const uniquePoints = CoordinateHelper.getUniqueCoordinates(points);
+        //Don't put this above +- 0.00001, because it will mess up long distance raycasting
+        //Don't put it below +- 0.000001, because it seems to mess up short distance raycasting (use new Vector(180, 400))
+        const offset = 0.000001;
 
-        const offset = 0.000000001;
-        const uniqueAngles: number[] = [];
+        // console.log('---- Draw ----');
+        // const target: string | undefined = 'Bottom Left';
+        // const points = this.visibleEdges.map(edge => {
+        //     // if (edge.object.name === target) {
+        //     //     const direction = edge.coordinate.sub(owner.pos);
+        //     //     const normalizedDirection = direction.normalize();
+        //     //     const angle = normalizedDirection.toAngle();
+        //     //     const angleDirection = Vector.fromAngle(angle);
+        //     //     const angleDirectionAtRange = angleDirection.scale(edge.coordinate.distance(owner.pos));
+        //     //     const hits = this.rayCast(owner.pos, Vector.fromAngle(angle - offset), {
+        //     //         searchAllColliders: false,
+        //     //         filter: hit => {
+        //     //             if (!hit.collider.owner.has(BlockVisibilityComponent)) {
+        //     //                 return false;
+        //     //             }
+        //     //
+        //     //             console.log(hit.collider.owner.name, hit.point, hit);
+        //     //
+        //     //             return true;
+        //     //         },
+        //     //     });
+        //     //     console.log('+++ results +++');
+        //     //     console.log({
+        //     //         coordinate: edge.coordinate,
+        //     //         direction,
+        //     //         normalizedDirection,
+        //     //         angle,
+        //     //         angleDirection,
+        //     //         angleDirectionAtRange,
+        //     //         hits,
+        //     //         hit: hits[0].collider.owner.name,
+        //     //     });
+        //     // }
+        //
+        //     return edge.coordinate;
+        // });
+        // const uniquePoints = CoordinateHelper.getUniqueCoordinates(points);
+        const uniquePoints = CoordinateHelper.getUniqueCoordinates(this.points);
+
+        let uniqueAngles: number[] = [];
         for (const point of uniquePoints) {
             const angle = point.sub(owner.pos).toAngle();
-            uniqueAngles.push(angle - offset, angle, angle + offset);
+            uniqueAngles.push(
+                angle - offset,
+                angle, // TODO check if this one can be removed
+                angle + offset,
+            );
         }
 
-        let hitsByAngle: { angle: number, hit: RayCastHit }[] = [];
+        uniqueAngles = uniqueAngles.sort();
+
+        const hitsByAngle: Vector[] = [];
         for (const angle of uniqueAngles) {
+            // console.log('angle',angle);
             const hit = this.rayCast(owner.pos, Vector.fromAngle(angle), {
-                searchAllColliders: false,
+                searchAllColliders: true, // KEEP AT TRUE TILL FIXED IN EX!!!!!
                 filter: hit => hit.collider.owner.has(BlockVisibilityComponent),
+                // filter: hit => {
+                //     if (!hit.collider.owner.has(BlockVisibilityComponent)) {
+                //         return false;
+                //     }
+                //
+                //     if (hit.collider.owner.name === target) {
+                //         console.log('Hit', angle, hit.point, hit);
+                //     }
+                //
+                //     return true;
+                // },
             })[0];
 
             if (!hit) {
@@ -153,14 +214,18 @@ export class NewViewpointComponent extends BaseComponent implements ViewPoint {
 
             hit.collider.owner.get(BlockVisibilityComponent).seen();
 
-            hitsByAngle.push({angle, hit});
+            hitsByAngle.push(hit.point);
         }
 
-        hitsByAngle = hitsByAngle.sort((a, b) => a.angle - b.angle);
+        // hitsByAngle = hitsByAngle.sort((a, b) => a.angle - b.angle);
+
+        // hitsByAngle = CoordinateHelper.getUniqueCoordinates(hitsByAngle, 4);
 
         const polygon = new Path2D();
-        for (const {hit} of hitsByAngle) {
-            polygon.lineTo(hit.point.x, hit.point.y);
+        const {x, y} = hitsByAngle[hitsByAngle.length - 1];
+        polygon.moveTo(x, y);
+        for (const point of hitsByAngle) {
+            polygon.lineTo(point.x, point.y);
         }
 
         return polygon;

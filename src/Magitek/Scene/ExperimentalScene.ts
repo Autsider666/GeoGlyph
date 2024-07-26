@@ -23,7 +23,7 @@ import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/V
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
 import {EnemyVisibilitySystem} from "../System/EnemyVisibilitySystem.ts";
 
-type PolygonActorArgs = ActorArgs & PolygonOptions & RasterOptions
+type PolygonActorArgs = ActorArgs & PolygonOptions & RasterOptions & { angle?: number }
 
 function createPolygonActor(config: PolygonActorArgs): Actor {
     const collider = new PolygonCollider({
@@ -34,14 +34,15 @@ function createPolygonActor(config: PolygonActorArgs): Actor {
         ...config,
         // @ts-expect-error weird IDE
         collider,
-        rotation: undefined,
+        rotation: 0,
     });
 
-    actor.graphics.use(new Polygon(config));
+    actor.graphics.use(new Polygon({
+        ...config,
+    }));
 
-    if (config.rotation) {
-        // actor.rotation = config.rotation;
-        actor.rotation = 2;
+    if (config.angle) {
+        actor.rotation = config.angle;
     }
 
     return actor;
@@ -88,9 +89,10 @@ const objects: Actor[] = [
         name: 'Bottom Left',
         x: 100,
         y: 450,
-        width: 100,
-        height: 100,
+        width: 50,
+        height: 300,
         color: ColorPalette.accentDarkColor,
+        anchor: Vector.Zero,
     }),
     // //BOTTOM RIGHT
     // new Actor({
@@ -98,7 +100,7 @@ const objects: Actor[] = [
     //     x: 450,
     //     y: 425,
     //     radius: 100,
-    //     color: Color.Blue,
+    //     color: ColorPalette.accentLightColor,
     // }),
     createPolygonActor({
         name: 'Polygon Bottom Right',
@@ -113,34 +115,35 @@ const objects: Actor[] = [
         ],
         color: ColorPalette.accentLightColor,
         // rotation: Math.PI / 3,
+        angle: -Math.PI / 3,
     }),
-    // createPolygonActor({
-    //     name: 'Polygon Bottom Right',
-    //     pos: new Vector(450, 425),
-    //     points: [
-    //         new Vector(-100, -100),
-    //         new Vector(0, -50),
-    //         new Vector(100, -100),
-    //         new Vector(50, 50),
-    //         new Vector(-100, 100),
-    //         new Vector(-50, 50),
-    //     ],
-    //     color: ColorPalette.accentLightColor,
-    //     // rotation: Math.PI / 3,
-    // }),
-    // createPolygonActor({
-    //     name: 'Polygon Bottom Right',
-    //     pos: new Vector(250, 350),
-    //     points: [
-    //         new Vector(-100, -100),
-    //         new Vector(0, -50),
-    //         new Vector(100, -100),
-    //         new Vector(50, 50),
-    //         new Vector(-100, 100),
-    //         new Vector(-50, 50),
-    //     ],
-    //     color: ColorPalette.accentLightColor,
-    // }),
+    createPolygonActor({
+        name: 'Polygon Bottom Right',
+        pos: new Vector(550, 450),
+        points: [
+            new Vector(-100, -100),
+            new Vector(0, -50),
+            new Vector(100, -100),
+            new Vector(50, 50),
+            new Vector(-100, 100),
+            new Vector(-50, 50),
+        ],
+        color: ColorPalette.accentLightColor,
+        // rotation: Math.PI,
+    }),
+    createPolygonActor({
+        name: 'Polygon Bottom Right',
+        pos: new Vector(250, 350),
+        points: [
+            new Vector(-100, -100),
+            new Vector(0, -50),
+            new Vector(100, -100),
+            new Vector(50, 50),
+            new Vector(-100, 100),
+            new Vector(-50, 50),
+        ],
+        color: ColorPalette.accentLightColor,
+    }),
 ];
 
 export class ExperimentalScene extends Scene {
@@ -157,12 +160,14 @@ export class ExperimentalScene extends Scene {
         }));
         this.world.add(new ShadowLayer());
 
-        this.add(this.createViewPoint(
+        const viewPoint = this.createViewPoint(
             'Player',
+            // new Vector(180, 400), // Weird position right between square an polygon
             new Vector(165, 100),
             // x: 165, //300
             // y: 100, //300
-        ));
+        );
+        this.add(viewPoint);
 
         for (const object of objects) {
             object.addComponent(new BlockVisibilityComponent());
@@ -187,7 +192,7 @@ export class ExperimentalScene extends Scene {
             //     getRange: (): number => 1000,
             // },
             {
-                getRange: (): number => 1000, // 150, //250
+                getRange: (): number => 150, // 150, //250
                 getFalloff: (): number => 0, //0.75
             }
         ];
@@ -195,7 +200,7 @@ export class ExperimentalScene extends Scene {
         viewPoint.addComponent(new PointerClickToPositionComponent());
         viewPoint.addComponent(new ViewpointComponent(viewPoints));
         viewPoint.addComponent(new NewViewpointComponent(viewPoints));
-        viewPoint.addComponent(new KeyboardControlledComponent(() => 250));
+        viewPoint.addComponent(new KeyboardControlledComponent(() => 100));
 
         return viewPoint;
     }

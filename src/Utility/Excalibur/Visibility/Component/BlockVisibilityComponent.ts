@@ -195,7 +195,7 @@ export class BlockVisibilityComponent extends BaseComponent {
     }
 
     private calculateEdgesForComposite(viewpoint: Actor, collider: CompositeCollider, owner: Actor): VisibilityEdge[] {
-        const visibleEdgeCoordinates = ColliderHelper.getUniqueCompositePoints(collider)
+        const visibleEdgeCoordinates = ColliderHelper.getCompositeColliderPoints(collider)
             .filter(edgeCoordinate => this.isEdgeVisible(viewpoint, edgeCoordinate, collider));
 
         return visibleEdgeCoordinates.map(edgeCoordinate => { //TODO copy pasted, seems to work
