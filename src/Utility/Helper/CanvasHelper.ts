@@ -1,4 +1,5 @@
 import {GenericVector} from "../Type/Coordinate.ts";
+import {RadianHelper} from "./RadianHelper.ts";
 
 export class CanvasHelper {
     public static posToReverseGradient(
@@ -34,12 +35,12 @@ export class CanvasHelper {
         return gradient;
     }
 
-    public static drawPolygon(ctx: CanvasRenderingContext2D, points: GenericVector[]): void {
+    public static generatePolygonPath(points: GenericVector[]): Path2D {
         const polygon = new Path2D();
         const firstPoint = points.shift();
         if (!firstPoint) {
             console.log('Empty points?');
-            return;
+            return polygon;
         }
 
         polygon.moveTo(firstPoint.x, firstPoint.y);
@@ -47,7 +48,19 @@ export class CanvasHelper {
             polygon.lineTo(point.x, point.y);
         }
 
-        ctx.fill(polygon);
+        return polygon;
+    }
+
+    public static generateCirclePath(
+        {x, y}: GenericVector,
+        radius: number,
+        startAngle: number = 0,
+        endAngle: number = RadianHelper.Circle,
+    ): Path2D {
+        const circle = new Path2D();
+        circle.arc(x, y, radius, startAngle, endAngle);
+
+        return circle;
     }
 
     public static isolateContextState(ctx: CanvasRenderingContext2D, callback: (ctx: CanvasRenderingContext2D) => void): void {

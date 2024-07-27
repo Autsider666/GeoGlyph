@@ -134,7 +134,7 @@ export class BlockVisibilityComponent extends BaseComponent {
         ctx.globalCompositeOperation = 'destination-out';
         ctx.globalAlpha = 1;
 
-        ColliderHelper.drawShape(ctx, collider);
+        ctx.fill(ColliderHelper.generateShapePath(collider));
     }
 
     private calculateEdgesForCircle(viewpoint: Actor, collider: CircleCollider, owner: Actor): VisibilityEdge[] {
