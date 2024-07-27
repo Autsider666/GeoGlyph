@@ -131,13 +131,10 @@ export class BlockVisibilityComponent extends BaseComponent {
             return;
         }
 
-        ctx.save();
         ctx.globalCompositeOperation = 'destination-out';
         ctx.globalAlpha = 1;
 
         ColliderHelper.drawShape(ctx, collider);
-
-        ctx.restore();
     }
 
     private calculateEdgesForCircle(viewpoint: Actor, collider: CircleCollider, owner: Actor): VisibilityEdge[] {

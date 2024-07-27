@@ -31,6 +31,8 @@ export class VisibilitySystem extends System {
             for (const entity of this.visibilityBlockerQuery.entities) {
                 layer.drawBlocker(entity);
             }
+
+            layer.postProcess();
         }
     }
 

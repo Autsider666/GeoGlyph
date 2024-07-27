@@ -49,4 +49,10 @@ export class CanvasHelper {
 
         ctx.fill(polygon);
     }
+
+    public static isolateContextState(ctx: CanvasRenderingContext2D, callback: (ctx: CanvasRenderingContext2D) => void): void {
+        ctx.save();
+        callback(ctx);
+        ctx.restore();
+    }
 }

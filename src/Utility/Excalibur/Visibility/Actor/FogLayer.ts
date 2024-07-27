@@ -29,11 +29,15 @@ export class FogLayer extends Actor {
                     ctx.globalCompositeOperation = 'destination-out';
                 }
             }),
-            {insideAlpha, outsideAlpha}
+            {insideAlpha, outsideAlpha},
+            this.postProcess.bind(this),
         ));
     }
 
-    // onPreUpdate(engine: Engine): void {
-    //     this.pos = engine.screenToWorldCoordinates(Vector.Zero);
-    // }
+    private postProcess(ctx: CanvasRenderingContext2D): void {
+        ctx.globalCompositeOperation = 'luminosity';
+
+        ctx.fillStyle = 'rgb(0,0,0,0.25)';
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
 }

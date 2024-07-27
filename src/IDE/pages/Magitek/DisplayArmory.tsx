@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import {Color, Scene, Vector} from "excalibur";
+import {Scene, Vector} from "excalibur";
 import {ReactElement, useEffect, useState} from "react";
 import {ArmoryDummy} from "../../../Magitek/Actor/ArmoryDummy.ts";
 import {MachineGun} from "../../../Magitek/Actor/Equipment/MachineGun.ts";
@@ -8,6 +8,7 @@ import {RegularMagazine} from "../../../Magitek/Actor/Equipment/Magazine/Regular
 import {ArmoryScene} from "../../../Magitek/Scene/ArmoryScene.ts";
 import {CollisionGroups} from "../../../Magitek/Utility/CollisionGroups.ts";
 import {ExcaliburContainer, ExcaliburOptions} from "../../../Utility/Excalibur/ExcaliburContainer.tsx";
+import {ColorPalette} from "../../ColorPalette.ts";
 
 const defaultDummySpeed = 25;
 const defaultDummyDistance = 300;
@@ -16,7 +17,7 @@ const armoryDummy = new ArmoryDummy({
     x: defaultDummyDistance,
     y: 10,
     radius: 10,
-    color: Color.Red,
+    color: ColorPalette.accentDarkColor,
     collisionGroup: CollisionGroups.Enemy,
 });
 
