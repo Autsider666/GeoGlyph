@@ -1,14 +1,17 @@
 import {Actor, BoundingBox, Vector} from "excalibur";
 import {DirtyCanvas} from "../../DirtyCanvas.ts";
+import {ViewPointModifiers} from "../../Utility/ViewPoint.ts";
 import {VisibilityLayerComponent} from "../Component/VisibilityLayerComponent.ts";
 
 export class ShadowLayer extends Actor {
     constructor(
-        bounds:BoundingBox,
+        bounds: BoundingBox,
         {
             alpha = 1,
-            color = '#000000'
-        }: { alpha?: number, color?: string } = {}
+            color = '#000000',
+            insideAlpha = 1,
+            outsideAlpha = 1,
+        }: { alpha?: number, color?: string } & ViewPointModifiers = {}
     ) {
         let initialRun: boolean = true;
 
@@ -36,7 +39,8 @@ export class ShadowLayer extends Actor {
 
                     ctx.globalCompositeOperation = 'destination-out'; // Used to be destination-out
                 }
-            })
+            }),
+            {insideAlpha, outsideAlpha}
         ));
     }
 }

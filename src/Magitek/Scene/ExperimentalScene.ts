@@ -161,7 +161,7 @@ export class ExperimentalScene extends Scene {
         );
 
         this.add(new FogLayer(worldBounds, {
-            alpha: 0.75,
+            // alpha: 0.75,
             // color: 'white',
         }));
         this.add(new ShadowLayer(worldBounds));
@@ -210,12 +210,14 @@ export class ExperimentalScene extends Scene {
                 getRange: (): number => 150, // 150, //250
                 getFalloff: (): number => 0, //0.75
             },
-            // {
-            //     getAngle: (): number => Math.PI,
-            //     getRange: (): number => 250,
-            //     getFalloff: (): number => 0, //0.75
-            // },
+            {
+                getAngle: (): number => Math.PI,
+                getRange: (): number => 250,
+                getFalloff: (): number => 0, //0.75
+            },
         ];
+
+        viewPoint.rotation = -Math.PI/2;
 
         if (speed !== undefined) {
             viewPoint.addComponent(new PointerClickToPositionComponent());

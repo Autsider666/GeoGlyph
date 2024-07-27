@@ -67,7 +67,7 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
         });
     }
 
-    public drawViewPoint(ctx: CanvasRenderingContext2D): void {
+    public drawViewPoint(ctx: CanvasRenderingContext2D, {insideAlpha = 1, outsideAlpha = 0}:{insideAlpha?:number,outsideAlpha?:number} = {}): void {
         if (this.disableRendering) {
             return;
         }
@@ -96,13 +96,14 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
             const endAngle = direction + angle / 2;
 
 
+            ctx.save();
             const range = getRange();
             ctx.fillStyle = CanvasHelper.posToReverseGradient(
                 ctx,
                 pos,
                 range,
-                'rgba(0,0,0,0)', // Dark outside
-                'rgba(0,0,0,1)', // Light inside
+                `rgba(0,0,0,${outsideAlpha})`, // Dark outside
+                `rgba(0,0,0,${insideAlpha})`, // Light inside
                 getFalloff()
             );
 
@@ -113,7 +114,6 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
             //
             // ctx.fillStyle = gradient;
 
-            ctx.save();
             const viewCone = new Path2D();
             // ctx.fillStyle = 'rgba(0,0,0,1)';
             viewCone.moveTo(pos.x,pos.y);

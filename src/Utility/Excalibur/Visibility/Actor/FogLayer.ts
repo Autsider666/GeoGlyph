@@ -1,13 +1,16 @@
 import {Actor, BoundingBox, Canvas, Vector} from "excalibur";
+import {ViewPointModifiers} from "../../Utility/ViewPoint.ts";
 import {VisibilityLayerComponent} from "../Component/VisibilityLayerComponent.ts";
 
 export class FogLayer extends Actor {
     constructor(
-        bounds:BoundingBox,
+        bounds: BoundingBox,
         {
             alpha = 0.75,
-            color = '#000000'
-        }: { alpha?: number, color?: string } = {}
+            color = '#000000',
+            insideAlpha = 0.5,
+            outsideAlpha = 0,
+        }: { alpha?: number, color?: string } & ViewPointModifiers = {}
     ) {
         super({
             pos: bounds.center,
@@ -26,6 +29,7 @@ export class FogLayer extends Actor {
                     ctx.globalCompositeOperation = 'destination-out';
                 }
             }),
+            {insideAlpha, outsideAlpha}
         ));
     }
 
