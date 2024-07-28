@@ -8,9 +8,11 @@ export class FogLayer extends Actor {
         {
             alpha = 0.75,
             color = '#000000',
-            insideAlpha = 0.5,
-            outsideAlpha = 0,
-        }: { alpha?: number, color?: string } & ViewPointModifiers = {}
+            defaultModifiers = {
+                getInsideAlpha: (): number => 0.5,
+                getOutsideAlpha: (): number => 0,
+            }
+        }: { alpha?: number, color?: string, defaultModifiers?: ViewPointModifiers } = {}
     ) {
         super({
             name: 'FogLayer',
@@ -29,10 +31,7 @@ export class FogLayer extends Actor {
                     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                     ctx.globalCompositeOperation = 'destination-out';
                 },
-                viewPointModifiers: {
-                    insideAlpha,
-                    outsideAlpha,
-                },
+                viewPointModifiers: defaultModifiers,
                 postProcessCallback: this.postProcess.bind(this),
             },
         ));

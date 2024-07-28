@@ -4,30 +4,30 @@ import {CanvasHelper} from "../../../Helper/CanvasHelper.ts";
 import {CoordinateHelper} from "../../../Helper/CoordinateHelper.ts";
 import {RadianHelper} from "../../../Helper/RadianHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
-import {ViewPoint} from "../../Utility/ViewPoint.ts";
+import {ViewPoint, ViewPointModifiers} from "../../Utility/ViewPoint.ts";
 import {BlockVisibilityComponent} from "./BlockVisibilityComponent.ts";
 
-type ViewPointData = {
-    getAngle?: () => number,
-    getRange?: () => number,
-    getFalloff?: () => number,
-}
-
 export class ViewpointComponent extends BaseComponent implements ViewPoint {
-    private static defaultAngle: number = RadianHelper.Circle;
-    private static defaultRange: number = Infinity;
-    private static defaultFalloff: number = 0;
+    private static readonly getDefaultInsideAlpha: () => number = () => 1;
+    private static readonly getDefaultOutsideAlpha: () => number = () => 0;
+    private static readonly getDefaultAngle: () => number = () => RadianHelper.Circle;
+    private static readonly getDefaultRange: () => number = () => Infinity;
+    private static readonly getDefaultFalloff: () => number = () => 0;
     private useCache: boolean = false;
 
     private readonly points: Vector[] = [];
 
     private visibilityBlockerQuery?: Query<typeof BlockVisibilityComponent>;
 
+    private readonly viewPoints: (ViewPointModifiers & { cachedPath?: Path2D })[];
+
     constructor(
-        private readonly viewPoints: (ViewPointData & { cachedPath?: Path2D })[],
+        viewPoints: ViewPointModifiers[],
         private readonly disableRendering: boolean = false,
     ) {
         super();
+
+        this.viewPoints = viewPoints;
     }
 
     onAdd(owner: Actor): void {
@@ -54,10 +54,10 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
         });
     }
 
-    public drawViewPoint(ctx: CanvasRenderingContext2D, {insideAlpha = 1, outsideAlpha = 0}: {
-        insideAlpha?: number,
-        outsideAlpha?: number
-    } = {}): void {
+    public drawViewPoint(
+        ctx: CanvasRenderingContext2D,
+        defaultModifiers: ViewPointModifiers,
+    ): void {
         if (this.disableRendering) {
             return;
         }
@@ -78,15 +78,18 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
         // const viewCone = new Path2D();
         for (const viewpoint of this.viewPoints) {
             const {
-                getAngle = (): number => ViewpointComponent.defaultAngle,
-                getRange = (): number => ViewpointComponent.defaultRange,
-                getFalloff = (): number => ViewpointComponent.defaultFalloff,
+                getAngle = defaultModifiers.getAngle ?? ViewpointComponent.getDefaultAngle,
+                getRange = defaultModifiers.getRange ?? ViewpointComponent.getDefaultRange,
+                getFalloff = defaultModifiers.getFalloff ?? ViewpointComponent.getDefaultFalloff,
+                getInsideAlpha = defaultModifiers.getInsideAlpha ?? ViewpointComponent.getDefaultInsideAlpha,
+                getOutsideAlpha = defaultModifiers.getOutsideAlpha ?? ViewpointComponent.getDefaultOutsideAlpha,
             } = viewpoint;
 
             const angle = getAngle();
             const startAngle = direction - angle / 2;
             const endAngle = direction + angle / 2;
-
+            const insideAlpha = getInsideAlpha();
+            const outsideAlpha = getOutsideAlpha();
 
             ctx.save();
             const range = getRange();

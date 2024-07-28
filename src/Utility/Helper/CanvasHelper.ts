@@ -12,7 +12,7 @@ export class CanvasHelper {
     ): CanvasGradient {
         const gradient = ctx.createRadialGradient(pos.x, pos.y, visionRadius, pos.x, pos.y, visionRadius * falloff);
         gradient.addColorStop(0, lightColor);
-        gradient.addColorStop(1, darkColor);
+        gradient.addColorStop(0.9, darkColor);
 
         return gradient;
     }

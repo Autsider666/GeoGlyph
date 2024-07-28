@@ -1,6 +1,9 @@
 export type ViewPointModifiers = {
-    insideAlpha?:number,
-    outsideAlpha?:number,
+    getInsideAlpha?:()=>number,
+    getOutsideAlpha?:()=>number,
+    getAngle?: () => number,
+    getRange?: () => number,
+    getFalloff?: () => number,
 }
 
 export interface ViewPoint {

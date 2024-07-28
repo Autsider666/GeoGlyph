@@ -52,6 +52,8 @@ export class Machina extends Actor {
             }, {
                 getRange: (): number => radius * 5,
                 getFalloff: (): number => 0.50,
+                getInsideAlpha: (): number => 1,
+                getOutsideAlpha: (): number => 0.75,
             }
         ]));
 

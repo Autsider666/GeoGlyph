@@ -8,9 +8,11 @@ export class ShadowLayer extends Actor {
         {
             alpha = 1,
             color = '#000000',
-            insideAlpha = 1,
-            outsideAlpha = 1,
-        }: { alpha?: number, color?: string } & ViewPointModifiers = {}
+            defaultModifiers = {
+                getInsideAlpha: (): number => 1,
+                getOutsideAlpha: (): number => 1,
+            }
+        }: { alpha?: number, color?: string, defaultModifiers?: ViewPointModifiers } = {}
     ) {
         super({
             name: 'ShadowLayer',
@@ -31,10 +33,7 @@ export class ShadowLayer extends Actor {
                 },
                 initialDraw: (ctx): void => ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height),
                 resetBeforeDraw: false,
-                viewPointModifiers: {
-                    insideAlpha,
-                    outsideAlpha,
-                }
+                viewPointModifiers: defaultModifiers,
             },
         ));
     }

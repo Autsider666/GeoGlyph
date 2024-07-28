@@ -17,7 +17,9 @@ import {
     PointerClickToPositionComponent
 } from "../../Utility/Excalibur/ECS/Component/PointerClickToPositionComponent.ts";
 import {KeyboardControlledComponent} from "../../Utility/Excalibur/Movement/Component/KeyboardControlledComponent.ts";
+import {ViewPointModifiers} from "../../Utility/Excalibur/Utility/ViewPoint.ts";
 import {FogLayer} from "../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
+import {ShadowLayer} from "../../Utility/Excalibur/Visibility/Actor/ShadowLayer.ts";
 import {BlockVisibilityComponent} from "../../Utility/Excalibur/Visibility/Component/BlockVisibilityComponent.ts";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
@@ -164,7 +166,7 @@ export class ExperimentalScene extends Scene {
             // alpha: 0.75,
             // color: 'white',
         }));
-        // this.add(new ShadowLayer(worldBounds));
+        this.add(new ShadowLayer(worldBounds));
 
         // const viewPoint = this.createViewPoint(
         //     'Player',
@@ -201,13 +203,13 @@ export class ExperimentalScene extends Scene {
             radius: 10,
             color: ColorPalette.accentLightColor,
         });
-        const viewPoints = [
+        const viewPoints: ViewPointModifiers[] = [
             // {
             //     getRange: (): number => 10,
             //     getFalloff: (): number => 1, //0.75
             // },
             {
-                getRange: (): number => 150, // 150, //250
+                getRange: (): number => 100, // 150, //250
                 getFalloff: (): number => 0, //0.75
             },
             {
