@@ -1,11 +1,11 @@
-import {Actor, Vector} from "excalibur";
+import {Actor, Query, Vector} from "excalibur";
 import {CanvasHelper} from "../../../Helper/CanvasHelper.ts";
 import {CoordinateHelper} from "../../../Helper/CoordinateHelper.ts";
 import {RadianHelper} from "../../../Helper/RadianHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
 import {ColliderHelper} from "../../Utility/ColliderHelper.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
-import {BlockVisibilityComponent, VisibilityEdge} from "./BlockVisibilityComponent.ts";
+import {BlockVisibilityComponent} from "./BlockVisibilityComponent.ts";
 
 type ViewPointData = {
     getAngle?: () => number,
@@ -19,8 +19,10 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
     private static defaultFalloff: number = 0;
     private readonly initializedEntities = new Set<number>(); //TODO remove
 
-    private readonly visibleEdges: VisibilityEdge[] = [];
+    // private readonly visibleEdges: VisibilityEdge[] = [];
     private readonly points: Vector[] = [];
+
+    private visibilityBlockerQuery?: Query<typeof BlockVisibilityComponent>;
 
     constructor(
         private readonly viewPoints: ViewPointData[],
@@ -31,43 +33,44 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
 
     onAdd(owner: Actor): void {
         owner.on('preupdate', ({engine}) => {
-            for (const child of owner.children) {
-                if (child.hasTag('debugDraw')) {
-                    child.unparent();
-                }
+            if (!this.visibilityBlockerQuery) {
+                this.visibilityBlockerQuery = engine.currentScene.world.query([BlockVisibilityComponent]);
             }
 
             this.points.length = 0;
-            const visibleEdges: VisibilityEdge[] = [];
-            const visionBlockers = engine.currentScene.world.query([BlockVisibilityComponent]).entities;
+            // const visibleEdges: VisibilityEdge[] = [];
+            const visionBlockers = this.visibilityBlockerQuery.entities;
             for (const visionBlocker of visionBlockers) {
                 if (visionBlocker.id === owner.id || !(visionBlocker instanceof Actor) || this.initializedEntities.has(visionBlocker.id)) {
                     continue;
                 }
 
-                visibleEdges.push(...visionBlocker.get(BlockVisibilityComponent).getEdges(owner, false));
+                // visibleEdges.push(...visionBlocker.get(BlockVisibilityComponent).getEdges(owner, false));
                 this.points.push(...ColliderHelper.getColliderPoints(visionBlocker.collider.get(), {viewpoint: owner.pos}));
             }
 
-            for (const visibleEdge of visibleEdges) {
-                if (visibleEdge.marker) {
-                    engine.add(visibleEdge.marker);
-                }
-            }
+            // for (const visibleEdge of visibleEdges) {
+            //     if (visibleEdge.marker) {
+            //         engine.add(visibleEdge.marker);
+            //     }
+            // }
 
-            this.visibleEdges.length = 0;
+            // this.visibleEdges.length = 0;
 
-            this.visibleEdges.push(...visibleEdges.sort((a: VisibilityEdge, b: VisibilityEdge) => {
-                if (a.angle === b.angle) {
-                    return 0;
-                }
-
-                return a.angle < b.angle ? -1 : 1;
-            }));
+            // this.visibleEdges.push(...visibleEdges.sort((a: VisibilityEdge, b: VisibilityEdge) => {
+            //     if (a.angle === b.angle) {
+            //         return 0;
+            //     }
+            //
+            //     return a.angle < b.angle ? -1 : 1;
+            // }));
         });
     }
 
-    public drawViewPoint(ctx: CanvasRenderingContext2D, {insideAlpha = 1, outsideAlpha = 0}:{insideAlpha?:number,outsideAlpha?:number} = {}): void {
+    public drawViewPoint(ctx: CanvasRenderingContext2D, {insideAlpha = 1, outsideAlpha = 0}: {
+        insideAlpha?: number,
+        outsideAlpha?: number
+    } = {}): void {
         if (this.disableRendering) {
             return;
         }
@@ -116,7 +119,7 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
 
             const viewCone = new Path2D();
             // ctx.fillStyle = 'rgba(0,0,0,1)';
-            viewCone.moveTo(pos.x,pos.y);
+            viewCone.moveTo(pos.x, pos.y);
             viewCone.arc(
                 pos.x,
                 pos.y,

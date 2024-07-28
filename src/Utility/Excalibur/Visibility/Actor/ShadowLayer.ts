@@ -1,5 +1,4 @@
 import {Actor, BoundingBox, Vector} from "excalibur";
-import {DirtyCanvas} from "../../DirtyCanvas.ts";
 import {ViewPointModifiers} from "../../Utility/ViewPoint.ts";
 import {VisibilityLayerComponent} from "../Component/VisibilityLayerComponent.ts";
 
@@ -13,8 +12,6 @@ export class ShadowLayer extends Actor {
             outsideAlpha = 1,
         }: { alpha?: number, color?: string } & ViewPointModifiers = {}
     ) {
-        let initialRun: boolean = true;
-
         super({
             pos: bounds.center,
             anchor: Vector.Zero,
@@ -23,24 +20,21 @@ export class ShadowLayer extends Actor {
         });
 
         this.addComponent(new VisibilityLayerComponent(
-            new DirtyCanvas({
-                width: bounds.width,
-                height: bounds.height,
-                // cache: true,
-                draw: (ctx): void => {
+            {
+                bounds,
+                draw: (ctx: CanvasRenderingContext2D): void => {
                     ctx.globalAlpha = alpha;
                     ctx.fillStyle = color;
 
-                    if (initialRun) {
-                        initialRun = false;
-
-                        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    }
-
                     ctx.globalCompositeOperation = 'destination-out'; // Used to be destination-out
+                },
+                initialDraw: (ctx): void => ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height),
+                resetBeforeDraw: false,
+                viewPointModifiers: {
+                    insideAlpha,
+                    outsideAlpha,
                 }
-            }),
-            {insideAlpha, outsideAlpha}
+            },
         ));
     }
 }

@@ -1,4 +1,4 @@
-import {Actor, BoundingBox, Canvas, Vector} from "excalibur";
+import {Actor, BoundingBox, Vector} from "excalibur";
 import {ViewPointModifiers} from "../../Utility/ViewPoint.ts";
 import {VisibilityLayerComponent} from "../Component/VisibilityLayerComponent.ts";
 
@@ -15,22 +15,25 @@ export class FogLayer extends Actor {
         super({
             pos: bounds.center,
             anchor: Vector.Zero,
+            width: bounds.width,
+            height: bounds.height,
         });
 
         this.addComponent(new VisibilityLayerComponent(
-            new Canvas({
-                width: bounds.width,
-                height: bounds.height,
-                // cache: true,
-                draw: (ctx): void => {
+            {
+                bounds,
+                draw: (ctx: CanvasRenderingContext2D): void => {
                     ctx.globalAlpha = alpha;
                     ctx.fillStyle = color;
                     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                     ctx.globalCompositeOperation = 'destination-out';
-                }
-            }),
-            {insideAlpha, outsideAlpha},
-            this.postProcess.bind(this),
+                },
+                viewPointModifiers: {
+                    insideAlpha,
+                    outsideAlpha,
+                },
+                postProcessCallback: this.postProcess.bind(this),
+            },
         ));
     }
 

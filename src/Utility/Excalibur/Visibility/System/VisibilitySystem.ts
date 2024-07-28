@@ -1,4 +1,5 @@
 import {Query, System, SystemPriority, SystemType, World} from "excalibur";
+import {OffscreenTag} from "../../../../Magitek/Actor/tags.ts";
 import {BlockVisibilityComponent} from "../Component/BlockVisibilityComponent.ts";
 import {ViewpointComponent} from "../Component/ViewpointComponent.ts";
 import {VisibilityLayerComponent} from "../Component/VisibilityLayerComponent.ts";
@@ -29,6 +30,10 @@ export class VisibilitySystem extends System {
             }
 
             for (const entity of this.visibilityBlockerQuery.entities) {
+                if (entity.hasTag(OffscreenTag)) {
+                    continue;
+                }
+
                 layer.drawBlocker(entity);
             }
 

@@ -12,6 +12,7 @@ import {
     Vector,
 } from "excalibur";
 import {ColorPalette} from "../../IDE/ColorPalette.ts";
+import {DirtyComponent} from "../../Utility/Excalibur/ECS/Component/DirtyComponent.ts";
 import {
     PointerClickToPositionComponent
 } from "../../Utility/Excalibur/ECS/Component/PointerClickToPositionComponent.ts";
@@ -164,7 +165,7 @@ export class ExperimentalScene extends Scene {
             // alpha: 0.75,
             // color: 'white',
         }));
-        this.add(new ShadowLayer(worldBounds));
+        // this.add(new ShadowLayer(worldBounds));
 
         // const viewPoint = this.createViewPoint(
         //     'Player',
@@ -176,8 +177,8 @@ export class ExperimentalScene extends Scene {
         // );
         const viewPoint = new Machina(worldBounds.center, 50);
         viewPoint.addComponent(new KeyboardControlledComponent(() => 100));
+        viewPoint.addComponent(new DirtyComponent());
         this.add(viewPoint);
-
 
         this.add(this.createViewPoint('Monster', new Vector(100, 100), undefined, true));
         this.add(this.createViewPoint('Ally Top', worldBounds.center.sub(new Vector(0,100)), undefined, false));
