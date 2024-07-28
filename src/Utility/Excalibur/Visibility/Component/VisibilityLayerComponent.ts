@@ -76,12 +76,11 @@ export class VisibilityLayerComponent extends BaseComponent {
             draw,
             width: bounds.width,
             height: bounds.height,
-            // cache: true,
+            cache: true,
         };
 
         const canvas = resetBeforeDraw ? new Canvas(canvasOptions) : new DirtyCanvas(canvasOptions);
 
-        console.log(canvas, draw, initialDraw,resetBeforeDraw);
         if (initialDraw) {
             initialDraw(canvas.ctx);
         }
