@@ -13,6 +13,7 @@ export class FogLayer extends Actor {
         }: { alpha?: number, color?: string } & ViewPointModifiers = {}
     ) {
         super({
+            name: 'FogLayer',
             pos: bounds.center,
             anchor: Vector.Zero,
             width: bounds.width,

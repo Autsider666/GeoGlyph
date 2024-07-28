@@ -13,6 +13,7 @@ export class ShadowLayer extends Actor {
         }: { alpha?: number, color?: string } & ViewPointModifiers = {}
     ) {
         super({
+            name: 'ShadowLayer',
             pos: bounds.center,
             anchor: Vector.Zero,
             width: bounds.width,

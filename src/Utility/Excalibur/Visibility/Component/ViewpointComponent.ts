@@ -1,9 +1,9 @@
 import {Actor, Query, Vector} from "excalibur";
+import {DirtyTag} from "../../../../Magitek/Actor/tags.ts";
 import {CanvasHelper} from "../../../Helper/CanvasHelper.ts";
 import {CoordinateHelper} from "../../../Helper/CoordinateHelper.ts";
 import {RadianHelper} from "../../../Helper/RadianHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
-import {ColliderHelper} from "../../Utility/ColliderHelper.ts";
 import {ViewPoint} from "../../Utility/ViewPoint.ts";
 import {BlockVisibilityComponent} from "./BlockVisibilityComponent.ts";
 
@@ -17,15 +17,14 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
     private static defaultAngle: number = RadianHelper.Circle;
     private static defaultRange: number = Infinity;
     private static defaultFalloff: number = 0;
-    private readonly initializedEntities = new Set<number>(); //TODO remove
+    private useCache: boolean = false;
 
-    // private readonly visibleEdges: VisibilityEdge[] = [];
     private readonly points: Vector[] = [];
 
     private visibilityBlockerQuery?: Query<typeof BlockVisibilityComponent>;
 
     constructor(
-        private readonly viewPoints: ViewPointData[],
+        private readonly viewPoints: (ViewPointData & { cachedPath?: Path2D })[],
         private readonly disableRendering: boolean = false,
     ) {
         super();
@@ -37,33 +36,21 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
                 this.visibilityBlockerQuery = engine.currentScene.world.query([BlockVisibilityComponent]);
             }
 
+            this.useCache = !owner.hasTag(DirtyTag);
+
             this.points.length = 0;
-            // const visibleEdges: VisibilityEdge[] = [];
             const visionBlockers = this.visibilityBlockerQuery.entities;
             for (const visionBlocker of visionBlockers) {
-                if (visionBlocker.id === owner.id || !(visionBlocker instanceof Actor) || this.initializedEntities.has(visionBlocker.id)) {
+                if (visionBlocker.id === owner.id) {
                     continue;
                 }
 
-                // visibleEdges.push(...visionBlocker.get(BlockVisibilityComponent).getEdges(owner, false));
-                this.points.push(...ColliderHelper.getColliderPoints(visionBlocker.collider.get(), {viewpoint: owner.pos}));
+                if (visionBlocker.hasTag(DirtyTag)) {
+                    this.useCache = false;
+                }
+
+                this.points.push(...visionBlocker.get(BlockVisibilityComponent).getEdges(owner));
             }
-
-            // for (const visibleEdge of visibleEdges) {
-            //     if (visibleEdge.marker) {
-            //         engine.add(visibleEdge.marker);
-            //     }
-            // }
-
-            // this.visibleEdges.length = 0;
-
-            // this.visibleEdges.push(...visibleEdges.sort((a: VisibilityEdge, b: VisibilityEdge) => {
-            //     if (a.angle === b.angle) {
-            //         return 0;
-            //     }
-            //
-            //     return a.angle < b.angle ? -1 : 1;
-            // }));
         });
     }
 
@@ -89,11 +76,13 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
 
         // ctx.save();
         // const viewCone = new Path2D();
-        for (const {
-            getAngle = (): number => ViewpointComponent.defaultAngle,
-            getRange = (): number => ViewpointComponent.defaultRange,
-            getFalloff = (): number => ViewpointComponent.defaultFalloff,
-        } of this.viewPoints) {
+        for (const viewpoint of this.viewPoints) {
+            const {
+                getAngle = (): number => ViewpointComponent.defaultAngle,
+                getRange = (): number => ViewpointComponent.defaultRange,
+                getFalloff = (): number => ViewpointComponent.defaultFalloff,
+            } = viewpoint;
+
             const angle = getAngle();
             const startAngle = direction - angle / 2;
             const endAngle = direction + angle / 2;
@@ -128,9 +117,14 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
                 endAngle,
             );
 
-
             ctx.clip(viewCone);
-            ctx.fill(this.createPolygonUsingOffsetAngles(owner));
+            if (!this.useCache || !viewpoint.cachedPath) {
+                viewpoint.cachedPath = this.createPolygonUsingOffsetAngles(owner);
+            }
+
+            ctx.fill(viewpoint.cachedPath);
+
+            ctx.fill();
             ctx.restore();
         }
     }
@@ -146,7 +140,7 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
             const angle = point.sub(owner.pos).toAngle();
             uniqueAngles.push(
                 angle - offset,
-                angle, // TODO check if this one can be removed
+                // angle, // TODO check if this one can be removed
                 angle + offset,
             );
         }

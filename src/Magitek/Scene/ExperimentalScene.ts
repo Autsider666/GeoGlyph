@@ -18,7 +18,6 @@ import {
 } from "../../Utility/Excalibur/ECS/Component/PointerClickToPositionComponent.ts";
 import {KeyboardControlledComponent} from "../../Utility/Excalibur/Movement/Component/KeyboardControlledComponent.ts";
 import {FogLayer} from "../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
-import {ShadowLayer} from "../../Utility/Excalibur/Visibility/Actor/ShadowLayer.ts";
 import {BlockVisibilityComponent} from "../../Utility/Excalibur/Visibility/Component/BlockVisibilityComponent.ts";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
@@ -181,8 +180,8 @@ export class ExperimentalScene extends Scene {
         this.add(viewPoint);
 
         this.add(this.createViewPoint('Monster', new Vector(100, 100), undefined, true));
-        this.add(this.createViewPoint('Ally Top', worldBounds.center.sub(new Vector(0,100)), undefined, false));
-        this.add(this.createViewPoint('Ally Left', worldBounds.center.sub(new Vector(100,-100)), undefined, false));
+        this.add(this.createViewPoint('Ally Top', worldBounds.center.sub(new Vector(0, 100)), undefined, false));
+        this.add(this.createViewPoint('Ally Left', worldBounds.center.sub(new Vector(100, -100)), undefined, false));
 
         for (const object of objects) {
             object.addComponent(new BlockVisibilityComponent());
@@ -218,7 +217,7 @@ export class ExperimentalScene extends Scene {
             },
         ];
 
-        viewPoint.rotation = -Math.PI/2;
+        viewPoint.rotation = -Math.PI / 2;
 
         if (speed !== undefined) {
             viewPoint.addComponent(new PointerClickToPositionComponent());
@@ -229,10 +228,6 @@ export class ExperimentalScene extends Scene {
 
         return viewPoint;
     }
-
-    // private createScreenEdges():void {
-    //
-    // }
 
     private createOuterBoundsCollider(bounds: BoundingBox): void {
         const collider = new CompositeCollider([
@@ -259,6 +254,6 @@ export class ExperimentalScene extends Scene {
             pos: Vector.Zero,
             anchor: Vector.Zero,
             collider,
-        }).addComponent(new BlockVisibilityComponent(undefined, false)));
+        }).addComponent(new BlockVisibilityComponent(false)));
     }
 }
