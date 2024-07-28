@@ -1,4 +1,4 @@
-import {Actor, Random, Rectangle, Scene, Vector} from "excalibur";
+import {Actor, BoundingBox, Random, Rectangle, Scene, Vector} from "excalibur";
 import {ColorPalette} from "../../IDE/ColorPalette.ts";
 import {CommandHandler} from "../../Utility/Excalibur/CommandHandling/CommandHandler.ts";
 import {SelectionAreaHandler} from "../../Utility/Excalibur/InputHandling/Actor/SelectionAreaHandler.ts";
@@ -24,7 +24,9 @@ export class ArenaScene extends Scene {
     onActivate(): void {
         this.world.add(this.commandHandler);
 
-        this.world.add(new FogLayer());
+        const bounds = BoundingBox.fromDimension(1000,1000,Vector.Zero);
+
+        this.world.add(new FogLayer(bounds));
         // this.world.add(new ShadowLayer());
 
         this.world.add(new SelectionAreaHandler());

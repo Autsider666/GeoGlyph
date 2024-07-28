@@ -7,6 +7,7 @@ export const ErrorPage = (): ReactElement => {
 
     if (isRouteErrorResponse(error)) {
         // error is type `ErrorResponse`
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
         errorMessage = error.data?.message || error.statusText;
     } else if (error instanceof Error) {
         errorMessage = error.message;

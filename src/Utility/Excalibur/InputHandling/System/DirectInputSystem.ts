@@ -26,12 +26,12 @@ export class DirectInputSystem extends System {
 
         this.selectedQuery.entityAdded$.subscribe(entity => {
             if (entity.has(MovableComponent)) {
-                this.movable.add(entity);
+                this.movable.add(entity as Entity<MovableComponent>);
             }
         });
 
         this.selectedQuery.entityRemoved$.subscribe(entity => {
-            this.movable.delete(entity);
+            this.movable.delete(entity as Entity<MovableComponent>);
         });
     }
 

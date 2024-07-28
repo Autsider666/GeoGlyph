@@ -25,7 +25,7 @@ export function drawRoundRect(
 
 
 const TEXT_COLOR = "#000000";
-
+/* eslint-disable */
 export const drawHover: NodeHoverDrawingFunction = (
     context: CanvasRenderingContext2D,
     data: PartialButFor<NodeDisplayData, "x" | "y" | "size" | "label" | "color">,

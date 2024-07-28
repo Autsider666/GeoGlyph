@@ -32,6 +32,7 @@ const generateStyle = ({
                        }: BackgroundImageOptions): CSSProperties => {
     const style: CSSProperties = {
         backgroundSize: `${patternSize}px ${patternSize}px`,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         backgroundColor: backgroundColor,
     };
 
@@ -62,6 +63,7 @@ const generateStyle = ({
             style.backgroundPosition = `${offset}px ${offset}px, ${offset}px ${offset}px`;
             break;
         default:
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             throw new Error(`Background pattern "${type}" is not implemented yet.`);
     }
 

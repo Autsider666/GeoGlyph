@@ -5,6 +5,7 @@ import {
     Color,
     Engine,
     Entity,
+    PointerButton,
     PointerType,
     PolygonCollider,
     Rectangle,
@@ -50,7 +51,7 @@ export class SelectionAreaHandler extends Actor {
         const selectedQuery = engine.currentScene.world.queryTags([SelectedTag]);
 
         engine.input.pointers.primary.on('down', ({pointerType, button, worldPos}) => {
-            if (pointerType !== PointerType.Mouse || button !== 'Left') {
+            if (pointerType !== PointerType.Mouse || button !== PointerButton.Left) {
                 return;
             }
 
@@ -60,7 +61,7 @@ export class SelectionAreaHandler extends Actor {
         });
 
         engine.input.pointers.primary.on('up', ({pointerType, button}) => {
-            if (pointerType !== PointerType.Mouse || button !== 'Left') {
+            if (pointerType !== PointerType.Mouse || button !== PointerButton.Left) {
                 return;
             }
 

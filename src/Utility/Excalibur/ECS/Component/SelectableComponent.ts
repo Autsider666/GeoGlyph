@@ -3,7 +3,7 @@ import {ColorPalette} from "../../../../IDE/ColorPalette.ts";
 import {SelectionMarker} from "../../InputHandling/Actor/SelectionMarker.ts";
 import {BaseComponent} from "../BaseComponent.ts";
 
-export const SelectedTag: string = 'SELECTED' as const;
+export const SelectedTag: string = 'SELECTED';
 
 export class SelectableComponent extends BaseComponent {
     private readonly selectedCircle: SelectionMarker;

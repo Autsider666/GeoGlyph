@@ -50,10 +50,7 @@ export class BlockVisibilityComponent extends BaseComponent {
             this.isCacheable = false;
             this.calculateEdges = (viewpoint: Actor): Vector[] => ColliderHelper.getColliderPoints(collider, {viewpoint: viewpoint.pos});
         } else {
-            this.calculateEdges = (): Vector[] => {
-                console.log('cache?', this.isCacheable);
-                return ColliderHelper.getColliderPoints(collider);
-            };
+            this.calculateEdges = (): Vector[] => ColliderHelper.getColliderPoints(collider);
         }
         // } else if (collider instanceof PolygonCollider) {
         //     this.calculateEdges = (viewpoint: Actor): VisibilityEdge[] => this.calculateEdgesForPolygon(viewpoint, collider, owner);

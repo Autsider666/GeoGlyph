@@ -70,10 +70,12 @@ export const ExcaliburContainer = ({
         loadScenes(engine, scenes);
 
         if (scene) {
-            engine.goToScene(scene).then(() => loadActors(engine, actors));
+            engine.goToScene(scene)
+                .then(() => loadActors(engine, actors))
+                .catch(() => console.error(`Unable to go to scene "${scene}`));
         }
 
-        engine.start();
+        engine.start().catch(() => console.log('Unable to start Excalibur engine'));
 
         engines.set(instanceId, engine);
 
@@ -97,9 +99,9 @@ export const ExcaliburContainer = ({
                 throw new Error(`Scene "${scene} is not loaded.`);
             }
 
-            engine.goToScene(scene).then(() => {
-                setCurrentSceneName(engine.currentSceneName);
-            });
+            engine.goToScene(scene)
+                .then(() => setCurrentSceneName(engine.currentSceneName))
+                .catch(() => console.error(`Unable to go to scene "${scene}`));
         }
     }, [instanceId, scenes, actors, scene, currentSceneName]);
 
