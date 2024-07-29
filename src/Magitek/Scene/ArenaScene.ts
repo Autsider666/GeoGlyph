@@ -1,10 +1,11 @@
-import {Actor, BoundingBox, Random, Rectangle, Scene, Vector} from "excalibur";
+import {BoundingBox, Random, Scene, Vector} from "excalibur";
 import {ColorPalette} from "../../IDE/ColorPalette.ts";
 import {CommandHandler} from "../../Utility/Excalibur/CommandHandling/CommandHandler.ts";
 import {SelectionAreaHandler} from "../../Utility/Excalibur/InputHandling/Actor/SelectionAreaHandler.ts";
 import {DirectInputSystem} from "../../Utility/Excalibur/InputHandling/System/DirectInputSystem.ts";
 import {FogLayer} from "../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
+import {EnvironmentObject} from "../../Utility/Excalibur/Actor/EnvironmentObject.ts";
 import {Machina} from "../Actor/Machina.ts";
 import {EnemySpawnerComponent} from "../Component/EnemySpawnerComponent.ts";
 import {EnemySpawnerSystem} from "../System/EnemySpawnerSystem.ts";
@@ -24,7 +25,7 @@ export class ArenaScene extends Scene {
     onActivate(): void {
         this.world.add(this.commandHandler);
 
-        const bounds = BoundingBox.fromDimension(1000,1000,Vector.Zero);
+        const bounds = BoundingBox.fromDimension(1000, 1000, Vector.Zero);
 
         this.world.add(new FogLayer(bounds));
         // this.world.add(new ShadowLayer());
@@ -40,26 +41,20 @@ export class ArenaScene extends Scene {
 
         for (let i = 0; i < 10; i++) {
             const size = random.integer(10, 50);
-            const actor = new Actor({
+            const block = EnvironmentObject.Rectangular({
+                height: size,
+                width: size,
                 pos: new Vector(random.integer(0, self.innerWidth), random.integer(0, self.innerHeight)),
-                // radius: size,
-                height: size,
-                width: size,
-                // color: ColorPalette.accentLightColor,
-            });
-
-            actor.graphics.use(new Rectangle({
-                height: size,
-                width: size,
                 color: ColorPalette.backgroundLightColor,
 
                 lineWidth: 2,
                 strokeColor: ColorPalette.accentLightColor,
-            }));
 
-            actor.addComponent(new EnemySpawnerComponent());
+            });
 
-            this.add(actor);
+            block.addComponent(new EnemySpawnerComponent());
+
+            this.add(block);
         }
     }
 }

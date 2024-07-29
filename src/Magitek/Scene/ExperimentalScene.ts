@@ -1,17 +1,6 @@
-import {
-    Actor,
-    ActorArgs,
-    BoundingBox,
-    CompositeCollider,
-    EdgeCollider,
-    Polygon,
-    PolygonCollider,
-    PolygonOptions,
-    RasterOptions,
-    Scene,
-    Vector,
-} from "excalibur";
+import {Actor, BoundingBox, CompositeCollider, EdgeCollider, Scene, Vector,} from "excalibur";
 import {ColorPalette} from "../../IDE/ColorPalette.ts";
+import {EnvironmentObject} from "../../Utility/Excalibur/Actor/EnvironmentObject.ts";
 import {DirtyComponent} from "../../Utility/Excalibur/ECS/Component/DirtyComponent.ts";
 import {
     PointerClickToPositionComponent
@@ -20,57 +9,24 @@ import {KeyboardControlledComponent} from "../../Utility/Excalibur/Movement/Comp
 import {ViewPointModifiers} from "../../Utility/Excalibur/Utility/ViewPoint.ts";
 import {FogLayer} from "../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
 import {ShadowLayer} from "../../Utility/Excalibur/Visibility/Actor/ShadowLayer.ts";
-import {BlockVisibilityComponent} from "../../Utility/Excalibur/Visibility/Component/BlockVisibilityComponent.ts";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
 import {Machina} from "../Actor/Machina.ts";
 import {EnemyVisibilitySystem} from "../System/EnemyVisibilitySystem.ts";
 
-type PolygonActorArgs = ActorArgs & PolygonOptions & RasterOptions & { angle?: number }
-
-function createPolygonActor(config: PolygonActorArgs): Actor {
-    const collider = new PolygonCollider({
-        points: config.points,
-    }).triangulate();
-
-    const actor = new Actor({
-        ...config,
-        // @ts-expect-error weird IDE
-        collider,
-        rotation: 0,
-    });
-
-    actor.graphics.use(new Polygon({
-        ...config,
-    }));
-
-    if (config.angle) {
-        actor.rotation = config.angle;
-    }
-
-    return actor;
-}
-
-
 const objects: Actor[] = [
     //TOP LEFT
-    new Actor({
+    EnvironmentObject.Rectangular({
         name: 'Top Left',
         pos: new Vector(300, 400),
         width: 100,
         height: 100,
         color: ColorPalette.accentDarkColor,
         anchor: Vector.Zero,
+        rotation: Math.PI / 3 * 2
     }),
     //TOP Center
-    // new Actor({
-    //     name: 'Top Center',
-    //     x: 450,
-    //     y: 0,
-    //     radius: 200,
-    //     color: Color.Blue,
-    // }),
-    new Actor({
+    EnvironmentObject.Rectangular({
         name: 'Top Center',
         pos: new Vector(600, 300),
         width: 100,
@@ -79,7 +35,7 @@ const objects: Actor[] = [
         anchor: Vector.Zero,
     }),
     //TOP RIGHT
-    new Actor({
+    EnvironmentObject.Rectangular({
         name: 'Top Right',
         pos: new Vector(700, 400),
         width: 100,
@@ -88,7 +44,7 @@ const objects: Actor[] = [
         anchor: Vector.Zero,
     }),
     //BOTTOM LEFT
-    new Actor({
+    EnvironmentObject.Rectangular({
         name: 'Bottom Left',
         pos: new Vector(350, 700),
         width: 50,
@@ -104,8 +60,21 @@ const objects: Actor[] = [
     //     radius: 100,
     //     color: ColorPalette.accentLightColor,
     // }),
-    createPolygonActor({
-        name: 'Polygon Bottom Right',
+    EnvironmentObject.Polygonal({
+        name: 'Polygon Bottom Left',
+        pos: new Vector(350, 650),
+        points: [
+            new Vector(-100, -100),
+            new Vector(0, -50),
+            new Vector(100, -100),
+            new Vector(50, 50),
+            new Vector(-100, 100),
+            new Vector(-50, 50),
+        ],
+        color: ColorPalette.accentLightColor,
+    }),
+    EnvironmentObject.Polygonal({
+        name: 'Polygon Center',
         pos: new Vector(600, 600),
         points: [
             new Vector(-100, -100),
@@ -116,26 +85,11 @@ const objects: Actor[] = [
             new Vector(-50, 50),
         ],
         color: ColorPalette.accentLightColor,
-        // rotation: Math.PI / 3,
-        angle: -Math.PI / 3,
+        rotation: -Math.PI / 3,
     }),
-    createPolygonActor({
-        name: 'Polygon Bottom Right',
+    EnvironmentObject.Polygonal({
+        name: 'Polygon Center Right',
         pos: new Vector(800, 700),
-        points: [
-            new Vector(-100, -100),
-            new Vector(0, -50),
-            new Vector(100, -100),
-            new Vector(50, 50),
-            new Vector(-100, 100),
-            new Vector(-50, 50),
-        ],
-        color: ColorPalette.accentLightColor,
-        // rotation: Math.PI,
-    }),
-    createPolygonActor({
-        name: 'Polygon Bottom Right',
-        pos: new Vector(500, 600),
         points: [
             new Vector(-100, -100),
             new Vector(0, -50),
@@ -159,7 +113,6 @@ export class ExperimentalScene extends Scene {
         const worldBounds = BoundingBox.fromDimension(
             1000, 1000,
             Vector.Zero,
-            // Vector.Zero,
         );
 
         this.add(new FogLayer(worldBounds, {
@@ -168,14 +121,6 @@ export class ExperimentalScene extends Scene {
         }));
         this.add(new ShadowLayer(worldBounds));
 
-        // const viewPoint = this.createViewPoint(
-        //     'Player',
-        //     // new Vector(180, 400), // Weird position right between square an polygon
-        //     // new Vector(665, 600),
-        //     worldBounds.center,
-        //     100,
-        //     false,
-        // );
         const viewPoint = new Machina(worldBounds.center, 50);
         viewPoint.addComponent(new KeyboardControlledComponent(() => 100));
         viewPoint.addComponent(new DirtyComponent());
@@ -186,7 +131,6 @@ export class ExperimentalScene extends Scene {
         this.add(this.createViewPoint('Ally Left', worldBounds.center.sub(new Vector(100, -100)), undefined, false));
 
         for (const object of objects) {
-            object.addComponent(new BlockVisibilityComponent());
             this.add(object);
         }
 
@@ -251,11 +195,12 @@ export class ExperimentalScene extends Scene {
             }), // West
         ]);
 
-        this.engine.add(new Actor({
+        this.add(new EnvironmentObject({
             name: 'Screen collider',
             pos: Vector.Zero,
             anchor: Vector.Zero,
             collider,
-        }).addComponent(new BlockVisibilityComponent(false)));
+            drawWhenVisible: false,
+        }));
     }
 }
