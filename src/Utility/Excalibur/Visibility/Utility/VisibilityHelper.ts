@@ -1,5 +1,6 @@
-import {Actor, CircleCollider, PolygonCollider, Vector} from "excalibur";
+import {Actor, BoundingBox, CircleCollider, CompositeCollider, EdgeCollider, PolygonCollider, Vector} from "excalibur";
 import {RadianHelper} from "../../../Helper/RadianHelper.ts";
+import {EnvironmentObject} from "../../Actor/EnvironmentObject.ts";
 
 export class VisibilityHelper {
     public static canSee(target: Actor, position: Vector, rotation: number, fieldOfView: number, range: number): number {
@@ -70,5 +71,34 @@ export class VisibilityHelper {
 
         // Clamp percentage to range [0, 1]
         return Math.max(0, Math.min(1, maxVisibility * 10));
+    }
+
+    public static createOuterBoundsCollider(bounds: BoundingBox): EnvironmentObject {
+        const collider = new CompositeCollider([
+            new EdgeCollider({
+                begin: bounds.topLeft,
+                end: new Vector(bounds.width, 0),
+            }), // North
+            new EdgeCollider({
+                begin: bounds.topRight,
+                end: new Vector(bounds.width, bounds.height)
+            }), // East
+            new EdgeCollider({
+                begin: bounds.bottomLeft,
+                end: new Vector(bounds.width, bounds.height)
+            }), // South
+            new EdgeCollider({
+                begin: bounds.topLeft,
+                end: new Vector(0, bounds.height),
+            }), // West
+        ]);
+
+        return new EnvironmentObject({
+            name: 'Screen collider',
+            pos: Vector.Zero,
+            anchor: Vector.Zero,
+            collider,
+            drawWhenVisible: false,
+        });
     }
 }

@@ -4,6 +4,7 @@ import {CanvasHelper} from "../../../Helper/CanvasHelper.ts";
 import {CoordinateHelper} from "../../../Helper/CoordinateHelper.ts";
 import {RadianHelper} from "../../../Helper/RadianHelper.ts";
 import {BaseComponent} from "../../ECS/BaseComponent.ts";
+import {DirtyComponent} from "../../ECS/Component/DirtyComponent.ts";
 import {ViewPoint, ViewPointModifiers} from "../../Utility/ViewPoint.ts";
 import {BlockVisibilityComponent} from "./BlockVisibilityComponent.ts";
 
@@ -31,6 +32,10 @@ export class ViewpointComponent extends BaseComponent implements ViewPoint {
     }
 
     onAdd(owner: Actor): void {
+        if (!owner.has(DirtyComponent)) {
+            owner.addComponent(new DirtyComponent());
+        }
+
         owner.on('preupdate', ({engine}) => {
             if (!this.visibilityBlockerQuery) {
                 this.visibilityBlockerQuery = engine.currentScene.world.query([BlockVisibilityComponent]);

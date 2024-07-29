@@ -1,11 +1,12 @@
 import {BoundingBox, Random, Scene, Vector} from "excalibur";
 import {ColorPalette} from "../../IDE/ColorPalette.ts";
+import {EnvironmentObject} from "../../Utility/Excalibur/Actor/EnvironmentObject.ts";
 import {CommandHandler} from "../../Utility/Excalibur/CommandHandling/CommandHandler.ts";
 import {SelectionAreaHandler} from "../../Utility/Excalibur/InputHandling/Actor/SelectionAreaHandler.ts";
 import {DirectInputSystem} from "../../Utility/Excalibur/InputHandling/System/DirectInputSystem.ts";
 import {FogLayer} from "../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
-import {EnvironmentObject} from "../../Utility/Excalibur/Actor/EnvironmentObject.ts";
+import {VisibilityHelper} from "../../Utility/Excalibur/Visibility/Utility/VisibilityHelper.ts";
 import {Machina} from "../Actor/Machina.ts";
 import {EnemySpawnerComponent} from "../Component/EnemySpawnerComponent.ts";
 import {EnemySpawnerSystem} from "../System/EnemySpawnerSystem.ts";
@@ -25,9 +26,11 @@ export class ArenaScene extends Scene {
     onActivate(): void {
         this.world.add(this.commandHandler);
 
-        const bounds = BoundingBox.fromDimension(1000, 1000, Vector.Zero);
+        const worldBounds = BoundingBox.fromDimension(1000, 1000, Vector.Zero);
 
-        this.world.add(new FogLayer(bounds));
+        this.add(VisibilityHelper.createOuterBoundsCollider(worldBounds));
+
+        this.world.add(new FogLayer(worldBounds));
         // this.world.add(new ShadowLayer());
 
         this.world.add(new SelectionAreaHandler());

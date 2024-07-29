@@ -1,4 +1,4 @@
-import {Actor, BoundingBox, CompositeCollider, EdgeCollider, Scene, Vector,} from "excalibur";
+import {Actor, BoundingBox, Scene, Vector} from "excalibur";
 import {ColorPalette} from "../../IDE/ColorPalette.ts";
 import {EnvironmentObject} from "../../Utility/Excalibur/Actor/EnvironmentObject.ts";
 import {DirtyComponent} from "../../Utility/Excalibur/ECS/Component/DirtyComponent.ts";
@@ -11,6 +11,7 @@ import {FogLayer} from "../../Utility/Excalibur/Visibility/Actor/FogLayer.ts";
 import {ShadowLayer} from "../../Utility/Excalibur/Visibility/Actor/ShadowLayer.ts";
 import {ViewpointComponent} from "../../Utility/Excalibur/Visibility/Component/ViewpointComponent.ts";
 import {VisibilitySystem} from "../../Utility/Excalibur/Visibility/System/VisibilitySystem.ts";
+import {VisibilityHelper} from "../../Utility/Excalibur/Visibility/Utility/VisibilityHelper.ts";
 import {Machina} from "../Actor/Machina.ts";
 import {EnemyVisibilitySystem} from "../System/EnemyVisibilitySystem.ts";
 
@@ -137,7 +138,7 @@ export class ExperimentalScene extends Scene {
         this.camera.strategy.lockToActor(viewPoint);
         this.camera.strategy.limitCameraBounds(worldBounds);
 
-        this.createOuterBoundsCollider(worldBounds);
+        this.add(VisibilityHelper.createOuterBoundsCollider(worldBounds));
     }
 
     private createViewPoint(name: string, position: Vector, speed: number | undefined, hideViewPoint: boolean): Actor {
@@ -173,34 +174,5 @@ export class ExperimentalScene extends Scene {
         viewPoint.addComponent(new ViewpointComponent(viewPoints, hideViewPoint));
 
         return viewPoint;
-    }
-
-    private createOuterBoundsCollider(bounds: BoundingBox): void {
-        const collider = new CompositeCollider([
-            new EdgeCollider({
-                begin: bounds.topLeft,
-                end: new Vector(bounds.width, 0),
-            }), // North
-            new EdgeCollider({
-                begin: bounds.topRight,
-                end: new Vector(bounds.width, bounds.height)
-            }), // East
-            new EdgeCollider({
-                begin: bounds.bottomLeft,
-                end: new Vector(bounds.width, bounds.height)
-            }), // South
-            new EdgeCollider({
-                begin: bounds.topLeft,
-                end: new Vector(0, bounds.height),
-            }), // West
-        ]);
-
-        this.add(new EnvironmentObject({
-            name: 'Screen collider',
-            pos: Vector.Zero,
-            anchor: Vector.Zero,
-            collider,
-            drawWhenVisible: false,
-        }));
     }
 }
